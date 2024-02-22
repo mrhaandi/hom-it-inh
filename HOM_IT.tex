@@ -1,0 +1,123 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}
+%%%%%%%%%%%%%%%%%%%%%%%%% Packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{a4wide,xspace}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{csquotes} %\enquote{} macro
+\usepackage{lmodern} %easier on the eyes modern font
+\usepackage{hyperref} %linked references
+\usepackage{lineno}\linenumbers
+\usepackage{wasysym} %\brokenvert
+\usepackage[activate={true,nocompatibility}]{microtype} %layouting
+%%%%%%%%%%%%%%%%%%%%%%% Style changes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}[theorem]{Problem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Symbols %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%% specific %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\length}{length}
+\DeclareMathOperator{\depth}{depth}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% stylized symbols %%%%<%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\bbB}{\mathbb{B}}
+\newcommand{\bbC}{\mathbb{C}}
+\newcommand{\bbN}{\mathbb{N}}
+\newcommand{\bbT}{\mathbb{T}}
+\newcommand{\bbS}{\mathbb{S}}
+\newcommand{\bbV}{\mathbb{V}}
+\newcommand{\bbZ}{\mathbb{Z}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calD}{\mathcal{D}}
+\newcommand{\calM}{\mathcal{M}}
+\newcommand{\calR}{\mathcal{R}}
+\newcommand{\calT}{\mathcal{T}}
+
+\newcommand{\0}{\mathbf{0}}
+\newcommand{\1}{\mathbf{1}}
+%%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\title{Title}
+\author{Andrej Dudenhefner\\ TU Dortmund University, Germany \\
+\texttt{andrej.dudenhefner@cs.tu-dortmund.de}}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+Thoughts on undecidability of higher-order matching wrt.~$(=_\beta)$ (not to be confused with~$(=_{\beta\eta})$) using intersection type inhabitation.
+\end{abstract}
+
+
+
+\section{Introduction}
+
+We like to reduce the problem $\exists n.\0^{n+1} \twoheadrightarrow \1^{1+n}$ for simple semi-Thue systems to higher-order matching.
+A simple semi-Thue system $\calR = \{R_1, \ldots R_k\}$ over an alphabet $\Sigma \supseteq \{\0, \1\}$ contains rules of shape $ab \mapsto cd$.
+
+For the following intersection types we have that the problem $\exists n.\0^{n+1} \twoheadrightarrow \1^{1+n}$ corresponds to the type inhabitation problem $\vdash\,?: \sigma_\star \to \sigma_\0 \to \sigma_{R_1} \to \cdots \sigma_{R_k} \to \sigma_\1 \to \$$.
+
+\begin{align*}
+\sigma_\star & := \Big(\big((\1 \to \bullet) \to *\big) \to * \Big) \cap
+\Big(\big((\1 \to \RIGHTcircle) \to *\big) \to \# \Big) \cap
+\bigg(\Big(\big((\1 \to \LEFTcircle) \to \#\big) \cap \big((\1 \to \bullet) \to \$ \big)\Big) \to \$ \bigg)\\
+\sigma_0 & := \big(\0 \to (\1 \to \bullet) \to * \big) \cap \big(\0 \to (\1 \to \RIGHTcircle) \to * \big) \cap \big(\0 \to (\1 \to \LEFTcircle) \to \# \big) \cap \big(\1 \to (\1 \to \bullet) \to \$ \big)\\
+\sigma_{ab \to cd} & := \big(c \to (\1 \to \LEFTcircle) \to a \big) \cap \big(d \to (\1 \to \RIGHTcircle) \to b \big) \cap \bigcap_{e \in \Sigma} \big(e \to (\1 \to \bullet) \to e \big)\\
+\sigma_1 & := \1
+\end{align*}
+
+\begin{remark}
+The functions corresponding to $\sigma_\star, \sigma_\0, \sigma_{R_1}, \ldots, \sigma_{R_k}, \sigma_\1$ are realizable in the domain $D = \{\bullet, *, \LEFTcircle, \RIGHTcircle, \#, \$\} \,\dot{\cup}\, \Sigma$.
+\end{remark}
+
+Intuition:
+\begin{itemize}
+\item $\sigma_\star$ expands a tape $* \ldots * \#\$$ and saves adjacency information.
+\item $\sigma_\0$ initializes the tape to $\0 \ldots \0 \1$.
+\item $\sigma_{ab \to cd}$ performs rewriting operations.
+\item $\sigma_\1$ accepts the tape $\1 \ldots \1$.
+\end{itemize}
+
+\newpage
+
+Let $D := \{\bullet, *, \LEFTcircle, \RIGHTcircle, \#, \$\} \,\dot{\cup}\, \Sigma$ and $n := |D|$ in the remainder of the presentation.
+Let us also assign unique values $1 \ldots n$ to individual symbols in $D$.
+For $x \in D$ with the assigned value $i$ to $x$ we write $r_x$ for $r_i$ and we write $\pi_x$ for $\lambda r_1 \ldots r_n.r_i$.
+
+Let $A := \underbrace{0 \to \cdots 0 \to}_{n \text{ times}} 0$.
+
+We mimic inhabitation using the higher-order matching problem
+\begin{align*}
+&X\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k} = \lambda z.z\\
+&X\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1 = \pi_\$\\
+&\text{where}\\
+&F_\star := \lambda g^{(A \to A) \to A}.g\,(\lambda x^A.x)\\
+&F_\0 := \lambda x^A. \lambda h^{A \to A}.h\,x\\
+&F_{ab \to cd} := \lambda x^A. \lambda h^{A \to A}.h\,x\\
+&G_\star := ?\\
+&G_\star := ?\\
+&G_\star := ?\\
+&G_\1 := \pi_\1
+\end{align*}
+
+
+\bibliographystyle{plain} 
+\bibliography{bibliography}
+
+\end{document}
