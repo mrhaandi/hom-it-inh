@@ -50,6 +50,9 @@
 
 \newcommand{\0}{\mathbf{0}}
 \newcommand{\1}{\mathbf{1}}
+
+\newcommand{\case}[2]{\ensuremath{\textbf{case } #1 \textbf{ of } \langle #2 \rangle}}
+\newcommand{\caseelse}[3]{\ensuremath{\textbf{case } #1 \textbf{ of } \langle #2 \rangle \textbf{ else } #3}}
 %%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,16 +77,16 @@ A simple semi-Thue system $\calR = \{R_1, \ldots R_k\}$ over an alphabet $\Sigma
 For the following intersection types we have that the problem $\exists n.\0^{n+1} \twoheadrightarrow \1^{1+n}$ corresponds to the type inhabitation problem $\vdash\,?: \sigma_\star \to \sigma_\0 \to \sigma_{R_1} \to \cdots \sigma_{R_k} \to \sigma_\1 \to \$$.
 
 \begin{align*}
-\sigma_\star & := \Big(\big((\1 \to \bullet) \to *\big) \to * \Big) \cap
-\Big(\big((\1 \to \RIGHTcircle) \to *\big) \to \# \Big) \cap
-\bigg(\Big(\big((\1 \to \LEFTcircle) \to \#\big) \cap \big((\1 \to \bullet) \to \$ \big)\Big) \to \$ \bigg)\\
-\sigma_0 & := \big(\0 \to (\1 \to \bullet) \to * \big) \cap \big(\0 \to (\1 \to \RIGHTcircle) \to * \big) \cap \big(\0 \to (\1 \to \LEFTcircle) \to \# \big) \cap \big(\1 \to (\1 \to \bullet) \to \$ \big)\\
-\sigma_{ab \to cd} & := \big(c \to (\1 \to \LEFTcircle) \to a \big) \cap \big(d \to (\1 \to \RIGHTcircle) \to b \big) \cap \bigcap_{e \in \Sigma} \big(e \to (\1 \to \bullet) \to e \big)\\
+\sigma_\star & := \Big(\big((\top \to \bullet) \to *\big) \to * \Big) \cap
+\Big(\big((\top \to \RIGHTcircle) \to *\big) \to \# \Big) \cap
+\bigg(\Big(\big((\top \to \LEFTcircle) \to \#\big) \cap \big((\top \to \bullet) \to \$ \big)\Big) \to \$ \bigg)\\
+\sigma_0 & := \big(\0 \to (\top \to \bullet) \to * \big) \cap \big(\0 \to (\top \to \RIGHTcircle) \to * \big) \cap \big(\0 \to (\top \to \LEFTcircle) \to \# \big) \cap \big(\1 \to (\top \to \bullet) \to \$ \big)\\
+\sigma_{ab \to cd} & := \big(c \to (\top \to \LEFTcircle) \to a \big) \cap \big(d \to (\top \to \RIGHTcircle) \to b \big) \cap \bigcap_{e \in \Sigma} \big(e \to (\top \to \bullet) \to e \big)\\
 \sigma_1 & := \1
 \end{align*}
 
 \begin{remark}
-The functions corresponding to $\sigma_\star, \sigma_\0, \sigma_{R_1}, \ldots, \sigma_{R_k}, \sigma_\1$ are realizable in the domain $D = \{\bullet, *, \LEFTcircle, \RIGHTcircle, \#, \$\} \,\dot{\cup}\, \Sigma$.
+The functions corresponding to $\sigma_\star, \sigma_\0, \sigma_{R_1}, \ldots, \sigma_{R_k}, \sigma_\1$ are realizable in the domain $D = \{\bullet, *, \LEFTcircle, \RIGHTcircle, \#, \$, \top, \bot\} \,\dot{\cup}\, \Sigma$.
 \end{remark}
 
 Intuition:
@@ -96,41 +99,54 @@ Intuition:
 
 \newpage
 
-Let $D := \{\bullet, *, \LEFTcircle, \RIGHTcircle, \#, \$\} \,\dot{\cup}\, \Sigma$ and $n := |D|$ in the remainder of the presentation.
-Let us also assign unique values $1 \ldots n$ to individual symbols in $D$.
-For $x \in D$ with the assigned value $i$ to $x$ we write $r_x$ for $r_i$ and we write $\pi_x$ for $\lambda r_1 \ldots r_n.r_i$.
+Let $\Sigma = \{e_1, \ldots, e_m\}$, $D := \{\bullet, *, \LEFTcircle, \RIGHTcircle, \#, \$, \top, \bot\} \,\dot{\cup}\, \Sigma$ and $n := |D| = 8 + m$ in the remainder of the presentation.
+Let us also assign unique values $1 \ldots n$ to individual symbols in $D$ and freely write $x$ instead of its assigned value.
+For example, if $x \in D$ is assigned the value $i$ we write $r_x$ for $r_i$ and we write $\pi_x$ for $\lambda r_1 \ldots r_n.r_i$.
 
-Let $A := \underbrace{0 \to \cdots 0 \to}_{n \text{ times}} 0$.
+Fix the following simple type $A := \underbrace{0 \to \cdots 0 \to}_{n \text{ times}} 0$.
 
-\begin{align*}
-&\textbf{match } x \textbf{ with}\\
-&|\, y_1 \Rightarrow t_1\\
-&\ldots\\
-&|\, y_k \Rightarrow t_k\\
-&|\, \_ \Rightarrow t\\
-&\textbf{end}\\
-&:=
-&\lambda r_1 \ldots r_n. (x\,r_1 \ldots r_n)[r_i := if i = ?]
-\end{align*}
+\[
+\caseelse{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k}{t} := (x\,u_1 \ldots u_n) \text{ where } u_i = \begin{cases} t_j & \text{if } i = i_j\\t & \text{otherwise}\end{cases}
+\]
 
-\[\textbf{if } x \textbf{ is } y \textbf{ then } u \textbf{ else } v := \lambda r_1 \ldots r_n. \]
+By omitting the last clause of case we mean (???) \[\case{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k} := \caseelse{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k}{r_\bot ?}\]
 
-We mimic inhabitation using the higher-order matching problem
+\newpage
 
+We mimic intersection type inhabitation using the following higher-order matching problem
 
 \begin{align*}
 &X\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k} = \lambda z.z\\
-&X\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1 = \pi_\$\\
-&\text{where}\\
-&F_\star := \lambda g^{(A \to A) \to A}.g\,(\lambda x^A.x)\\
-&F_\0 := \lambda x^A. \lambda h^{A \to A}.h\,x\\
-&F_{ab \to cd} := \lambda x^A. \lambda h^{A \to A}.h\,x\\
-&G_\star := ?\\
-&G_\0 := \lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.h\,\1\,t_1\ldots t_n\\
-&\text{where}\\
-&t_\bullet := x\,u_1\ldots u_n\\
-&G_{ab \to cd} := ?\\
-&G_\1 := \pi_\1
+&X\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1 = \pi_\$
+\end{align*}
+where TODO actually need $r_\bot$ or $s_\bot$ in alternative syntax (no easy default?)
+\begin{align*}
+F_\star := &\lambda g^{(A \to A) \to A}.g\,(\lambda x^A.x)\\
+F_\0 := &\lambda x^A. \lambda h^{A \to A}.h\,x\\
+F_{ab \to cd} := &\lambda x^A. \lambda h^{A \to A}.h\,x\\\\
+\delta^\top_i := & \lambda x.\lambda s_1 \ldots s_n.\caseelse{x}{\top \mapsto s_i}{s_\bot}\\
+G_\star := &\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n. \caseelse{g\,\delta^\top_\bullet}{\\
+&\hspace{1.8em} * \mapsto r_*\\
+&\quad\mid \$ \mapsto \caseelse{g\,\delta^\top_{\LEFTcircle}}{\# \mapsto r_\$}{r_\bot}}{\\
+&\quad \caseelse{g\,\delta^\top_{\RIGHTcircle}}{* \mapsto r_\#}{r_\bot}}\\
+G_\0 := &\lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.\caseelse{h\,\pi_\top}{\\
+&\hspace{1.8em}\bullet \mapsto \caseelse{x}{\0 \mapsto r_* \mid \1 \mapsto r_\$}{r_\bot}\\
+&\quad\mid\RIGHTcircle \mapsto \caseelse{x}{\0 \mapsto r_*}{r_\bot}\\
+&\quad\mid\LEFTcircle \mapsto \caseelse{x}{\0 \mapsto r_\# }{r_\bot}}{r_\bot}\\
+G_{ab \to cd} := &\lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.\caseelse{h\,\pi_\top}{\\
+&\hspace{1.8em}\bullet \mapsto \caseelse{x}{e_1 \mapsto r_{e_1} \mid \ldots \mid e_m \mapsto r_{e_m}}{r_\bot}\\
+&\quad\mid\RIGHTcircle \mapsto \caseelse{x}{d \mapsto r_b}{r_\bot}\\
+&\quad\mid\LEFTcircle \mapsto \caseelse{x}{c \mapsto r_a }{r_\bot}}{r_\bot}\\
+G_\1 := &\pi_\1
+\end{align*}
+recalling
+\begin{align*}
+\sigma_\star & := \Big(\big((\top \to \bullet) \to *\big) \to * \Big) \cap
+\Big(\big((\top \to \RIGHTcircle) \to *\big) \to \# \Big) \cap
+\bigg(\Big(\big((\top \to \LEFTcircle) \to \#\big) \cap \big((\top \to \bullet) \to \$ \big)\Big) \to \$ \bigg)\\
+\sigma_0 & := \big(\0 \to (\top \to \bullet) \to * \big) \cap \big(\0 \to (\top \to \RIGHTcircle) \to * \big) \cap \big(\0 \to (\top \to \LEFTcircle) \to \# \big) \cap \big(\1 \to (\top \to \bullet) \to \$ \big)\\
+\sigma_{ab \to cd} & := \big(c \to (\top \to \LEFTcircle) \to a \big) \cap \big(d \to (\top \to \RIGHTcircle) \to b \big) \cap \bigcap_{e \in \Sigma} \big(e \to (\top \to \bullet) \to e \big)\\
+\sigma_1 & := \1
 \end{align*}
 
 
