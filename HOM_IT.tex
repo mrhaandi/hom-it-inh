@@ -53,6 +53,7 @@
 
 \newcommand{\case}[2]{\ensuremath{\textbf{case } #1 \textbf{ of } \langle #2 \rangle}}
 \newcommand{\caseelse}[3]{\ensuremath{\textbf{case } #1 \textbf{ of } \langle #2 \rangle \textbf{ else } #3}}
+\newcommand{\ite}[4]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3 \textbf{ else } #4}}
 %%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,7 +110,9 @@ Fix the following simple type $A := \underbrace{0 \to \cdots 0 \to}_{n \text{ ti
 \caseelse{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k}{t} := (x\,u_1 \ldots u_n) \text{ where } u_i = \begin{cases} t_j & \text{if } i = i_j\\t & \text{otherwise}\end{cases}
 \]
 
-By omitting the last clause of case we mean (???) \[\case{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k} := \caseelse{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k}{r_\bot ?}\]
+If we only have one case we write
+
+\[\ite{x}{i}{s}{t} := \caseelse{x}{i \mapsto s}{t}\]
 
 \newpage
 
@@ -117,7 +120,7 @@ We mimic intersection type inhabitation using the following higher-order matchin
 
 \begin{align*}
 &X\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k} = \lambda z.z\\
-&X\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1 = \pi_\$
+&X\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1\,r_1\ldots r_n = r_\$
 \end{align*}
 where TODO actually need $r_\bot$ or $s_\bot$ in alternative syntax (no easy default?)
 \begin{align*}
@@ -149,7 +152,46 @@ recalling
 \sigma_1 & := \1
 \end{align*}
 the two constraints are combined into the following matching problem over the variable $X$
-\[(\lambda x.\lambda y.y\,(x\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k}) (x\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1))\,X = \lambda y.y\,(\lambda z.z)\,\pi_\$\]
+\[(\lambda x.\lambda y.y\,(x\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k}) (\lambda r_1  \ldots r_n.x\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1\,r_1 \ldots r_n))\,X = \lambda y.y\,(\lambda z.z)\,\pi_\$\]
+
+
+Remarks
+\begin{itemize}
+\item For inhabitation instead of $\top \to \LEFTcircle$ just the type $\LEFTcircle$ suffices, whereas for matching it is required for structural constraints (equation 1).
+\end{itemize}
+
+\newpage
+
+\section{Easier Proof}
+
+consider the specification $\rho_\star \to \rho_0 \to \rho_{R_1} \to \cdots \to \rho_{R_k} \to \rho_1 \to \$$ where
+
+\begin{align*}
+\rho_\star & := \Big((\top \to \bullet) \to \$ \Big) \to \$\\
+\rho_0 & := \1 \to (\top \to \bullet) \to \$\\
+\rho_{ab \to cd} & := \1 \to (\top \to \bullet) \to \1\\
+\rho_1 & := \1
+\end{align*}
+
+Inhabitants are necessary of shape $\lambda x_\star x_0 x_{R_1} \ldots x_{R_k} x_1.M$ where $M$ is TODO
+
+\begin{align*}
+\delta^\top_i := & \lambda x.\lambda s_1 \ldots s_n.\caseelse{x}{\top \mapsto s_i}{s_\bot}\\\\
+F_\star := &\lambda g^{(A \to A) \to A}.g\,(\lambda x^A.x)\\
+F_\0 := &\lambda x^A. \lambda h^{A \to A}.h\,x\\
+F_{ab \to cd} := &\lambda x^A. \lambda h^{A \to A}.h\,x\\\\
+H_\star := &\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n. \caseelse{g\,\delta^\top_\bullet}{\$ \mapsto r_\$}{r_\bot}\\
+H_\0 := &\lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.\caseelse{h\,\pi_\top}{\bullet \mapsto \caseelse{x}{\1 \mapsto r_\$}{r_\bot}}{r_\bot}\\
+H_{ab \to cd} := &\lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.\caseelse{h\,\pi_\top}{\bullet \mapsto \caseelse{x}{\1 \mapsto r_\1}{r_\bot}}{r_\bot}\\
+H_\1 := &\pi_\1
+\end{align*}
+
+Consider the higher-order matching problem
+
+\begin{align*}
+&X\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k} = \lambda z.z\\
+&X\,H_\star\,H_\0\,H_{R_1} \ldots H_{R_k}\,H_\1\,r_1\ldots r_n = r_\$
+\end{align*}
 
 \bibliographystyle{plain} 
 \bibliography{bibliography}
