@@ -54,11 +54,12 @@
 \newcommand{\case}[2]{\ensuremath{\textbf{case } #1 \textbf{ of } \langle #2 \rangle}}
 \newcommand{\caseelse}[3]{\ensuremath{\textbf{case } #1 \textbf{ of } \langle #2 \rangle \textbf{ else } #3}}
 \newcommand{\ite}[4]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3 \textbf{ else } #4}}
+\newcommand{\itb}[3]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3}}
 %%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
-\title{Title}
+\title{Higher-order Matching -- a Loader and Urzyczyn Story}
 \author{Andrej Dudenhefner\\ TU Dortmund University, Germany \\
 \texttt{andrej.dudenhefner@cs.tu-dortmund.de}}
 \date{\today}
@@ -101,8 +102,10 @@ Intuition:
 \newpage
 
 Let $\Sigma = \{e_1, \ldots, e_m\}$, $D := \{\bullet, *, \LEFTcircle, \RIGHTcircle, \#, \$, \top, \bot\} \,\dot{\cup}\, \Sigma$ and $n := |D| = 8 + m$ in the remainder of the presentation.
-Let us also assign unique values $1 \ldots n$ to individual symbols in $D$ and freely write $x$ instead of its assigned value.
-For example, if $x \in D$ is assigned the value $i$ we write $r_x$ for $r_i$ and we write $\pi_x$ for $\lambda r_1 \ldots r_n.r_i$.
+Let us assign unique values $1 \ldots n$ to individual symbols in $D$, where $\bot$ is assigned the value $n$.
+We freely write $x$ instead of its assigned value.
+For example, if $x \in D$ is assigned the value $i$ we write $r_x$ for $r_i$, and we write $\pi_x$ for $\lambda r_1 \ldots r_n.r_i$.
+
 
 Fix the following simple type $A := \underbrace{0 \to \cdots 0 \to}_{n \text{ times}} 0$.
 
@@ -110,9 +113,9 @@ Fix the following simple type $A := \underbrace{0 \to \cdots 0 \to}_{n \text{ ti
 \caseelse{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k}{t} := (x\,u_1 \ldots u_n) \text{ where } u_i = \begin{cases} t_j & \text{if } i = i_j\\t & \text{otherwise}\end{cases}
 \]
 
-If we only have one case we write
+If we only have one case and the \textbf{else} branch is the most recently bound variable we write
 
-\[\ite{x}{i}{s}{t} := \caseelse{x}{i \mapsto s}{t}\]
+\[\Big(\lambda r_1 \ldots r_n.\itb{x}{i}{s}\Big) := \Big(\lambda r_1 \ldots r_n.\caseelse{x}{i \mapsto s}{r_n}\Big)\]
 
 \newpage
 
@@ -164,34 +167,50 @@ Remarks
 
 \section{Easier Proof}
 
-consider the specification $\rho_\star \to \rho_0 \to \rho_{R_1} \to \cdots \to \rho_{R_k} \to \rho_1 \to \$$ where
+consider the specification $\rho_{R_1} \to \cdots \to \rho_{R_k} \to \rho_0 \to \rho_\star \to \rho_1 \to \$$ where
 
 \begin{align*}
 \rho_\star & := \Big((\top \to \bullet) \to \$ \Big) \to \$\\
-\rho_0 & := \1 \to (\top \to \bullet) \to \$\\
-\rho_{ab \to cd} & := \1 \to (\top \to \bullet) \to \1\\
+\rho_0 & := (\top \to \bullet) \to \1 \to \$\\
+\rho_{ab \to cd} & := (\top \to \bullet) \to \1 \to \1\\
 \rho_1 & := \1
 \end{align*}
 
-Inhabitants are necessary of shape $\lambda x_\star x_0 x_{R_1} \ldots x_{R_k} x_1.M$ where $M$ is TODO
+Inhabitants are necessary of shape $\lambda x_{R_1} \ldots x_{R_k} \, x_0 \, x_\star \, x_1.M$ where $M$ is TODO
 
 \begin{align*}
-\delta^\top_i := & \lambda x.\lambda s_1 \ldots s_n.\caseelse{x}{\top \mapsto s_i}{s_\bot}\\\\
+\delta^\top_i := & \lambda x.\lambda s_1 \ldots s_n.\itb{x}{\top}{s_i}\\\\
 F_\star := &\lambda g^{(A \to A) \to A}.g\,(\lambda x^A.x)\\
-F_\0 := &\lambda x^A. \lambda h^{A \to A}.h\,x\\
-F_{ab \to cd} := &\lambda x^A. \lambda h^{A \to A}.h\,x\\\\
-H_\star := &\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n. \caseelse{g\,\delta^\top_\bullet}{\$ \mapsto r_\$}{r_\bot}\\
-H_\0 := &\lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.\caseelse{h\,\pi_\top}{\bullet \mapsto \caseelse{x}{\1 \mapsto r_\$}{r_\bot}}{r_\bot}\\
-H_{ab \to cd} := &\lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.\caseelse{h\,\pi_\top}{\bullet \mapsto \caseelse{x}{\1 \mapsto r_\1}{r_\bot}}{r_\bot}\\
+F_\0 := &\lambda h^{A \to A}.h\\
+F_{ab \to cd} := &\lambda h^{A \to A}.h\\\\
+H_\star := &\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n. \itb{g\,\delta^\top_\bullet}{\$}{r_\$}\\
+H_\0 := &\lambda h^{A \to A}.\lambda x^A. \lambda r_1 \ldots r_n.\itb{h\,\pi_\top}{{\bullet}}{(\itb{x}{\1}{r_\$})}\\
+H_{ab \to cd} := &\lambda h^{A \to A}.\lambda x^A. \lambda r_1 \ldots r_n.\itb{h\,\pi_\top}{{\bullet}}{(\itb{x}{\1}{r_\1})}\\
 H_\1 := &\pi_\1
 \end{align*}
 
 Consider the higher-order matching problem
 
 \begin{align*}
-&X\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k} = \lambda z.z\\
-&X\,H_\star\,H_\0\,H_{R_1} \ldots H_{R_k}\,H_\1\,r_1\ldots r_n = r_\$
+&X\,F_{R_1} \ldots F_{R_k}\,F_\0\,F_\star = \lambda z.z\\
+&X\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\star\,H_\1\,q \ldots q\, p\, q \ldots q = p  \text{ where } p \text{ is at position } \$
 \end{align*}
+
+for this the following constraint must be solved
+
+\[\Big(\lambda x.\lambda y.y\,(x\,F_{R_1} \ldots F_{R_k}\,F_\0\,F_\star) (\lambda p\,q.x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\star\,G_\1\,q \ldots q\,p\,q \ldots q)\Big)\,X = \lambda y.y\,(\lambda z.z)\,(\lambda p\,q.p)\]
+
+We write $M\,\vec{i}$ for $M\,t_1 \ldots t_n$ where $t_i := p$ and $t_j := q$ for $j \neq i$.
+The above constraints are
+
+\begin{align*}
+&X\,F_{R_1} \ldots F_{R_k}\,F_\0\,F_\star = \lambda z.z\\
+&X\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\star\,H_\1\,\vec{\$} = p
+\end{align*}
+
+and
+
+\[\Big(\lambda x.\lambda y.y\,(x\,F_{R_1} \ldots F_{R_k}\,F_\0\,F_\star) (\lambda p\,q.x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\star\,G_\1\,\vec{\$})\Big)\,X = \lambda y.y\,(\lambda z.z)\,(\lambda p\,q.p)\]
 
 \bibliographystyle{plain} 
 \bibliography{bibliography}
