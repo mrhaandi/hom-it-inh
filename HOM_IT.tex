@@ -113,70 +113,29 @@ Fix the following simple type $A := \underbrace{0 \to \cdots 0 \to}_{n \text{ ti
 \caseelse{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k}{t} := (x\,u_1 \ldots u_n) \text{ where } u_i = \begin{cases} t_j & \text{if } i = i_j\\t & \text{otherwise}\end{cases}
 \]
 
+We may omit the \textbf{else} branch if it is the most recently bound variable, that is
+
+\[\Big(\lambda r_1 \ldots r_n.\case{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k}\Big) := \Big(\lambda r_1 \ldots r_n.\caseelse{x}{i_1 \mapsto t_1 \mid \ldots \mid i_k \mapsto t_k}{r_n}\Big)\]
+
 If we only have one case and the \textbf{else} branch is the most recently bound variable we write
 
 \[\Big(\lambda r_1 \ldots r_n.\itb{x}{i}{s}\Big) := \Big(\lambda r_1 \ldots r_n.\caseelse{x}{i \mapsto s}{r_n}\Big)\]
 
 \newpage
 
-We mimic intersection type inhabitation using the following higher-order matching problem
+\section{Shape Control}
+
+consider the specification $\rho_{R_1} \to \cdots \to \rho_{R_k} \to \rho_0 \to \rho_1 \to \rho_\star \to \rho_\bullet \to \$$ where
 
 \begin{align*}
-&X\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k} = \lambda z.z\\
-&X\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1\,r_1\ldots r_n = r_\$
-\end{align*}
-where TODO actually need $r_\bot$ or $s_\bot$ in alternative syntax (no easy default?)
-\begin{align*}
-F_\star := &\lambda g^{(A \to A) \to A}.g\,(\lambda x^A.x)\\
-F_\0 := &\lambda x^A. \lambda h^{A \to A}.h\,x\\
-F_{ab \to cd} := &\lambda x^A. \lambda h^{A \to A}.h\,x\\\\
-\delta^\top_i := & \lambda x.\lambda s_1 \ldots s_n.\caseelse{x}{\top \mapsto s_i}{s_\bot}\\
-G_\star := &\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n. \caseelse{g\,\delta^\top_\bullet}{\\
-&\hspace{1.8em} * \mapsto r_*\\
-&\quad\mid \$ \mapsto \caseelse{g\,\delta^\top_{\LEFTcircle}}{\# \mapsto r_\$}{r_\bot}}{\\
-&\quad \caseelse{g\,\delta^\top_{\RIGHTcircle}}{* \mapsto r_\#}{r_\bot}}\\
-G_\0 := &\lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.\caseelse{h\,\pi_\top}{\\
-&\hspace{1.8em}\bullet \mapsto \caseelse{x}{\0 \mapsto r_* \mid \1 \mapsto r_\$}{r_\bot}\\
-&\quad\mid\RIGHTcircle \mapsto \caseelse{x}{\0 \mapsto r_*}{r_\bot}\\
-&\quad\mid\LEFTcircle \mapsto \caseelse{x}{\0 \mapsto r_\# }{r_\bot}}{r_\bot}\\
-G_{ab \to cd} := &\lambda x^A. \lambda h^{A \to A}.\lambda r_1 \ldots r_n.\caseelse{h\,\pi_\top}{\\
-&\hspace{1.8em}\bullet \mapsto \caseelse{x}{e_1 \mapsto r_{e_1} \mid \ldots \mid e_m \mapsto r_{e_m}}{r_\bot}\\
-&\quad\mid\RIGHTcircle \mapsto \caseelse{x}{d \mapsto r_b}{r_\bot}\\
-&\quad\mid\LEFTcircle \mapsto \caseelse{x}{c \mapsto r_a }{r_\bot}}{r_\bot}\\
-G_\1 := &\pi_\1
-\end{align*}
-recalling
-\begin{align*}
-\sigma_\star & := \Big(\big((\top \to \bullet) \to *\big) \to * \Big) \cap
-\Big(\big((\top \to \RIGHTcircle) \to *\big) \to \# \Big) \cap
-\bigg(\Big(\big((\top \to \LEFTcircle) \to \#\big) \cap \big((\top \to \bullet) \to \$ \big)\Big) \to \$ \bigg)\\
-\sigma_0 & := \big(\0 \to (\top \to \bullet) \to * \big) \cap \big(\0 \to (\top \to \RIGHTcircle) \to * \big) \cap \big(\0 \to (\top \to \LEFTcircle) \to \# \big) \cap \big(\1 \to (\top \to \bullet) \to \$ \big)\\
-\sigma_{ab \to cd} & := \big(c \to (\top \to \LEFTcircle) \to a \big) \cap \big(d \to (\top \to \RIGHTcircle) \to b \big) \cap \bigcap_{e \in \Sigma} \big(e \to (\top \to \bullet) \to e \big)\\
-\sigma_1 & := \1
-\end{align*}
-the two constraints are combined into the following matching problem over the variable $X$
-\[(\lambda x.\lambda y.y\,(x\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k}) (\lambda r_1  \ldots r_n.x\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1\,r_1 \ldots r_n))\,X = \lambda y.y\,(\lambda z.z)\,\pi_\$\]
-
-
-Remarks
-\begin{itemize}
-\item For inhabitation instead of $\top \to \LEFTcircle$ just the type $\LEFTcircle$ suffices, whereas for matching it is required for structural constraints (equation 1).
-\end{itemize}
-
-\newpage
-
-\section{Easier Proof}
-
-consider the specification $\rho_{R_1} \to \cdots \to \rho_{R_k} \to \rho_0 \to \rho_\star \to \rho_1 \to \$$ where
-
-\begin{align*}
+\rho_\bullet & := \top \to \bullet \\
 \rho_\star & := \Big((\top \to \bullet) \to \$ \Big) \to \$\\
 \rho_0 & := (\top \to \bullet) \to \1 \to \$\\
 \rho_{ab \to cd} & := (\top \to \bullet) \to \1 \to \1\\
 \rho_1 & := \1
 \end{align*}
 
-Inhabitants are necessary of shape $\lambda x_{R_1} \ldots x_{R_k} \, x_0 \, x_\star \, x_1.M$ where $M$ is TODO
+Inhabitants are necessary of shape $\lambda x_{R_1} \ldots x_{R_k} \, x_0 \, x_1 \, x_\star \, x_\bullet.M$ where $M$ is TODO
 
 \begin{align*}
 \delta^\top_i := & \lambda x.\lambda s_1 \ldots s_n.\itb{x}{\top}{s_i}\\\\
@@ -189,28 +148,74 @@ H_{ab \to cd} := &\lambda h^{A \to A}.\lambda x^A. \lambda r_1 \ldots r_n.\itb{h
 H_\1 := &\pi_\1
 \end{align*}
 
+We write $M\,\vec{i}$ for $M\,t_1 \ldots t_n$ where $t_i := p$ and $t_j := q$ for $j \neq i$.
 Consider the higher-order matching problem
 
 \begin{align*}
-&X\,F_{R_1} \ldots F_{R_k}\,F_\0\,F_\star = \lambda z.z\\
-&X\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\star\,H_\1\,q \ldots q\, p\, q \ldots q = p  \text{ where } p \text{ is at position } \$
+&X\,F_{R_1} \ldots F_{R_k}\,F_\0\,z\,F_\star\,I = z\\
+&X\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\1\,H_\star\,\delta^\top_\bullet\,\vec{\$} = p
 \end{align*}
 
 for this the following constraint must be solved
 
-\[\Big(\lambda x.\lambda y.y\,(x\,F_{R_1} \ldots F_{R_k}\,F_\0\,F_\star) (\lambda p\,q.x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\star\,G_\1\,q \ldots q\,p\,q \ldots q)\Big)\,X = \lambda y.y\,(\lambda z.z)\,(\lambda p\,q.p)\]
+\[\Big(\lambda x.\lambda y.y\,(\lambda z.x\,F_{R_1} \ldots F_{R_k}\,F_\0\,z\,F_\star\,I) (\lambda p\,q.x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\delta^\top_\bullet\,\vec{\$})\Big)\,X = \lambda y.y\,(\lambda z.z)\,(\lambda p\,q.p)\]
 
-We write $M\,\vec{i}$ for $M\,t_1 \ldots t_n$ where $t_i := p$ and $t_j := q$ for $j \neq i$.
-The above constraints are
+Solutions to this constraint have a specific shape which can be used for semantics.
+The last $\delta^\top_\bullet$ is used for the first positional abstraction.
+
+\newpage
+
+\section{Semantics}
+
+We mimic intersection type inhabitation using the following higher-order matching problem
 
 \begin{align*}
-&X\,F_{R_1} \ldots F_{R_k}\,F_\0\,F_\star = \lambda z.z\\
-&X\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\star\,H_\1\,\vec{\$} = p
+&X\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\vec{\$} = p
 \end{align*}
+where
+\begin{align*}
+G_\star := &\lambda x^A.\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n.\case{x}{\\
+&\hspace{1.8em} \bullet \mapsto \case{g\,\delta^\top_\bullet}{* \mapsto r_* \mid \$ \mapsto \itb{g\,\delta^\top_{\LEFTcircle}}{\#}{r_\$}}\\
+&\hspace{1.8em} \RIGHTcircle \mapsto \case{g\,\delta^\top_\bullet}{* \mapsto r_*}\\
+&\hspace{1.8em} \LEFTcircle \mapsto \case{g\,\delta^\top_{\RIGHTcircle}}{* \mapsto r_\#}}\\
+%&\quad\mid \$ \mapsto \caseelse{g\,\delta^\top_{\LEFTcircle}}{\# \mapsto r_\$}{r_\bot}}{\\
+%&\quad \caseelse{g\,\delta^\top_{\RIGHTcircle}}{* \mapsto r_\#}{r_\bot}}\\
+%&\caseelse{g\,\delta^\top_\bullet}{\\
+%&\hspace{1.8em} * \mapsto r_*\\
+%&\quad\mid \$ \mapsto \caseelse{g\,\delta^\top_{\LEFTcircle}}{\# \mapsto r_\$}{r_\bot}}{\\
+%&\quad \caseelse{g\,\delta^\top_{\RIGHTcircle}}{* \mapsto r_\#}{r_\bot}}\\
+G_\0 := &\lambda h^{A \to A}.\lambda x^A. \lambda r_1 \ldots r_n.\case{h\,\pi_\top}{\\
+&\hspace{1.8em}\bullet \mapsto \case{x}{\0 \mapsto r_* \mid \1 \mapsto r_\$}\\
+&\quad\mid\RIGHTcircle \mapsto \case{x}{\0 \mapsto r_*}\\
+&\quad\mid\LEFTcircle \mapsto \case{x}{\0 \mapsto r_\# }}\\
+G_{ab \to cd} := &\lambda h^{A \to A}.\lambda x^A.\lambda r_1 \ldots r_n.\case{h\,\pi_\top}{\\
+&\hspace{1.8em}\bullet \mapsto \case{x}{e_1 \mapsto r_{e_1} \mid \ldots \mid e_m \mapsto r_{e_m}}\\
+&\quad\mid\RIGHTcircle \mapsto \case{x}{d \mapsto r_b}\\
+&\quad\mid\LEFTcircle \mapsto \case{x}{c \mapsto r_a }}\\
+G_\1 := &\pi_\1
+\end{align*}
+recalling
+\begin{align*}
+\sigma_\star := & \Big(\bullet \to \big((\top \to \bullet) \to *\big) \to * \Big) \cap \\
+&\Big(\RIGHTcircle \to \big((\top \to \bullet) \to *\big) \to * \Big) \cap \\
+& \Big(\LEFTcircle \to \big((\top \to \RIGHTcircle) \to *\big) \to \# \Big) \cap \\
+& \bigg(\bullet \to \Big(\big((\top \to \LEFTcircle) \to \#\big) \cap \big((\top \to \bullet) \to \$ \big)\Big) \to \$ \bigg)\\
+\sigma_0 := &\big((\top \to \bullet) \to \0 \to * \big) \cap \big((\top \to \RIGHTcircle) \to \0 \to * \big) \cap \big((\top \to \LEFTcircle) \to \0 \to \# \big) \cap \big((\top \to \bullet) \to \1 \to \$ \big)\\
+\sigma_{ab \to cd} := &\big((\top \to \LEFTcircle) \to c \to a \big) \cap \big((\top \to \RIGHTcircle) \to d \to b \big) \cap \bigcap_{e \in \Sigma} \big((\top \to \bullet) \to e \to e \big)\\
+\sigma_1 := &\1
+\end{align*}
+the two constraints are combined into the following matching problem over the variable $X$
+\[(\lambda x.\lambda y.y\,(x\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k}) (\lambda r_1  \ldots r_n.x\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1\,r_1 \ldots r_n))\,X = \lambda y.y\,(\lambda z.z)\,\pi_\$\]
 
-and
 
-\[\Big(\lambda x.\lambda y.y\,(x\,F_{R_1} \ldots F_{R_k}\,F_\0\,F_\star) (\lambda p\,q.x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\star\,G_\1\,\vec{\$})\Big)\,X = \lambda y.y\,(\lambda z.z)\,(\lambda p\,q.p)\]
+Remarks
+\begin{itemize}
+\item For inhabitation instead of $\top \to \LEFTcircle$ just the type $\LEFTcircle$ suffices, whereas for matching it is required for structural constraints (equation 1).
+\end{itemize}
+
+\newpage
+
+
 
 \bibliographystyle{plain} 
 \bibliography{bibliography}
