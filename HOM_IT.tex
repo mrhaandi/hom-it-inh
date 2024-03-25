@@ -129,9 +129,9 @@ consider the specification $\rho_{R_1} \to \cdots \to \rho_{R_k} \to \rho_0 \to 
 
 \begin{align*}
 \rho_\bullet & := \top \to \bullet \\
-\rho_\star & := \Big((\top \to \bullet) \to \$ \Big) \to \$\\
-\rho_0 & := (\top \to \bullet) \to \1 \to \$\\
-\rho_{ab \to cd} & := (\top \to \bullet) \to \1 \to \1\\
+\rho_\star & := \rho_\bullet \to \Big(\rho_\bullet \to \$ \Big) \to \$\\
+\rho_0 & := \rho_\bullet \to \1 \to \$\\
+\rho_{ab \to cd} & := \rho_\bullet \to \1 \to \1\\
 \rho_1 & := \1
 \end{align*}
 
@@ -139,26 +139,25 @@ Inhabitants are necessary of shape $\lambda x_{R_1} \ldots x_{R_k} \, x_0 \, x_1
 
 \begin{align*}
 \delta^\top_i := & \lambda x.\lambda s_1 \ldots s_n.\itb{x}{\top}{s_i}\\\\
-F_\star := &\lambda g^{(A \to A) \to A}.g\,(\lambda x^A.x)\\
-F_\0 := &\lambda h^{A \to A}.h\\
+F_\star := &\lambda h^{A \to A}.g^{(A \to A) \to A}.g\,(\lambda x^A.x)\\
+F_\0 := &\lambda h^{A \to A}.\lambda x^A.x\\
 F_{ab \to cd} := &\lambda h^{A \to A}.h\\\\
-H_\star := &\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n. \itb{g\,\delta^\top_\bullet}{\$}{r_\$}\\
-H_\0 := &\lambda h^{A \to A}.\lambda x^A. \lambda r_1 \ldots r_n.\itb{h\,\pi_\top}{{\bullet}}{(\itb{x}{\1}{r_\$})}\\
+H_\star := &\lambda h^{A \to A}.\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n. \itb{g\,\delta^\top_\bullet}{\$}{r_\$}\\
+H_\0 := &\lambda h^{A \to A}.\lambda x^A. \lambda r_1 \ldots r_n.\itb{x}{\1}{r_\$}\\
 H_{ab \to cd} := &\lambda h^{A \to A}.\lambda x^A. \lambda r_1 \ldots r_n.\itb{h\,\pi_\top}{{\bullet}}{(\itb{x}{\1}{r_\1})}\\
 H_\1 := &\pi_\1
 \end{align*}
 
-We write $M\,\vec{i}$ for $M\,t_1 \ldots t_n$ where $t_i := p$ and $t_j := q$ for $j \neq i$.
 Consider the higher-order matching problem
 
 \begin{align*}
 &X\,F_{R_1} \ldots F_{R_k}\,F_\0\,z\,F_\star\,I = z\\
-&X\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\1\,H_\star\,\delta^\top_\bullet\,\vec{\$} = p
+&X\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\1\,H_\star\,\delta^\top_\bullet = \pi_\$
 \end{align*}
 
 for this the following constraint must be solved
 
-\[\Big(\lambda x.\lambda y.y\,(\lambda z.x\,F_{R_1} \ldots F_{R_k}\,F_\0\,z\,F_\star\,I) (\lambda p\,q.x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\delta^\top_\bullet\,\vec{\$})\Big)\,X = \lambda y.y\,(\lambda z.z)\,(\lambda p\,q.p)\]
+\[\Big(\lambda x.\lambda y.y\,(\lambda z.x\,F_{R_1} \ldots F_{R_k}\,F_\0\,z\,F_\star\,I) (x\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\1\,H_\star\,\delta^\top_\bullet)\Big)\,X = \lambda y.y\,(\lambda z.z)\,\pi_\$\]
 
 Solutions to this constraint have a specific shape which can be used for semantics.
 The last $\delta^\top_\bullet$ is used for the first positional abstraction.
@@ -170,11 +169,13 @@ The last $\delta^\top_\bullet$ is used for the first positional abstraction.
 We mimic intersection type inhabitation using the following higher-order matching problem
 
 \begin{align*}
-&X\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\vec{\$} = p
+&X\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\delta_\bullet = \pi_\$\\
+&X\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\delta_{\LEFTcircle} = \pi_\#\\
+&X\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\delta_{\RIGHTcircle} = \pi_*
 \end{align*}
 where
 \begin{align*}
-G_\star := &\lambda x^A.\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n.\case{x}{\\
+G_\star := &\lambda h^{A \to A}.\lambda g^{(A \to A) \to A}.\lambda r_1 \ldots r_n.\case{h\,\pi_\top}{\\
 &\hspace{1.8em} \bullet \mapsto \case{g\,\delta^\top_\bullet}{* \mapsto r_* \mid \$ \mapsto \itb{g\,\delta^\top_{\LEFTcircle}}{\#}{r_\$}}\\
 &\hspace{1.8em} \RIGHTcircle \mapsto \case{g\,\delta^\top_\bullet}{* \mapsto r_*}\\
 &\hspace{1.8em} \LEFTcircle \mapsto \case{g\,\delta^\top_{\RIGHTcircle}}{* \mapsto r_\#}}\\
@@ -189,24 +190,29 @@ G_\0 := &\lambda h^{A \to A}.\lambda x^A. \lambda r_1 \ldots r_n.\case{h\,\pi_\t
 &\quad\mid\RIGHTcircle \mapsto \case{x}{\0 \mapsto r_*}\\
 &\quad\mid\LEFTcircle \mapsto \case{x}{\0 \mapsto r_\# }}\\
 G_{ab \to cd} := &\lambda h^{A \to A}.\lambda x^A.\lambda r_1 \ldots r_n.\case{h\,\pi_\top}{\\
-&\hspace{1.8em}\bullet \mapsto \case{x}{e_1 \mapsto r_{e_1} \mid \ldots \mid e_m \mapsto r_{e_m}}\\
+&\hspace{1.8em}\bullet \mapsto x\,r_1 \ldots r_n\\
 &\quad\mid\RIGHTcircle \mapsto \case{x}{d \mapsto r_b}\\
 &\quad\mid\LEFTcircle \mapsto \case{x}{c \mapsto r_a }}\\
 G_\1 := &\pi_\1
 \end{align*}
 recalling
 \begin{align*}
-\sigma_\star := & \Big(\bullet \to \big((\top \to \bullet) \to *\big) \to * \Big) \cap \\
-&\Big(\RIGHTcircle \to \big((\top \to \bullet) \to *\big) \to * \Big) \cap \\
-& \Big(\LEFTcircle \to \big((\top \to \RIGHTcircle) \to *\big) \to \# \Big) \cap \\
-& \bigg(\bullet \to \Big(\big((\top \to \LEFTcircle) \to \#\big) \cap \big((\top \to \bullet) \to \$ \big)\Big) \to \$ \bigg)\\
+\sigma_\star := & \Big((\top \to \bullet) \to \big((\top \to \bullet) \to *\big) \to * \Big) \cap \\
+&\Big((\top \to \RIGHTcircle) \to \big((\top \to \bullet) \to *\big) \to * \Big) \cap \\
+& \Big((\top \to \LEFTcircle) \to \big((\top \to \RIGHTcircle) \to *\big) \to \# \Big) \cap \\
+& \bigg((\top \to \bullet) \to \Big(\big((\top \to \LEFTcircle) \to \#\big) \cap \big((\top \to \bullet) \to \$ \big)\Big) \to \$ \bigg)\\
 \sigma_0 := &\big((\top \to \bullet) \to \0 \to * \big) \cap \big((\top \to \RIGHTcircle) \to \0 \to * \big) \cap \big((\top \to \LEFTcircle) \to \0 \to \# \big) \cap \big((\top \to \bullet) \to \1 \to \$ \big)\\
 \sigma_{ab \to cd} := &\big((\top \to \LEFTcircle) \to c \to a \big) \cap \big((\top \to \RIGHTcircle) \to d \to b \big) \cap \bigcap_{e \in \Sigma} \big((\top \to \bullet) \to e \to e \big)\\
 \sigma_1 := &\1
 \end{align*}
-the two constraints are combined into the following matching problem over the variable $X$
-\[(\lambda x.\lambda y.y\,(x\,F_\star\,F_\0\,F_{R_1} \ldots F_{R_k}) (\lambda r_1  \ldots r_n.x\,G_\star\,G_\0\,G_{R_1} \ldots G_{R_k}\,G_\1\,r_1 \ldots r_n))\,X = \lambda y.y\,(\lambda z.z)\,\pi_\$\]
-
+all constraints are combined into the following matching problem over the variable $X$
+\begin{align*}
+\Big(\lambda x. \lambda y.y\,&(\lambda z.x\,F_{R_1} \ldots F_{R_k}\,F_\0\,z\,F_\star\,I)\\
+&(x\,H_{R_1} \ldots H_{R_k}\,H_\0\,H_\1\,F_\star\,\delta_\bullet)\\
+&(x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\delta_\bullet)\\
+&(x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\delta_{\LEFTcircle})\\
+&(x\,G_{R_1} \ldots G_{R_k}\,G_\0\,G_\1\,G_\star\,\delta_{\RIGHTcircle})\Big)\,X = \lambda y.y\,I\,\pi_\$\,\pi_\$\,\pi_\#\,\pi_*\\
+\end{align*}
 
 Remarks
 \begin{itemize}
@@ -214,7 +220,6 @@ Remarks
 \end{itemize}
 
 \newpage
-
 
 
 \bibliographystyle{plain} 
