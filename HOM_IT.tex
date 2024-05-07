@@ -12,7 +12,9 @@
 \usepackage{hyperref} %linked references
 \usepackage{lineno}\linenumbers
 \usepackage{wasysym} %\brokenvert
-\usepackage[activate={true,nocompatibility}]{microtype} %layouting
+\usepackage{bussproofs}
+\usepackage{listings}
+%\usepackage[activate={true,nocompatibility}]{microtype} %layouting
 %%%%%%%%%%%%%%%%%%%%%%% Style changes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \theoremstyle{definition}
 \newtheorem{theorem}{Theorem}
@@ -47,6 +49,7 @@
 \newcommand{\calM}{\mathcal{M}}
 \newcommand{\calR}{\mathcal{R}}
 \newcommand{\calT}{\mathcal{T}}
+\newcommand{\calU}{\mathcal{U}}
 
 \newcommand{\0}{\mathbf{0}}
 \newcommand{\1}{\mathbf{1}}
@@ -56,6 +59,8 @@
 \newcommand{\ite}[4]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3 \textbf{ else } #4}}
 \newcommand{\itb}[3]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3}}
 %%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ga}{\ensuremath{\diamond}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -70,6 +75,367 @@ Thoughts on undecidability of higher-order matching wrt.~$(=_\beta)$ (not to be 
 \end{abstract}
 
 
+\section{Preliminaries}
+\begin{definition}[$\lambda$-Terms]
+\[
+\begin{array}{rcl}
+M, N &::= &x \mid M \, N \mid \lambda x.M
+\end{array}
+\]
+\end{definition}
+
+\begin{definition}[$\beta$-Reduction]~
+\begin{itemize}
+\item $\to_\beta$ is the contextual closure of $(\lambda x.M)\,N \to_\beta M[x := N]$
+\item $\twoheadrightarrow_\beta$ is the reflexive, transitive closure of $\to_\beta$
+\item $=_\beta$ is the reflexive, transitive, symmetric closure of $\to_\beta$
+\end{itemize}
+\end{definition}
+
+\begin{definition}[Simple Types with Ground Atom $\ga$]
+\[
+\begin{array}{rcl}
+\sigma, \tau &::= &\ga \mid \sigma \to \tau
+\end{array}
+\]
+\end{definition}
+
+\begin{definition}[Type Environments]
+\[
+\begin{array}{rcl}
+\Gamma &::= &\{x_1 : \sigma_1, \ldots, x_n : \sigma_n\}
+\end{array}
+\]
+\end{definition}
+
+\begin{definition}[Simple Type System]~\\
+\begin{tabular}{ccc}
+{%\RightLabel{\textnormal{(Var)}}
+\AxiomC{$(x : \sigma) \in \Gamma$}
+\UnaryInfC{$\Gamma \vdash x : \sigma$}
+\DisplayProof}
+&
+{%\RightLabel{\textnormal{($\to$I)}}
+\AxiomC{$\Gamma, x : \sigma \vdash M : \tau$}
+\UnaryInfC{$\Gamma \vdash \lambda x.M : \sigma \to \tau$}
+\DisplayProof}
+&
+{%\RightLabel{\textnormal{($\to$E)}}
+\AxiomC{$\Gamma \vdash M : \sigma \to \tau$}
+\AxiomC{$\Gamma \vdash N : \sigma$}
+\BinaryInfC{$\Gamma \vdash M\,N : \tau$}
+\DisplayProof}
+\end{tabular}
+\end{definition}
+
+\begin{problem}[Higher-order $\beta$-Matching (${F}\,X = N$)]
+Given terms $F, N$ and simple types $\sigma, \tau$ such that $\emptyset \vdash F : \sigma \to \tau$ and $\emptyset \vdash N : \tau$, is there a term $M$ such that $\emptyset \vdash M : \sigma$ and $F\,M =_\beta N$?
+\end{problem}
+
+\begin{theorem}[{[\cite[Theorem~5.5]{Loader03}]}]
+Higher-order $\beta$-matching is undecidable.
+\end{theorem}
+
+\begin{proof}[Proof Outline]
+Many-one reduction from an ad-hoc variant of $\lambda$-definability.
+\end{proof}
+
+\begin{remark}
+Artifacts
+\begin{itemize}
+\item \emph{myopic} $\lambda\bot$-terms and \emph{myopic} order
+\item characterization of $1$-lifts and $7$-lifts by \emph{checker} $\lambda\bot$-terms
+\item characterization of finite models by $(7+1)$-lifted terms\qedhere
+\end{itemize}
+\end{remark}
+
+\begin{definition}[Simple Semi-Thue System]
+A semi-Thue system $\calR$ is \emph{simple}, if each rule has the form $ab \Rightarrow cd$.
+\end{definition}
+
+\begin{example}
+Let $\calR  := \{00 \Rightarrow 21, 02 \Rightarrow 11\}$ over the alphabet $\{0,1,2\}$.\medskip
+
+We have $000 \Rightarrow_\calR 021 \Rightarrow_\calR 111$.
+\end{example}
+
+\begin{problem}[$0^+ \Rightarrow^*_\calR 1^+$]
+Given a simple semi-Thue system $\calR$, does $0^n \Rightarrow^*_\calR 1^n$ hold for some $n > 0$?
+\end{problem}
+
+\begin{theorem}[{[\cite[Lemma~3.3]{DudenhefnerR19}]}]
+Problem $0^+ \Rightarrow^*_\calR 1^+$ is undecidable.
+\end{theorem}
+
+\begin{itemize}
+\item similar to [\cite[Lemma~2]{Urzyczyn09}]
+\item mechanized in Coq~[\cite[\texttt{SSTS01}]{CLUP20}]
+\end{itemize}
+
+Given a simple semi-Thue system $\calR$
+
+\begin{enumerate}
+\item construct intersection type $A_\calR$
+\begin{itemize}
+\item $A_\calR$ is inhabited iff $0^+ \Rightarrow^*_\calR 1^+$
+\end{itemize}
+\item present $A_\calR$ as a higher-order $\beta$-matching instance $\calM_\calR$
+\begin{itemize}
+\item $\calM_\calR$ is solvable iff $0^+ \Rightarrow^*_\calR 1^+$
+\end{itemize}
+\item mechanize the construction in Coq ($4000$ LOC)
+\end{enumerate}
+
+\bigskip
+
+\begin{remark}[Properties of $A_\calR$]
+\begin{itemize}
+\item based on~[\cite{Urzyczyn09}] and~[\cite{DudenhefnerR19}]
+\item has rank 3
+\item allows for simple tools (no $\lambda\bot$-terms or myopic order)
+\item $\lambda$-definable when interpreted as finite function~[\cite{SalvatiMGB12}]
+\end{itemize}
+\end{remark}
+
+\begin{itemize}
+\item specification $A := \big((1 \to 2) \wedge (2 \to 3) \wedge (3 \to 1)\big) \to 1 \to 3$
+\item universe elements
+\begin{itemize}
+\item $\pi_1 := \lambda xyz.x$
+\item $\pi_2 := \lambda xyz.y$
+\item $\pi_3 := \lambda xyz.z$
+\item $\emptyset \vdash \pi_i : \sigma_\calU$ where $\sigma_\calU := \ga \to \ga \to \ga \to \ga$
+\end{itemize}
+\item permutation $G := \lambda h.\lambda xyz.h\,y\,z\,x$
+\begin{itemize}
+\item $G\,\pi_1 \twoheadrightarrow_\beta \pi_2$
+\item $G\,\pi_2 \twoheadrightarrow_\beta \pi_3$
+\item $G\,\pi_3 \twoheadrightarrow_\beta \pi_1$
+\item[$\leadsto$] $G$ realizes specification $(1 \to 2) \wedge (2 \to 3) \wedge (3 \to 1)$
+\item $\emptyset \vdash G : \sigma_\calU \to \sigma_\calU$
+\end{itemize}
+\item matching constraint $X\,G\,\pi_1 =_\beta \pi_3$
+\item \emph{well-behaved} solution %$X \mapsto \tm{\lambda g.\lambda h.g\,(g\,h)}$
+\begin{itemize}
+\item $X\,G\,\pi_1 \mapsto \big(\lambda g.\lambda h.g\,(g\,h)\big)\,G\,\pi_1
+\twoheadrightarrow_\beta G\,(G\,\pi_1) \twoheadrightarrow_\beta \pi_3$
+\end{itemize}
+\item \emph{troubling} solution %$X \mapsto \tm{\lambda g.\lambda h.\pi_\li{3}}$
+\begin{itemize}
+\item $X\,G\,\pi_1 \mapsto \big(\lambda g.\lambda h.\pi_3\big)\,G\,\pi_1
+\twoheadrightarrow_\beta \pi_3$
+\end{itemize}
+\item another \emph{troubling} solution %$X \mapsto \tm{\lambda g.\lambda h.\lambda xyz.h\,z\,z\,z}$
+\begin{itemize}
+\item $X\,G\,\pi_1 \mapsto \big(\lambda g.\lambda h.\lambda xyz.h\,z\,z\,z\big)\,G\,\pi_1
+\twoheadrightarrow_\beta \lambda xyz.\pi_1\,z\,z\,z \twoheadrightarrow_\beta \pi_3$
+\end{itemize}
+\end{itemize}
+
+
+\begin{itemize}
+\item \emph{semantic} constraint (1) $X\,G\,\pi_1 =_\beta \pi_3$
+\item \emph{syntactic} constraint (2) $X\,I\,u =_\beta u$
+\item well-behaved solutions for (1) solve (2)
+\begin{itemize}
+\item $X\,I\,u \mapsto \big(\lambda g.\lambda h.g\,(g\,h)\big)\,I\,u
+\twoheadrightarrow_\beta I\,(I\,u) \twoheadrightarrow_\beta u$
+\end{itemize}
+\item troubling solutions for (1) do \emph{not} solve (2)
+\begin{itemize}
+\item $X\,I\,u \mapsto \big(\lambda g.\lambda h.\pi_3\big)\,I\,u
+\twoheadrightarrow_\beta \pi_3 \not=_\beta u$
+\item $X\,I\,u \mapsto \big(\lambda g.\lambda h.\lambda xyz.h\,z\,z\,z\big)\,I\,u
+\twoheadrightarrow_\beta \lambda xyz.u\,z\,z\,z \not=_\beta u$
+\end{itemize}
+\item combined matching instance $\big(\lambda x.\lambda y.y\,(x\,G\,\pi_1)\,(\lambda u.x\,I\,u)\big)\,X = \lambda y.y\,\pi_3\,(\lambda u.u)$
+\end{itemize}
+
+\begin{remark}~
+\begin{itemize}
+\setlength\itemsep{0.1em}
+\item syntactic constraint restricts the number of $\lambda$-abstractions in solutions
+\item solutions are \emph{not} $\eta$-long wrt. $(\sigma_\calU \to \sigma_\calU) \to \sigma_\calU \to \sigma_\calU$
+\item solutions are inhabitants of intersection type $A$
+%\item syntactic constraints don't work well with $\eta$-equality
+\end{itemize}
+\end{remark}
+
+\begin{itemize}
+\item example $\calR := \{00 \Rightarrow 21, 02 \Rightarrow 11\}$
+\item atoms $\{\bot, \top, \bullet, \dag, 0, 1, 2 \}$
+%\item universe $\calU := \{\tm{\pi}_\bot, \tm{\pi}_\top, \tm{\pi_\xt{\bullet}}, \tm{\pi_\li{0}}, \tm{\pi_\li{1}}, \tm{\pi_\li{0}}, \tm{\pi_\li{1}}, \tm{\pi_\xt{\dag}}, \tm{\pi_\li{0}}, \tm{\pi_\li{1}}, \tm{\pi_\li{2}} \}$
+\item specification\\
+{\small$A_\calR := A_{00 \Rightarrow 21} \to A_{02 \Rightarrow 11} \to A_{0} \to 1 \to A_\smile \to (\bullet^\top \to \dag) \wedge (0^\top \to 1) \wedge (1^\top \to 0)$}
+\begin{itemize}
+\item rule application\\
+$A_{ab \Rightarrow cd} :=
+\big(0^\top \to c \to a \big) \wedge \big(1^\top \to d \to b \big) \wedge \bigwedge\limits_{e \in \{0, 1, 2\}} \big(\bullet^\top \to e \to e \big)$
+\item initialization\\
+$A_{0} := \big(\bullet^\top \to 0 \to 0 \big) \wedge \big(1^\top \to 0 \to 0 \big) \wedge \big(0^\top \to 0 \to 1 \big) \wedge \big(\bullet^\top \to 1 \to \dag \big)$
+\item finalization $1$
+\item expansion (find suitable word length)\\
+$\arraycolsep=1.4pt\begin{array}{lcl}
+A_\smile &:=& \big(\bullet^\top \to \big(\bullet^\top \to 0 \big) \to 0 \big) \wedge \big(1^\top \to \big(\bullet^\top \to 0 \big) \to 0 \big) \wedge\phantom{pain}\\
+&&\big(0^\top \to \big(1^\top \to 0 \big) \to 1 \big) \wedge \big(\bullet^\top \to \big(\big(0^\top \to 1 \big) \wedge \big(\bullet^\top \to \dag \big)\big) \to \dag \big)
+\end{array}$
+\item starting configuration $(\bullet^\top \to \dag) \wedge (0^\top \to 1) \wedge (1^\top \to 0)$
+\end{itemize}
+%\item finite function $f_\calR \in \enc{A_\calR}$
+%\begin{itemize}
+%\item $\enc{a} = \{a\}$ for $a \in \calU$
+%\item $\enc{A \to B} = \{f \mid \text{for all } a \in \enc{A} \text{ we have } f(a) \in \enc{B} \}$
+%\item $\enc{A \wedge B} = \enc{A} \wedge \enc{B}$
+%\end{itemize}
+\end{itemize}
+
+\begin{theorem}
+Given a simple semi-Thue system $\calR$, the intersection type $A_\calR$ is inhabited iff for some $n > 0$ we have $0^n \Rightarrow^*_\calR 1^n$.
+\end{theorem}
+
+\begin{proof}[Proof Outline~{[\cite{DudenhefnerR19}]}]
+\vspace*{-0.2em}
+\begin{itemize}
+\item[$\Rightarrow$:] Induction on inhabitant size, using generation lemma.
+\item[$\Leftarrow$:] Induction on the number of rewrite steps.\qedhere
+\end{itemize}
+\end{proof}
+
+\begin{corollary}
+Intersection type inhabitation is undecidable.
+\end{corollary}
+
+\begin{itemize}
+%\item example $\calR  = \{\li{00} \Rightarrow \li{21}, \li{02} \Rightarrow \li{11}\}$
+\item universe $\calU := \{\pi_\bot, \pi_\top, \pi_\bullet, \pi_\dag, \pi_0, \pi_1, \pi_2 \}$
+\item each $M \in \calU$ of simple type $\sigma_{\calU} := \underbrace{\ga \to \cdots \to \ga}_{\scriptsize|\calU| \text{ times}} \to \ga$
+\item specification\\
+{\small$A_\calR := A_{00 \Rightarrow 21} \to A_{02 \Rightarrow 11} \to A_{0} \to 1 \to A_\smile \to (\bullet^\top \to \dag) \wedge (0^\top \to 1) \wedge (1^\top \to 0)$}
+\end{itemize}
+%\begin{definition}[Interpolation Equation]
+%$\tm{x\,M_1 \ldots M_n} = \tm{M_{n+1}}$ where $\tm{M_1}, \ldots, \tm{M_{n+1}}$ are terms in normal form with no occurrence of $\tm{x}$.
+%\end{definition}
+\begin{enumerate}
+\item semantic constraints (1), (2), (3)
+\begin{itemize}
+\item[(1)] $X\,G_{00 \Rightarrow 21}\,G_{02 \Rightarrow 11}\,G_{0}\,\pi_{1}\,G_\smile\,G^{\top}_{\bullet} =_\beta \pi_{\dag}$
+\item[(2)] $X\,G_{00 \Rightarrow 21}\,G_{02 \Rightarrow 11}\,G_{0}\,\pi_{1}\,G_\smile\,G^{\top}_{0} =_\beta \pi_{1}$
+\item[(3)] $X\,G_{00 \Rightarrow 21}\,G_{02 \Rightarrow 11}\,G_{0}\,\pi_{1}\,G_\smile\,G^{\top}_{1} =_\beta \pi_{0}$
+\end{itemize}
+\item syntactic constraints (4), (5)
+\begin{itemize}
+\item[(4)] $X\,H_{00 \Rightarrow 21}\,H_{02 \Rightarrow 11}\,H_{0}\,\pi_{1}\,H_\smile\,H^{\top}_{\bullet} =_\beta \pi_{\dag}$
+\item[(5)] $X\,I\,I\,(\lambda h.\lambda x.x)\,u\,(\lambda h.\lambda g.g\,I)\,I =_\beta u$
+\end{itemize}
+\item combine constraints (1)--(5) to matching instance $\calM_\calR := (F\,X = N)$
+\begin{itemize}
+\item $F := \lambda x.\lambda y.y\hspace*{-0.3em} \begin{array}[t]{l}
+(x\,G_{00 \Rightarrow 21}\,G_{02 \Rightarrow 11}\,G_{0}\,\pi_{1}\,G_\smile\,G^{\top}_{\bullet})\\
+(x\,G_{00 \Rightarrow 21}\,G_{02 \Rightarrow 11}\,G_{0}\,\pi_{1}\,G_\smile\,G^{\top}_{0})\\
+(x\,G_{00 \Rightarrow 21}\,G_{02 \Rightarrow 11}\,G_{0}\,\pi_{1}\,G_\smile\,G^{\top}_{1})\\
+(x\,H_{00 \Rightarrow 21}\,H_{02 \Rightarrow 11}\,H_{0}\,\pi_{1}\,H_\smile\,H^{\top}_{\bullet})\\
+(\lambda u.x\,I\,I\,(\lambda h.\lambda x.x)\,u\,(\lambda h.\lambda g.g\,I)\,I)
+\end{array}$
+%$\begin{array}{lcll}
+%\tm{F} &=& \lambda x.\lambda y.y & \big(da
+%\end{array}$
+\item $N := \lambda y.y\,\pi_{\dag}\,\pi_{1}\,\pi_{0}\,\pi_{\dag}\,(\lambda u.u)$
+\end{itemize}
+\end{enumerate}
+
+\begin{theorem}
+Given a simple semi-Thue system $\calR$, the matching instance $\calM_\calR$ is solvable iff for some $n > 0$ we have $0^n \Rightarrow^*_\calR 1^n$.
+\end{theorem}
+
+\begin{proof}[Proof Outline]
+\vspace*{-0.2em}
+\begin{itemize}
+\item[$\Rightarrow$:] Induction on solution term size, using case analysis.
+\item[$\Leftarrow$:] Induction on the number of rewrite steps.\qedhere
+\end{itemize}
+\end{proof}
+
+\begin{corollary}
+Higher-order $\beta$-matching is undecidable.
+\end{corollary}
+
+\begin{remark}
+\begin{description}
+\item[($30$ LOC)] problem definition (\lstinline$HOMbeta$)
+\item[($1000$ LOC)] simply typed $\lambda$-calculus infrastructure (\lstinline$autosubst$, confluence, normalization) 
+\item[($3000$ LOC)] many-one reduction from $0^+ \Rightarrow^*_\calR 1^+$ to \lstinline$HOMbeta$
+\item[($4$s)] compilation time (heavy use of \lstinline$ssreflect$, \lstinline$lia$, \lstinline$auto$)
+\end{description}
+\end{remark}
+
+\begin{itemize}
+%\item universe elements $\tm{\pi_i} : \ity{\ga \to \cdots \to \ga \to \ga}$ of order $2$
+\item $\beta$-matching is undecidable at order $6$~[\cite{Loader03}]
+\begin{itemize}
+\item $\lambda$-definability is undecidable at order $4$~[\cite{loader2001undecidability}]
+\item $(7+1)$-lifts increase order by $2$
+\end{itemize}
+\item present work: $\beta$-matching at order $6$
+\begin{itemize}
+\item $A_\calR$ of order $5$
+\item universe elements $\pi_i$ increase order by $1$
+\end{itemize}
+\item $\eta$-long $\beta$-matching is decidable at order $4$~[\cite{Padovani00}]
+\item $\eta$-long $\beta$-matching is equivalent to $\beta\eta$-matching~[\cite{Stovring06}]
+%\begin{itemize}
+%\item translates to $\beta\eta$-matching at order $4$
+%\item does decidability translate to $\beta$-matching at order $4$?
+%\end{itemize}
+\end{itemize}
+
+\bigskip
+
+\large
+\enquote{\textit{one might guess that undecidability starts at order $5$}}~[\cite{Loader03}]
+\normalsize
+
+\bigskip
+
+\begin{itemize}
+\item undecidability at order $5$ using Loader's approach?
+\begin{itemize}
+\item remove $1$-lifts? (so far, I failed)
+\end{itemize}
+\item undecidability at order $5$ using present approach?
+\begin{itemize}
+\item intersection type inhabitation is undecidable at order $4$
+\item universe elements $\pi_i$ increase order by $1$
+\item specification argument $\top$ facilitates syntactic constraints
+\item remove $\top$? (so far, I failed)
+\end{itemize}
+%\item undecidability at order $5$ using different approach?
+%\begin{itemize}
+%\item Hilbert's 10th problem as starting point
+%\end{itemize}
+\end{itemize}
+
+\begin{example}
+\begin{itemize}
+\item specification $A := \big((1 \to 2) \wedge (2 \to 3) \wedge (3 \to 1)\big) \to 1 \to 3$
+\item universe elements $\pi_1, \pi_2, \pi_3$
+\item permutation $G$ realizing $(1 \to 2) \wedge (2 \to 3) \wedge (3 \to 1)$
+\item \emph{semantic} constraint (1) $X\,G\,\pi_1 =_{\beta\eta} \pi_3$
+\item \emph{syntactic} constraint (2) $X\,I\,u =_{\beta\eta} u$
+\item troubling solution $X \mapsto \lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 x\,z\,y)\,y\,z$
+\begin{itemize}
+\item[(1)] $\arraycolsep=1.4pt\begin{array}[t]{lll}
+X\,G\,\pi_1 &\mapsto& \big(\lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 x\,z\,y)\,y\,z\big)\,G\,\pi_1\\
+&\twoheadrightarrow_\beta& \lambda xyz.\pi_{1}\,(G\,\pi_1 x\,z\,y)\,y\,z\\
+&\twoheadrightarrow_\beta& \lambda xyz.\pi_2\,x\,z\,y \twoheadrightarrow_\beta \lambda xyz.z = \pi_{3}
+\end{array}$
+\item[(2)] $\arraycolsep=1.4pt\begin{array}[t]{lll}
+X\,I\,u &\mapsto& \big(\lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 x\,z\,y)\,y\,z\big)\,I\,u\\
+&\twoheadrightarrow_\beta& \lambda xyz.u\,(I\,\pi_1 x\,z\,y)\,y\,z\\
+&\twoheadrightarrow_\beta& \lambda xyz.u\,(\pi_1 x\,z\,y)\,y\,z \twoheadrightarrow_\beta \lambda xyz.u\,x\,y\,z =_\eta u
+\end{array}$
+\end{itemize}
+\end{itemize}
+\end{example}
 
 \section{Introduction}
 
