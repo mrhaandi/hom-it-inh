@@ -46,6 +46,7 @@
 \newcommand{\bbZ}{\mathbb{Z}}
 \newcommand{\calC}{\mathcal{C}}
 \newcommand{\calD}{\mathcal{D}}
+\newcommand{\calF}{\mathcal{F}}
 \newcommand{\calM}{\mathcal{M}}
 \newcommand{\calR}{\mathcal{R}}
 \newcommand{\calT}{\mathcal{T}}
@@ -60,7 +61,7 @@
 \newcommand{\itb}[3]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3}}
 %%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\ga}{\ensuremath{\diamond}}
+\newcommand{\ga}{\ensuremath{\iota}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -76,6 +77,9 @@ Thoughts on undecidability of higher-order matching wrt.~$(=_\beta)$ (not to be 
 
 
 \section{Preliminaries}
+
+\subsection*{Simply-typed $\lambda$-Calculus}
+
 \begin{definition}[$\lambda$-Terms]
 \[
 \begin{array}{rcl}
@@ -128,11 +132,13 @@ M, N &::= &x \mid M \, N \mid \lambda x.M
 \end{tabular}
 \end{definition}
 
-\begin{problem}[Higher-order $\beta$-Matching (${F}\,X = N$)]
+\subsection*{Higher-order $\beta$-Matching}
+
+\begin{problem}[Higher-order $\beta$-Matching (${F}\,\mathsf{X} = N$)]
 Given terms $F, N$ and simple types $\sigma, \tau$ such that $\emptyset \vdash F : \sigma \to \tau$ and $\emptyset \vdash N : \tau$, is there a term $M$ such that $\emptyset \vdash M : \sigma$ and $F\,M =_\beta N$?
 \end{problem}
 
-\begin{theorem}[{[\cite[Theorem~5.5]{Loader03}]}]
+\begin{theorem}[{\cite[Theorem~5.5]{Loader03}}]
 Higher-order $\beta$-matching is undecidable.
 \end{theorem}
 
@@ -149,9 +155,58 @@ Artifacts
 \end{itemize}
 \end{remark}
 
+\subsection*{Finite Models}
+
+\begin{definition}[Finite Model]
+Fix a finite set $\calM_\ga$, $\calM_{\sigma \to \tau}$ is the finite set of all functions from $\calM_\sigma$ to $\calM_\tau$.
+\end{definition}
+
+We use tabular notation for families of finite functions in a given finite model, illustrated by the following examples.
+
+\setlength{\arraycolsep}{1pt}
+
+\begin{example}
+Fix the finite model $\calM$ with $\calM_\ga = \{1, 2\}$.
+The family ${\small\left(\begin{array}{c}
+1 \mapsto 2\\
+2 \mapsto 1
+\end{array}\right)} \subseteq \calM_{\ga \to \ga}$ contains exactly one finite function $f \in \calM_{\ga \to \ga}$ where $f(1) = 2$, $f(2) = 1$.
+\end{example}
+
+\begin{example}
+Fix the finite model $\calM$ with $\calM_\ga = \{1, 2, 3\}$.
+The family ${\small\left(\begin{array}{c}
+1 \mapsto 2\\
+2 \mapsto 3
+\end{array}\right)} \subseteq \calM_{\ga \to \ga}$ contains exactly three distinct finite functions $f \in \calM_{\ga \to \ga}$ where $f(1) = 2$, $f(2) = 3$, and $f(3) \in \{1, 2, 3\}$.
+\end{example}
+
+\begin{example}\label{xmp:fin-model}
+Fix the finite model $\calM$ with $\calM_\ga = \{1, 2, 3\}$. The family $\left({\small\left(\begin{array}{c}
+1 \mapsto 2\\
+2 \mapsto 3
+\end{array}\right)} \mapsto (1 \mapsto 3)\right)$ contains finite functions $f \in \calM_{(\ga \to \ga) \to \ga \to \ga}$ such that $f(g)(1) = 3$ for any $g \in {\small\left(\begin{array}{c}
+1 \mapsto 2\\
+2 \mapsto 3
+\end{array}\right)}$.
+
+As a side note, there is a $\lambda$-definable member of $\left({\small\left(\begin{array}{c}
+1 \mapsto 2\\
+2 \mapsto 3
+\end{array}\right)} \mapsto (1 \mapsto 3)\right)$ realized by the $\lambda$-term $\lambda f.\lambda x.f\,(f\,x)$.
+\end{example}
+
+\subsection*{Simple Semi-Thue Systems}
+
 \begin{definition}[Simple Semi-Thue System]
 A semi-Thue system $\calR$ is \emph{simple}, if each rule has the form $ab \Rightarrow cd$.
 \end{definition}
+
+\begin{remark}
+Simple Semi-Thue System inspired by \enquote{\emph{Inhabitation of Low-Rank Intersection Types}}~[\cite{Urzyczyn09}]
+and \enquote{\emph{Loader and Urzyczyn Are Logically Related}}~[\cite{SalvatiMGB12}].
+\end{remark}
+
 
 \begin{example}
 Let $\calR  := \{00 \Rightarrow 21, 02 \Rightarrow 11\}$ over the alphabet $\{0,1,2\}$.\medskip
@@ -159,44 +214,88 @@ Let $\calR  := \{00 \Rightarrow 21, 02 \Rightarrow 11\}$ over the alphabet $\{0,
 We have $000 \Rightarrow_\calR 021 \Rightarrow_\calR 111$.
 \end{example}
 
-\begin{problem}[$0^+ \Rightarrow^*_\calR 1^+$]
+\begin{problem}[$0^+ \Rightarrow^*_\calR 1^+$]\label{prb:ssts01}
 Given a simple semi-Thue system $\calR$, does $0^n \Rightarrow^*_\calR 1^n$ hold for some $n > 0$?
 \end{problem}
 
-\begin{theorem}[{[\cite[Lemma~3.3]{DudenhefnerR19}]}]
+\begin{remark}
+Problem~\ref{prb:ssts01} used as a starting point in~\cite{DudenhefnerR19} by Dudenhefner.
+\end{remark}
+
+\begin{theorem}[{\cite[Lemma~3.3]{DudenhefnerR19}}]
 Problem $0^+ \Rightarrow^*_\calR 1^+$ is undecidable.
 \end{theorem}
 
+\begin{remark}~
 \begin{itemize}
-\item similar to [\cite[Lemma~2]{Urzyczyn09}]
-\item mechanized in Coq~[\cite[\texttt{SSTS01}]{CLUP20}]
+\item similar to \cite[Lemma~2]{Urzyczyn09}
+\item mechanized in Coq~\cite[\texttt{SSTS01}]{CLUP20}
 \end{itemize}
+\end{remark}
+
+\newpage
+
+\section{Undecidability of Higher-order $\beta$-Matching}
+
+New plan (no intersection types):
 
 Given a simple semi-Thue system $\calR$
 
 \begin{enumerate}
-\item construct intersection type $A_\calR$
+\item construct a higher-order $\beta$-matching instance $F_\calR \, \textsf{X} = N_\calR$
 \begin{itemize}
-\item $A_\calR$ is inhabited iff $0^+ \Rightarrow^*_\calR 1^+$
+\item $F_\calR \, \textsf{X} = N_\calR$ is solvable iff $0^+ \Rightarrow^*_\calR 1^+$
 \end{itemize}
-\item present $A_\calR$ as a higher-order $\beta$-matching instance $\calM_\calR$
-\begin{itemize}
-\item $\calM_\calR$ is solvable iff $0^+ \Rightarrow^*_\calR 1^+$
-\end{itemize}
+\begin{enumerate}
+\item Syntactic constraints
+\item Semantic constraints
+\end{enumerate}
 \item mechanize the construction in Coq ($4000$ LOC)
 \end{enumerate}
 
-\bigskip
+Two examples.
+First, in which there is only a semantic constraint and where the solution is wrong and arbitrary syntax.
 
-\begin{remark}[Properties of $A_\calR$]
-\begin{itemize}
-\item based on~[\cite{Urzyczyn09}] and~[\cite{DudenhefnerR19}]
-\item has rank 3
-\item allows for simple tools (no $\lambda\bot$-terms or myopic order)
-\item $\lambda$-definable when interpreted as finite function~[\cite{SalvatiMGB12}]
-\end{itemize}
-\end{remark}
+\begin{example}
+Consider the finite model $\calM$ with $\calM_\ga = \{1, 2, 3\}$ from Example~\ref{xmp:fin-model} together with the family $\calF = \left({\small\left(\begin{array}{c}
+1 \mapsto 2\\
+2 \mapsto 3
+\end{array}\right)} \mapsto (1 \mapsto 3)\right)$ of finite functions $f \in \calM_{(\ga \to \ga) \to \ga \to \ga}$ such that $f(g)(1) = 3$ for any $g \in {\small\left(\begin{array}{c}
+1 \mapsto 2\\
+2 \mapsto 3
+\end{array}\right)}$.
 
+Let us realize elements of the set $\{1, 2, 3\}$ by projections $\pi_1 := \lambda xyz.x$, $\pi_2 := \lambda xyz.y$, and $\pi_3 := \lambda xyz.z$ respectively.
+For the term $G := \lambda h.\lambda x_1 x_2 x_3.h\,x_2\,x_3\,x_1$ we have
+\[G\,\pi_1 \twoheadrightarrow_\beta \pi_2 \text{ and } G\,\pi_2 \twoheadrightarrow_\beta \pi_3\]
+Therefore, $G$ realizes a member of ${\small\left(\begin{array}{c}
+1 \mapsto 2\\
+2 \mapsto 3
+\end{array}\right)}$.
+Consider the matching constraint $\mathsf{X}\,G\,\pi_1 =_\beta \pi_3$.
+Any term which realizes a member of the family $\calF$ solves the above constraint.
+For instance, we have $\big(\lambda f.\lambda x.f\,(f\,x)\big)\,G\,\pi_1 \twoheadrightarrow_\beta \pi_3$.
+
+However, the converse is not the case.
+One obvious ad-hoc solution to the above constraint is $\big(\lambda f.\lambda x.\pi_3\big)\,G\,\pi_1
+\twoheadrightarrow_\beta \pi_3$.
+Another, more \enquote{troubling} solution to he above constraint is $\big(\lambda f.\lambda x.\lambda x_1 x_2 x_3.x\,x_3\,x_3\,x_3\big)\,G\,\pi_1
+\twoheadrightarrow_\beta \lambda x_1 x_2 x_3.\pi_1\,x_3\,x_3\,x_3 \twoheadrightarrow_\beta \pi_3$.
+The reason for such solutions is an ad-hoc construction conjuring up universe elements. 
+\end{example}
+
+Second, we add syntactic constraint so that the solutions are well-behaved.
+
+\begin{example}
+TODO
+\end{example}
+
+\subsection{Syntactic Constrains}
+We present two constraints such that solutions are of certain shape.
+
+\subsection{Semantic Constrains}
+
+\begin{example}~
 \begin{itemize}
 \item specification $A := \big((1 \to 2) \wedge (2 \to 3) \wedge (3 \to 1)\big) \to 1 \to 3$
 \item universe elements
@@ -250,6 +349,9 @@ Given a simple semi-Thue system $\calR$
 \end{itemize}
 \item combined matching instance $\big(\lambda x.\lambda y.y\,(x\,G\,\pi_1)\,(\lambda u.x\,I\,u)\big)\,X = \lambda y.y\,\pi_3\,(\lambda u.u)$
 \end{itemize}
+\end{example}
+
+
 
 \begin{remark}~
 \begin{itemize}
@@ -288,22 +390,6 @@ A_\smile &:=& \big(\bullet^\top \to \big(\bullet^\top \to 0 \big) \to 0 \big) \w
 %\item $\enc{A \wedge B} = \enc{A} \wedge \enc{B}$
 %\end{itemize}
 \end{itemize}
-
-\begin{theorem}
-Given a simple semi-Thue system $\calR$, the intersection type $A_\calR$ is inhabited iff for some $n > 0$ we have $0^n \Rightarrow^*_\calR 1^n$.
-\end{theorem}
-
-\begin{proof}[Proof Outline~{[\cite{DudenhefnerR19}]}]
-\vspace*{-0.2em}
-\begin{itemize}
-\item[$\Rightarrow$:] Induction on inhabitant size, using generation lemma.
-\item[$\Leftarrow$:] Induction on the number of rewrite steps.\qedhere
-\end{itemize}
-\end{proof}
-
-\begin{corollary}
-Intersection type inhabitation is undecidable.
-\end{corollary}
 
 \begin{itemize}
 %\item example $\calR  = \{\li{00} \Rightarrow \li{21}, \li{02} \Rightarrow \li{11}\}$
@@ -584,6 +670,43 @@ Remarks
 \begin{itemize}
 \item For inhabitation instead of $\top \to \LEFTcircle$ just the type $\LEFTcircle$ suffices, whereas for matching it is required for structural constraints (equation 1).
 \end{itemize}
+
+\section{Undecidability of Rank 3 Intersection Type Inhabitation}
+
+Given a simple semi-Thue system $\calR$
+\begin{enumerate}
+\item construct intersection type $A_\calR$
+\begin{itemize}
+\item $A_\calR$ is inhabited iff $0^+ \Rightarrow^*_\calR 1^+$
+\end{itemize}
+\end{enumerate}
+
+\bigskip
+
+\begin{remark}[Properties of $A_\calR$]
+\begin{itemize}
+\item based on~[\cite{Urzyczyn09}] and~[\cite{DudenhefnerR19}]
+\item has rank 3
+\item allows for simple tools (no $\lambda\bot$-terms or myopic order)
+\item $\lambda$-definable when interpreted as finite function~[\cite{SalvatiMGB12}]
+\end{itemize}
+\end{remark}
+
+\begin{theorem}
+Given a simple semi-Thue system $\calR$, the intersection type $A_\calR$ is inhabited iff for some $n > 0$ we have $0^n \Rightarrow^*_\calR 1^n$.
+\end{theorem}
+
+\begin{proof}[Proof Outline~{[\cite{DudenhefnerR19}]}]
+\vspace*{-0.2em}
+\begin{itemize}
+\item[$\Rightarrow$:] Induction on inhabitant size, using generation lemma.
+\item[$\Leftarrow$:] Induction on the number of rewrite steps.\qedhere
+\end{itemize}
+\end{proof}
+
+\begin{corollary}
+Intersection type inhabitation is undecidable.
+\end{corollary}
 
 \newpage
 
