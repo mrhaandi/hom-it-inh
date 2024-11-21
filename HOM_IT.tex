@@ -14,6 +14,7 @@
 \usepackage{wasysym} %\brokenvert
 \usepackage{bussproofs}
 \usepackage{listings}
+\usepackage{pdfpages}
 %\usepackage[activate={true,nocompatibility}]{microtype} %layouting
 %%%%%%%%%%%%%%%%%%%%%%% Style changes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \theoremstyle{definition}
@@ -56,9 +57,13 @@
 \newcommand{\1}{\mathbf{1}}
 
 \newcommand{\case}[2]{\ensuremath{\textbf{case } #1 \textbf{ of } \langle #2 \rangle}}
-\newcommand{\caseelse}[3]{\ensuremath{\textbf{case } #1 \textbf{ of } \langle #2 \rangle \textbf{ else } #3}}
+\newcommand{\caseelse}[3]{\ensuremath{\textbf{case } {#1} \textbf{ of } \langle #2 \mid\mid #3 \rangle}}
 \newcommand{\ite}[4]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3 \textbf{ else } #4}}
 \newcommand{\itb}[3]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3}}
+
+\newcommand{\coq}[1]{\textnormal{[\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/LambdaCalculus/Reductions/SSTS01\_to\_HOMbeta.v\##1}{\raisebox{-0.2em}{\includegraphics[width=0.6em]{coq-logo.pdf}}}]}}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\ga}{\ensuremath{\iota}}
@@ -345,7 +350,7 @@ in de Bruijn -- actually reversed\\
 $\bot := K$, $\top := K - 1$, $\bullet := K - 2$, $\$ := K - 3$, $\0 := K - 4$, $\1 := K - 5$
 \item $\kappa = \underbrace{\ga \to \ldots \to \ga}_{K~\text{times}} \to \ga$ (in code \lstinline|Definition A := fold_right arr atom (repeat atom n)|)
 \item $\pi_i := \lambda x_1 \ldots x_K.x_i$ where $i \in \{1, \ldots, K\}$ (reversed de Bruijn index)
-\item $\delta_i := \lambda x.\lambda r_1 \ldots r_K.\itb{x}{\top}{r_i}$
+\item $\delta_i := \lambda x.\lambda r_1 \ldots r_K.\caseelse{x}{\top \mapsto r_i}{r_\bot}$
 \end{itemize}
 
 \begin{definition}
@@ -379,7 +384,14 @@ Example?\\
 We present two constraints such that solutions are of certain shape.
 
 
-Let us 
+\begin{definition}
+\begin{align*}
+H_\star := &\lambda h.\lambda g.\lambda r_1 \ldots r_K. \caseelse{g\,\delta_\bullet}{\$ \mapsto r_\$}{r_\bot}\\
+H_\0 := &\lambda h.\lambda x. \lambda r_1 \ldots r_K.\caseelse{x}{\1 \mapsto r_\$}{r_\bot}\\
+H_R := &\lambda h.\lambda x. \lambda r_1 \ldots r_K.\caseelse{h\,\pi_\top}{\bullet \mapsto \caseelse{x}{\1 \mapsto r_\1}{r_\bot} }{r_\bot}\\
+H_\1 := &\pi_\1
+\end{align*}
+\end{definition}
 
 
 %(* x_R x_p M or x_R (\w.x_p w) M *)
@@ -389,22 +401,24 @@ Let us
 %  | ring2_intro_eta x y M : ring2 l M -> x < length rules -> y < l -> ring2 l (app (app (var (x + 3 + l)) (lam (app (var (S y)) (var 0)))) M)
 %  | ring2_fin : ring2 l (var (S l)).
 
-\begin{lemma}
+\begin{lemma}\label{lem:ring2}
 %Lemma construct_ring2 M m :
 %  normal_form M ->
 %  stlc (Gamma_A m) M A ->
 %  steps (subst (sigma_F m) M) (var m) ->
 %  steps (subst (sigma_H m) M) (pi one) ->
 %  ring2 m M.
-$M$ is in normal form, $\Gamma_A \vdash M : A$
-\begin{itemize}
-\item[(4)] $M\,H_{00 \Rightarrow 21}\,H_{02 \Rightarrow 11}\,H_{0}\,\pi_{1}\,H_\smile\,H^{\top}_{\bullet} =_\beta \pi_{\dag}$
-\item[(5)] $M\,I\,I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I =_\beta u$
-\end{itemize}
-implies $M = \lambda x_1 \ldots x_n.\lambda y z a b.N$ and 
-
-is ring2
+If $M$ is in normal form, $\Gamma_\kappa \vdash M : \kappa$,\\
+$\begin{array}{lllllll}
+M[z_\star := \lambda h.\lambda g.g\,I, &z_\1 := u, &z_\0 := \lambda h.I, &y_R := I, &x_p := I] &=_\beta u,\\
+M[z_\star := H_\star, &z_\1 := \pi_\1, &z_\0 := H_\0, &y_R := H_R, &x_p := \delta_\bullet] &=_\beta \pi_{\1}
+\end{array}$,\\
+then $M = y_R\,N_1\,(y_R\,N_2\,(\ldots(y_R\,N_k\,z_\1)\ldots))$ for some $k \in \bbN$ such that $N_i = x_p$ or $N_i = \lambda w.x_p w$ for $i \in \{1, \ldots, k\}$.
 \end{lemma}
+
+\begin{proof}[Proof\;\coq{L1687}.]
+By induction on the size of $M$ and exhaustive case analysis of the normal form.
+\end{proof}
 
 %(* x_star N (\x_p.M) *)
 %(* word expansion term or init rule application term *)
@@ -413,29 +427,45 @@ is ring2
 %  | ring1_init M N : ring2 l M -> ring1 l (apps (var (2 + l)) [N; M]).
 
 
-\begin{lemma}
+\begin{lemma}\label{lem:ring1}
 %Lemma construct_ring1 M m :
 %  normal_form M ->
 %  stlc (Gamma_A m) M A ->
 %  steps (subst (sigma_F m) M) (var m) ->
 %  steps (subst (sigma_H m) M) (pi dollar)  ->
 %  ring1 m M.
-$M$ is in normal form, $\Gamma_A \vdash M : A$
-\begin{itemize}
-\item[(4)] $M\,H_{00 \Rightarrow 21}\,H_{02 \Rightarrow 11}\,H_{0}\,\pi_{1}\,H_\smile\,H^{\top}_{\bullet} =_\beta \pi_{\dag}$
-\item[(5)] $M\,I\,I\,(\lambda h.\lambda x.x)\,u\,(\lambda h.\lambda g.g\,I)\,I =_\beta u$
-\end{itemize}
-implies $M$ is ring1
+If $M$ is in normal form, $\Gamma_\kappa \vdash M : \kappa$,\\
+$\begin{array}{lllllll}
+M[z_\star := \lambda h.\lambda g.g\,I, &z_\1 := u, &z_\0 := \lambda h.I, &y_R := I, &x_p := I] &=_\beta u,\\
+M[z_\star := H_\star, &z_\1 := \pi_\1, &z_\0 := H_\0, &y_R := H_R, &x_p := \delta_\bullet] &=_\beta \pi_{\$}
+\end{array},$\\
+then $M = z_\star\,N_1\,(\lambda x_p^1._\star\,N_2\,(\lambda x_p^2. \ldots (N)))$ for some $k \in \bbN$ and $N$ in special form.
 \end{lemma}
 
-\begin{theorem}
-$M$ is in normal form, $\Gamma_A \vdash M : A$
-\begin{itemize}
-\item[(4)] $M\,H_{00 \Rightarrow 21}\,H_{02 \Rightarrow 11}\,H_{0}\,\pi_{1}\,H_\smile\,H^{\top}_{\bullet} =_\beta \pi_{\dag}$
-\item[(5)] $M\,I\,I\,(\lambda h.\lambda x.x)\,u\,(\lambda h.\lambda g.g\,I)\,I =_\beta u$
-\end{itemize}
-implies $M$ is ring2, ring1
+\begin{proof}[Proof\;\coq{L1825}.]
+By induction on the size of $M$ and exhaustive case analysis of the normal form, using Lemma~\ref{lem:ring2}.
+\end{proof}
+
+\begin{theorem}\label{thm:shape}
+%Lemma solution_shape (M : term) :
+%  normal_form M ->
+%  (* correctly typed closed term *)
+%  stlc [] M (arrs (repeat A_0R (length rules + 1) ++ [A; A_star; arr A A]) A) ->
+%  steps (apps M (repeat F_R (length rules) ++ [F_0; var 0; F_star; (lam (var 0))])) (var 0) ->
+%  steps (apps M (repeat H_R (length rules) ++ [H_0; H_1; H_star; delta bullet])) (pi dollar) ->
+%  exists N, M = lams (length rules + 4) N /\ ring1 1 N.
+  
+If $M$ is in normal form, $\emptyset \vdash M : ???$,\\
+$\begin{array}{ll}
+M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u,\\
+M\,H_R \ldots H_R\,H_\0\,H_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$},
+\end{array}$\\
+then $M = \lambda y_R^1 \ldots y_R^k.\lambda z_\0 z_\1 z_\star x_p^1.N$ for some $k \in \bbN$ such that $N$ is in special form.
 \end{theorem}
+
+\begin{proof}[Proof\;\coq{L1932}.]
+By induction on the size of $M$ and exhaustive case analysis of the normal form, using Lemma~\ref{lem:ring1}.
+\end{proof}
 
 \subsection{Semantic Constrains}
 
