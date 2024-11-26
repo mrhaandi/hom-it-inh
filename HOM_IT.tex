@@ -65,6 +65,8 @@
 \newcommand{\coq}[1]{\textnormal{[\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/LambdaCalculus/Reductions/SSTS01\_to\_HOMbeta.v\##1}{\raisebox{-0.2em}{\includegraphics[width=0.6em]{coq-logo.pdf}}}]}}
 \newcommand{\coqextra}[1]{\textnormal{[\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/#1}{\raisebox{-0.2em}{\includegraphics[width=0.6em]{coq-logo.pdf}}}]}}
 
+\newcommand{\isep}{-0.4em}
+
 %%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\ga}{\ensuremath{\iota}}
@@ -384,14 +386,15 @@ Example?\\
 \subsection{Syntactic Constrains}
 We present two constraints such that solutions are of certain shape.
 
-\begin{definition}~
-For $m \in \bbN$ let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules.
+\begin{definition}\label{def:ring}
+For $m, k \in \bbN$ let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules.
 \begin{itemize}
-\item $z_\1 \in \calQ_m$
-\item $M \in \calQ_m \implies (r_i\,p_j\,M) \in \calQ_m$
-\item $M \in \calQ_m \implies (r_i\,(\lambda w.p_j\,w)\,M) \in \calQ_m$
-\item $M \in \calQ_m \implies (z_\0\,N\,M) \in \calR_m$
-\item $M \in \calR_{m+1} \implies (z_\star\,N\,(\lambda p_m.M)) \in \calR_m$
+\setlength\itemsep{\isep}
+\item $z_\1 \in \calQ_m^k$
+\item $M \in \calQ_m^k \implies (r_i\,p_j\,M) \in \calQ_m^k$ for $i \in \{1, \ldots, k\}$ and $j \in \{1, \ldots, m\}$
+\item $M \in \calQ_m^k \implies (r_i\,(\lambda w.p_j\,w)\,M) \in \calQ_m^k$ for $i \in \{1, \ldots, k\}$ and $j \in \{1, \ldots, m\}$
+\item $M \in \calQ_m^k \implies (z_\0\,N\,M) \in \calR_m^k$
+\item $M \in \calR_{m+1}^k \implies (z_\star\,N\,(\lambda p_{m+1}.M)) \in \calR_m^k$
 \end{itemize}
 \end{definition}
 
@@ -400,30 +403,40 @@ Terms in $\calR_0$ are of shape used by Dudenhefner in Urzyczyn inhabitation.
 Terms in $\calQ_m$ are computations of ssts in width $m$.
 \end{remark}
 
-\begin{definition}\label{def:ring}
+\begin{definition}\label{def:H}
 \begin{align*}
 H_\star := &\lambda h.\lambda g.\lambda s_1 \ldots s_K. \caseelse{g\,\delta_\bullet}{\$ \mapsto s_\$}{s_\bot}\\
 H_\0 := &\lambda h.\lambda x. \lambda s_1 \ldots s_K.\caseelse{x}{\1 \mapsto s_\$}{s_\bot}\\
 H_R := &\lambda h.\lambda x. \lambda s_1 \ldots s_K.\caseelse{h\,\pi_\top}{\bullet \mapsto \caseelse{x}{\1 \mapsto s_\1}{s_\bot} }{s_\bot}\\
 H_\1 := &\pi_\1\\
-\Gamma_m^\kappa := &\{ \begin{aligned}[t]
+\Gamma_m^k := &\{ \begin{aligned}[t]
+&z_\1 : \kappa, z_\0 : (\kappa \to \kappa) \to \kappa \to \kappa, z_\star : (\kappa \to \kappa) \to ((\kappa \to \kappa) \to \kappa) \to \kappa,\\
 &p_1 : \kappa \to \kappa, \ldots, p_m : \kappa \to \kappa,\\
-&z_\1 : \kappa, z_\star : (\kappa \to \kappa) \to ((\kappa \to \kappa) \to \kappa) \to \kappa, z_\0 : (\kappa \to \kappa) \to \kappa \to \kappa\\
-&r_1 : (\kappa \to \kappa) \to \kappa \to \kappa, \ldots, r_k : (\kappa \to \kappa) \to \kappa \to \kappa\}
+&r_1 : (\kappa \to \kappa) \to \kappa \to \kappa, \ldots, r_k : (\kappa \to \kappa) \to \kappa \to \kappa\} \text{ for } k, m \in \bbN
 \end{aligned}
-%\{p_1 : \kappa \to \kappa, \ldots, p_m : \kappa \to \kappa, z_\1 : \kappa, z_\star : (\kappa \to \kappa) \to ((\kappa \to \kappa) \to \kappa) \to \kappa, r_1 : (\kappa \to \kappa) \to \kappa \to \kappa, \ldots, r_k : (\kappa \to \kappa) \to \kappa \to \kappa\}
 \end{align*}
 \end{definition}
 
+\begin{remark}\label{rem:H}
+Terms in the above Definition~\ref{def:H} realize certain finite functions as follows.
+\begin{itemize}
+\setlength\itemsep{\isep}
+\item $H_\star$ realizes a member of the family $\left(\omega \mapsto ((\top \mapsto \bullet) \mapsto \$) \mapsto \$ \right)$.
+\item $H_\0$ realizes a member of the family $(\omega \mapsto (\1 \mapsto \$))$.
+\item $H_R$ realizes a member of the family $((\top \mapsto \bullet) \mapsto (\1 \mapsto \1))$.
+\item $H_\1$ realizes the element $\1$.
+\end{itemize}
+\end{remark}
+
 \begin{lemma}~
 \begin{itemize}
-\setlength\itemsep{-0.5em}
+\setlength\itemsep{\isep}
 \item $\emptyset \vdash \pi_i : \kappa$
-\item $\emptyset \vdash \delta_i : \Gamma_m^\kappa(p_i)$
-\item $\emptyset \vdash H_\star : \Gamma_m^\kappa(z_\star)$
-\item $\emptyset \vdash H_\0 : \Gamma_m^\kappa(z_\0)$
-\item $\emptyset \vdash H_\1 : \Gamma_m^\kappa(z_\1)$
-\item $\emptyset \vdash H_R : \Gamma_m^\kappa(r_i)$
+\item $\emptyset \vdash \delta_i : \Gamma_m^k(p_j)$ for $i \in \{1, \ldots, K\}$ and $j \in \{1, \ldots, m\}$
+\item $\emptyset \vdash H_\star : \Gamma_m^k(z_\star)$
+\item $\emptyset \vdash H_\0 : \Gamma_m^k(z_\0)$
+\item $\emptyset \vdash H_\1 : \Gamma_m^k(z_\1)$
+\item $\emptyset \vdash H_R : \Gamma_m^k(r_i)$ for $i \in \{1, \ldots, k\}$
 \end{itemize}
 \end{lemma}
 
@@ -442,12 +455,12 @@ H_\1 := &\pi_\1\\
 %  steps (subst (sigma_F m) M) (var m) ->
 %  steps (subst (sigma_H m) M) (pi one) ->
 %  ring2 m M.
-If $M$ is in normal form, $\Gamma_\kappa \vdash M : \kappa$,\\
+For $k, m \in \bbN$, if $M$ is in normal form such that $\Gamma^k_m \vdash M : \kappa$,\\
 $\begin{array}{lllllllll}
 M[z_\star := \lambda h.\lambda g.g\,I, &z_\1 := u, &z_\0 := \lambda h.I, &r_1 := I, \ldots, &r_k := I, &p_1 := I, \ldots, &p_m := I] &=_\beta u,\\
-M[z_\star := H_\star, &z_\1 := \pi_\1, &z_\0 := H_\0, &r_1 := H_R, \ldots &r_k := H_R, &p_1 := \delta_\bullet, \ldots, &p_m := \delta_\bullet] &=_\beta \pi_{\1}
-\end{array}$,\\
-then $M \in \calQ_m$.
+M[z_\star := H_\star, &z_\1 := \pi_\1, &z_\0 := H_\0, &r_1 := H_R, \ldots &r_k := H_R, &p_1 := \delta_\bullet, \ldots, &p_m := \delta_\bullet] &=_\beta \pi_{\1},
+\end{array}$\\
+then $M \in \calQ_m^k$.
 \end{lemma}
 
 \begin{proof}[Proof\;\coq{L1687}.]
@@ -468,12 +481,12 @@ By induction on the size of $M$ and exhaustive case analysis of the normal form.
 %  steps (subst (sigma_F m) M) (var m) ->
 %  steps (subst (sigma_H m) M) (pi dollar)  ->
 %  ring1 m M.
-If $M$ is in normal form, $\Gamma_\kappa \vdash M : \kappa$,\\
+For $k, m \in \bbN$, if $M$ is in normal form such that $\Gamma^k_m \vdash M : \kappa$,\\
 $\begin{array}{lllllllll}
-M[z_\star := \lambda h.\lambda g.g\,I, &z_\1 := u, &z_\0 := \lambda h.I, &r_1 := I, \ldots, &r_k := I, &p_1 := I] &=_\beta u,\\
-M[z_\star := H_\star, &z_\1 := \pi_\1, &z_\0 := H_\0, &r_1 := H_R, \ldots &r_k := H_R, &p_1 := \delta_\bullet] &=_\beta \pi_{\$},
+M[z_\star := \lambda h.\lambda g.g\,I, &z_\1 := u, &z_\0 := \lambda h.I, &r_1 := I, \ldots, &r_k := I, &p_1 := I, \ldots, &p_m := I] &=_\beta u,\\
+M[z_\star := H_\star, &z_\1 := \pi_\1, &z_\0 := H_\0, &r_1 := H_R, \ldots &r_k := H_R, &p_1 := \delta_\bullet, \ldots, &p_m := \delta_\bullet] &=_\beta \pi_{\$},
 \end{array}$\\
-then $M \in \calR_1$.
+then $M \in \calR_m^k$.
 \end{lemma}
 
 \begin{proof}[Proof\;\coq{L1825}.]
@@ -489,12 +502,12 @@ By induction on the size of $M$ and exhaustive case analysis of the normal form,
 %  steps (apps M (repeat H_R (length rules) ++ [H_0; H_1; H_star; delta bullet])) (pi dollar) ->
 %  exists N, M = lams (length rules + 4) N /\ ring1 1 N.
   
-If $M$ is in normal form, $\emptyset \vdash M : ???$,\\
+For $k \in \bbN$, if $M$ is in normal form such that\\$\emptyset \vdash M : \Gamma_1^k(r_1) \to \cdots \to \Gamma_1^k(r_k) \to \Gamma_1^k(z_\0) \to \Gamma_1^k(z_\1) \to \Gamma_1^k(z_\star) \to \Gamma_1^k(p_1) \to \kappa$,\\
 $\begin{array}{ll}
 M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u,\\
 M\,H_R \ldots H_R\,H_\0\,H_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$},
 \end{array}$\\
-then $M = \lambda r_1 \ldots r_k.\lambda z_\0 z_\1 z_\star x_p^1.N$ for some $k \in \bbN$ such that $N \in \calR_1$.
+then $M = \lambda r_1 \ldots r_k.\lambda z_\0 z_\1 z_\star p_1.N$ for some $k \in \bbN$ such that $N \in \calR_1^k$.
 \end{theorem}
 
 \begin{proof}[Proof\;\coq{L1932}.]
