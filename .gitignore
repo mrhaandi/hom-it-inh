@@ -3,3 +3,6 @@
 *.out
 *.pdf
 *.gz
+*.bbl
+*.blg
+*.vtc

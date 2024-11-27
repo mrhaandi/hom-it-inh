@@ -168,7 +168,8 @@ Artifacts
 \end{remark}
 
 \begin{definition}[Matching Constraint]
-$\mathsf{X}\,F_1 \ldots F_n = N$
+$\mathsf{X}\,F_1 \ldots F_n = N$\\
+TODO: is this needed?
 \end{definition}
 
 \begin{lemma}
@@ -387,7 +388,7 @@ Example?\\
 We present two constraints such that solutions are of certain shape.
 
 \begin{definition}\label{def:ring}
-For $m, k \in \bbN$ let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules.
+For $m, k \in \bbN$ let $\calQ_m^k$ and $\calR_m^k$ be the smallest sets of terms satisfying the following rules.
 \begin{itemize}
 \setlength\itemsep{\isep}
 \item $z_\1 \in \calQ_m^k$
@@ -400,7 +401,7 @@ For $m, k \in \bbN$ let $\calQ_m$ and $\calR_m$ be the smallest sets of terms sa
 
 \begin{remark}
 Terms in $\calR_0$ are of shape used by Dudenhefner in Urzyczyn inhabitation.
-Terms in $\calQ_m$ are computations of ssts in width $m$.
+Terms in $\calQ_m^k$ are computations of ssts in width $m$ and $k$ rules.
 \end{remark}
 
 \begin{definition}\label{def:H}
@@ -516,6 +517,7 @@ By induction on the size of $M$ and exhaustive case analysis of the normal form,
 
 \subsection{Semantic Constrains}
 
+\begin{definition}\label{def:G}
 \begin{align*}
 G_\star := &\lambda h.\lambda g.\lambda s_1 \ldots s_K.\case{h\,\pi_\top}{s_\bot\\
 &\hspace{1.0em} \mid \bullet \mapsto \caseelse{g\,\delta_\bullet}{\0 \mapsto s_\0 \mid \$ \mapsto \caseelse{g\,\delta_\0}{\1 \mapsto s_\$}{s_\bot}}{s_\bot}\\
@@ -531,6 +533,35 @@ G_{ab \to cd} := &\lambda h.\lambda x.\lambda s_1 \ldots s_K.\case{h\,\pi_\top}{
 &\quad\mid\1 \mapsto \caseelse{x}{d \mapsto s_b}{s_\bot}}\\
 G_\1 := &\pi_\1
 \end{align*}
+\end{definition}
+
+\begin{remark}\label{rem:G}
+Terms in the above Definition~\ref{def:G} realize certain finite functions as follows.
+\begin{itemize}
+\setlength\itemsep{\isep}
+\item $G_\star$ realizes a member of the family ${\small\left(\begin{array}{l}
+(\top \mapsto \bullet) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)\\
+(\top \mapsto \bullet) \mapsto \left(\left(\begin{array}{l}
+(\top \mapsto \bullet) \mapsto \$\\
+(\top \mapsto \0) \mapsto \1
+\end{array}\right) \mapsto \$\right)\\
+(\top \mapsto \0) \mapsto ((\top \mapsto \1) \mapsto \0) \mapsto \1)\\
+(\top \mapsto \1) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)
+\end{array}\right)}$.
+\item $G_\0$ realizes a member of the family ${\small\left(\begin{array}{l}
+(\top \mapsto \bullet) \mapsto (\0 \mapsto \0)\\
+(\top \mapsto \bullet) \mapsto (\1 \mapsto \$)\\
+(\top \mapsto \0) \mapsto (\0 \mapsto \1)\\
+(\top \mapsto \1) \mapsto (\0 \mapsto \0)
+\end{array}\right)}$.
+\item $G_{ab \to cd}$ realizes a member of the family ${\small\left(\begin{array}{l}
+(\top \mapsto \0) \mapsto (c \mapsto a)\\
+(\top \mapsto \1) \mapsto (d \mapsto b)
+\end{array}\right)}$ such that\\
+$G_{ab \to cd} \, \delta_\bullet \, \pi_i =_\beta \pi_i$ for $i \in \{1, \ldots, K\}$.
+\item $G_\1$ realizes the element $\1$.
+\end{itemize}
+\end{remark}
 
 %  ring1 m N ->
 %  stlc (Gamma_A m) N A ->
@@ -595,9 +626,8 @@ M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u,\\
 M\,H_R \ldots H_R\,H_\0\,H_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$},\\
 M\,G_R \ldots G_R\,G_\0\,G_\1\,G_\star\,\delta_\bullet &=_\beta \pi_{\$},\\
 M\,G_R \ldots G_R\,G_\0\,G_\1\,G_\star\,\delta_\0 &=_\beta \pi_{\1},\\
-M\,G_R \ldots G_R\,G_\0\,G_\1\,G_\star\,\delta_\1 &=_\beta \pi_{\0},
-\end{array}$\\
-then $M = \lambda r_1 \ldots r_k.\lambda z_\0 z_\1 z_\star x_p^1.N$ for some $k \in \bbN$ such that $N \in \calR_1$.
+M\,G_R \ldots G_R\,G_\0\,G_\1\,G_\star\,\delta_\1 &=_\beta \pi_{\0}.
+\end{array}$
 \end{theorem}
 
 \begin{theorem}
