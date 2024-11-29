@@ -94,6 +94,7 @@
 
 \newcommand{\0}{\mathbf{0}}
 \newcommand{\1}{\mathbf{1}}
+\newcommand{\2}{\mathbf{2}}
 
 \newcommand{\case}[2]{\ensuremath{\textnormal{\textbf{case }} #1 \textnormal{\textbf{ of }} \langle #2 \rangle}}
 \newcommand{\caseelse}[3]{\ensuremath{\textnormal{\textbf{case }} {#1} \textnormal{\textbf{ of }} \langle #3 \mid #2 \rangle}}
@@ -278,14 +279,14 @@ and \enquote{\emph{Loader and Urzyczyn Are Logically Related}}~[\cite{SalvatiMGB
 \end{remark}
 
 
-\begin{example}
-Let $\calR  := \{00 \Rightarrow 21, 02 \Rightarrow 11\}$ over the alphabet $\{0,1,2\}$.\medskip
+\begin{example}\label{xmp:ssts}
+Let $\frakR  := \{\0\0 \Rightarrow \1\2, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$.\medskip
 
-We have $000 \Rightarrow_\calR 021 \Rightarrow_\calR 111$.
+We have $\0\0\0 \Rightarrow_\frakR \1\2\0 \Rightarrow_\frakR \1\1\1$.
 \end{example}
 
-\begin{problem}[$0^+ \Rightarrow^*_\calR 1^+$]\label{prb:ssts01}
-Given a simple semi-Thue system $\calR$, does $0^n \Rightarrow^*_\calR 1^n$ hold for some $n > 0$?
+\begin{problem}[$\0^+ \Rightarrow^*_\calR \1^+$]\label{prb:ssts01}
+Given a simple semi-Thue system $\frakR$, does $\0^n \Rightarrow^*_\frakR \1^n$ hold for some $n > 0$?
 \end{problem}
 
 \begin{remark}
@@ -293,7 +294,7 @@ Problem~\ref{prb:ssts01} used as a starting point in~\cite{DudenhefnerR19} by Du
 \end{remark}
 
 \begin{theorem}[{\cite[Lemma~3.3]{DudenhefnerR19}}]
-Problem $0^+ \Rightarrow^*_\calR 1^+$ is undecidable.
+Problem $\0^+ \Rightarrow^*_\calR \1^+$ is undecidable.
 \end{theorem}
 
 \begin{remark}~
@@ -544,14 +545,21 @@ $\begin{array}{ll}
 M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u,\\
 M\,H_R \ldots H_R\,H_\0\,H_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$},
 \end{array}$\\
-then $M = \lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.N$ for some $k \in \bbN$ such that $N \in \calR_1$.
+then $M = \lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.N$ for some term $N$ such that $N \in \calR_1$.
 \end{theorem}
 
 \begin{proof}[Proof\;\coq{L1932}.]
 By induction on the size of $M$ and exhaustive case analysis of the normal form, using Lemma~\ref{lem:ring1}.
 \end{proof}
 
-TODO running example
+\begin{example}\label{xmp:H}
+Consider $\frakR  := \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$ from Example~\ref{xmp:ssts}.
+Let $N := r_1\,p_1\,(r_2\,p_2\,z_\1)$ and
+$M := z_\star\,p_\1\,(\lambda p_2.z_\0\,p_1\,N)$.
+We have $N \in \calQ_2$ and $M \in \calR_1$.
+
+also equality after substitution
+\end{example}
 
 
 \subsection{Semantic Constrains}
@@ -575,7 +583,11 @@ G_j^i := &\begin{cases}
 \delta_\0 & \text{if } i = j\\
 \delta_\1 & \text{if } i = j + 1\\
 \delta_\bullet & \text{else}
-\end{cases}
+\end{cases}\\
+S_G(z_\star) := &G_\star\\
+S_G(z_\1) := &\pi_\1\\
+S_G(z_\0) := &G_\0\\
+S_G(r_j) := &G_{R_j} \text{ for } j \in {1, \ldots L}
 \end{align*}
 \end{definition}
 
@@ -625,18 +637,18 @@ $G_{ab \to cd} \, \delta_\bullet \, \pi_i =_\beta \pi_i$ for $i \in \{1, \ldots,
 \end{itemize}
 \end{lemma}
 
-\begin{lemma}
+\begin{lemma}\label{lem:R_ssts}
 If $M \in \calR_1$ such that $\Gamma_1 \vdash M : \kappa$,\\
 $\begin{array}{lllllllll}
-M[z_\star := G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L := G_{R_k}, p_1 := \delta_\bullet] =_\beta \pi_\$,\\
-M[z_\star := G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L := G_{R_k}, p_1 := \delta_\0] =_\beta \pi_\1,\\
-M[z_\star := G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L := G_{R_k}, p_1 := \delta_\1] =_\beta \pi_\0,
+S_G(M)[p_1 := \delta_\bullet] =_\beta \pi_\$,\\
+S_G(M)[p_1 := \delta_\0] =_\beta \pi_\1,\\
+S_G(M)[p_1 := \delta_\1] =_\beta \pi_\0,
 \end{array}$\\
 then there exists an $m > 0$ and an $N \in \calQ_m$ such that\\
 $\begin{array}{lllllllll}
 \Gamma_m \vdash N : \kappa,\\
-N[z_\star\hspace{0pt}:=\,\!G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L := G_{R_k}, p_1 := G_1^0, \ldots, p_m := G_m^0] =_\beta \pi_\1,\\
-N[z_\star := G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L := G_{R_L}, p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_\0\\
+S_G(N)[p_1 := G_1^0, \ldots, p_m := G_m^0] =_\beta \pi_\1,\\
+S_G(N)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_\0\\
 \text{for } i \in \{1, \ldots, m+1\}.
 \end{array}$
 \end{lemma}
@@ -644,8 +656,6 @@ N[z_\star := G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L 
 \begin{proof}[Proof\;\coq{L2017}.]
 Considering the general case $M \in \calR_m$, by induction on the size of $M$ and exhaustive case analysis using Definition~\ref{def:ring}.
 \end{proof}
-
-TODO running example
 
 %  m > 0 ->
 %  length v = S m ->
@@ -655,11 +665,11 @@ TODO running example
 %  Forall2 (fun i a => sym a < n /\ steps (subst (sigma_G m (S i)) M) (pi (sym a))) (seq 0 (S m)) v ->
 %  SSTS.multi_step rules v (repeat 1 (S m)).
 
-\begin{lemma}
+\begin{lemma}\label{lem:Q_ssts}
 For $m > 0$ let $a_1, \ldots, a_{m + 1} \in \{1, \ldots, K'\}$. If $M \in \calQ_m$ such that $\Gamma_m \vdash M : \kappa$,\\
 $\begin{array}{lllllllll}
-M[z_\star := G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L := G_{R_L}, p_1 := G_1^0, \ldots, p_m := G_m^0] =_\beta \pi_\1,\\
-M[z_\star := G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L := G_{R_L}, p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_{a_i}\\
+S_G(M)[p_1 := G_1^0, \ldots, p_m := G_m^0] =_\beta \pi_\1,\\
+S_G(M)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_{a_i}\\
 \text{for } i \in \{1, \ldots, m+1\}, \text{ then } a_1 \ldots a_{m + 1} \Rightarrow_\frakR^* \1^{m+1}.
 \end{array}$
 \end{lemma}
@@ -668,10 +678,30 @@ M[z_\star := G_\star, z_\1 := \pi_\1, z_\0 := G_\0, r_1 := G_{R_1}, \ldots, r_L 
 By induction on the size of $M$ and exhaustive case analysis using Definition~\ref{def:ring}.
 \end{proof}
 
+\begin{example}
+Consider $\frakR := \{\0\0 \Rightarrow \1\2, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$ from Example~\ref{xmp:ssts}, and $N := r_1\,p_1\,(r_2\,p_2\,z_\1)$ from Example~\ref{xmp:H}.
+
+we have that (replacing $G_1^i$ and $G_2^i$ accordingly for $i \in \{0, \ldots, 3\}$) \\
+$S_G(N)[p_1 := \delta_\bullet, p_2 := \delta_\bullet] =_\beta \pi_\1$\\
+$S_G(N)[p_1 := \delta_\0, p_2 := \delta_\bullet] =_\beta \pi_\0$\\
+$S_G(N)[p_1 := \delta_\1, p_2 := \delta_\0] =_\beta \pi_\0$\\
+$S_G(N)[p_1 := \delta_\bullet, p_2 := \delta_\1] =_\beta \pi_\0$
+
+In accordance with Lemma~\ref{lem:Q_ssts} we have that $\0^3 \Rightarrow_\frakR^* \1^3$.
+
+recalling $M := z_\star\,p_\1\,(\lambda p_2.z_\0\,p_1\,N)$ we have that \\
+$S_G(M)[p_1 := \delta_\bullet] =_\beta \pi_\$$\\
+$S_G(M)[p_1 := \delta_\0] =_\beta \pi_\1$\\
+$S_G(M)[p_1 := \delta_\1] =_\beta \pi_\0$.
+
+Note that $p_1$ is used for rule application at the first two positions and $p_2$ for the second and third position in the word.
+The first equivalence does not play a semantical role.
+\end{example}
+
 \begin{theorem}
-Exists $n$ such that $\0^{n+1} $ rewrites to $\1^{n+1}$ iff
-there exists $M$ is in normal form, such that the following conditions hold,\\
-$\emptyset \vdash M : ???$\\
+There exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ iff
+there exists a term $M$ is in normal form, such that the following conditions hold,\\
+$\emptyset \vdash M : \Gamma_1(r_1) \to \cdots \to \Gamma_1(r_L) \to \Gamma_1(z_\0) \to \Gamma_1(z_\1) \to \Gamma_1(z_\star) \to \Gamma_1(p_1) \to \kappa$,\\
 $\begin{array}{ll}
 M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u,\\
 M\,H_R \ldots H_R\,H_\0\,H_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$},\\
@@ -680,6 +710,17 @@ M\,G_R \ldots G_R\,G_\0\,G_\1\,G_\star\,\delta_\0 &=_\beta \pi_{\1},\\
 M\,G_R \ldots G_R\,G_\0\,G_\1\,G_\star\,\delta_\1 &=_\beta \pi_{\0}.
 \end{array}$
 \end{theorem}
+
+\begin{proof}[Proof\;\coq{L2758}.]
+The direction from left to right proceeds in two steps.
+First, by induction on the number of rewriting steps construct a term $N \in \calQ_n$ (easy converse of Lemma~\ref{lem:Q_ssts}).
+Second, by induction on $n$ define a term $M' \in \calR_1$ containing $N \in \calQ_n$ as a subterm (easy converse of Lemma~\ref{lem:R_ssts}).
+Then, the solution is $\lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.M'$.
+
+The direction from right to left is proceeds in two steps.
+First, by Theorem~\ref{thm:shape} we have $\lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.M'$ for some $M' \in \calR_1$.
+Second, by Lemma~\label{lem:R_ssts} and Lemma~\label{lem:Q_ssts} we have $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ for some $n > 0$.
+\end{proof}
 
 \begin{theorem}
 Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ (Problem~\ref{prb:ssts01}) many-one reduces to higher-order $\beta$-Matching (Problem~\ref{prb:hom}).
