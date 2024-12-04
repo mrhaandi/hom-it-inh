@@ -681,16 +681,36 @@ $S_G(N)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_\0$ for $i \in \{1, \ldo
 Considering the general case $M \in \calR_{m'}$, by induction on the size of $M$ and exhaustive case analysis using Definition~\ref{def:ring}.
 \end{proof}
 
-The following Example~\ref{xmp:G_R} complements Example~\ref{xmp:G_Q} and illustrates the intended meaning (word expansion and initialization) of a \enquote{well-formed} example term in $\calR_1$ under the substitution $S_G$.
+The following Example~\ref{xmp:G_R} complements the previous Example~\ref{xmp:G_Q} and illustrates the intended meaning (word expansion and initialization) of a \enquote{well-formed} example term in $\calR_1$ under the substitution $S_G$.
 
 \begin{example}\label{xmp:G_R}
-Additionally, we have\\
-$S_G(M)[p_1 := \delta_\bullet] =_\beta \pi_\$$\\
-$S_G(M)[p_1 := \delta_\1] =_\beta \pi_\0$\\
-$S_G(M)[p_1 := \delta_\0] =_\beta \pi_\1$.
+Assume $\frakR = \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$, and consider the terms
+$M_1 := z_\star\,p_1\,(\lambda p_2.M_2)$, $M_2 := z_\star\,p_2\,(\lambda p_3.M_3)$,
+$M_3 := z_\0\,p_3\,N$, and $N := r_1\,p_2\,(r_2\,p_1\,(r_3\,p_3\,z_\1))$ from Example~\ref{xmp:G_Q}.
+We have $M_i \in \calR_i$ for $i \in \{1,2,3\}$, and the following $\beta$-equivalences hold, illustrating word expansion and initialization:
 
-Note that $p_1$ is used for rule application at the first two positions and $p_2$ for the second and third position in the word.
-The first equivalence does not play a semantical role.
+$\begin{array}{l}
+S_G(M_1)[p_1 := \delta_\bullet] =_\beta \pi_\$\\
+S_G(M_1)[p_1 := \delta_\1] =_\beta \pi_\0\\
+S_G(M_1)[p_1 := \delta_\0] =_\beta \pi_\1
+\end{array}$
+\qquad
+$\begin{array}{l}
+S_G(M_2)[p_1 := \delta_\bullet, p_2 := \delta_\bullet] =_\beta \pi_\$\\
+S_G(M_2)[p_1 := \delta_\1, p_2 := \delta_\bullet] =_\beta \pi_\0\\
+S_G(M_2)[p_1 := \delta_\0, p_2 := \delta_\1] =_\beta \pi_\0\\
+S_G(M_2)[p_1 := \delta_\bullet, p_2 := \delta_\0] =_\beta \pi_\1
+\end{array}$
+
+$\begin{array}{l}
+S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\$\\
+S_G(M_3)[p_1 := \delta_\1, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\0\\
+S_G(M_3)[p_1 := \delta_\0, p_2 := \delta_\1, p_3 := \delta_\bullet] =_\beta \pi_\0\\
+S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\0, p_3 := \delta_\1] =_\beta \pi_\0\\
+S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\0] =_\beta \pi_\1
+\end{array}$
+
+In combination with the previous Example~\ref{xmp:G_Q}, the term $M_1 \in \calR_1$ witnesses word expansion up to length $4$, followed by initialization with $\0$s, and rewriting to $\1$s via rule application.
 \end{example}
 
 Next, we combine syntactic and semantic constraints in the following key Lemma~\ref{lem:ssts_to_constr}.
@@ -703,20 +723,20 @@ $\begin{array}{ll}
 M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u,\\
 M\,H_R \ldots H_R\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$},\\
 M\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_\1\,G_\star\,\delta_\bullet &=_\beta \pi_{\$},\\
-M\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_\1\,G_\star\,\delta_\0 &=_\beta \pi_{\1},\\
-M\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_\1\,G_\star\,\delta_\1 &=_\beta \pi_{\0}.
+M\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_\1\,G_\star\,\delta_\1 &=_\beta \pi_{\0},\\
+M\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_\1\,G_\star\,\delta_\0 &=_\beta \pi_{\1}.
 \end{array}$
 \end{lemma}
 
 \begin{proof}[Proof\;\coq{L2758}.]
 The direction from left to right proceeds in two steps.
-First, by induction on the number of rewriting steps construct a term $N \in \calQ_n$ (easy converse of Lemma~\ref{lem:Q_ssts_sem}).
-Second, by induction on $n$ define a term $M' \in \calR_1$ containing $N \in \calQ_n$ as a subterm (easy converse of Lemma~\ref{lem:R_ssts_sem}).
-Then, the solution is $\lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.M'$.
+First, by induction on the number of rewriting steps we construct a term $N \in \calQ_n$ (easy converse of Lemma~\ref{lem:Q_ssts_sem}).
+Second, by induction on $n$ we construct a term $M' \in \calR_1$ containing $N \in \calQ_n$ as a subterm (easy converse of Lemma~\ref{lem:R_ssts_sem}).
+Then, the solution is $M := \lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.M'$.
 
 The direction from right to left is proceeds in two steps.
 First, by Theorem~\ref{thm:shape} we have $\lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.M'$ for some $M' \in \calR_1$.
-Second, by Lemma~\label{lem:R_ssts} and Lemma~\label{lem:Q_ssts} we have $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ for some $n > 0$.
+Second, by Lemma~\ref{lem:R_ssts_sem} and Lemma~\ref{lem:Q_ssts_sem} we have $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ for some $n > 0$.
 \end{proof}
 
 Finally, we present constraints from the above Lemma~\ref{lem:ssts_to_constr} as an instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of Higher-order $\beta$-Matching.
@@ -727,16 +747,16 @@ Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ (Problem~\ref{prb:ssts01}) many-o
 \end{theorem}
 
 \begin{proof}[Proof\;\coq{L2880}.]
-Given a simple semi-Thue system $\frakR := \{R_1, \ldots, R_L\}$ due to Lemma~\ref{lem:ssts_to_constr} there exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ iff the instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of higher-order $\beta$-matching is solvable, where
+Given a simple semi-Thue system $\frakR = \{R_1, \ldots, R_L\}$ due to Lemma~\ref{lem:ssts_to_constr} there exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ iff the instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of higher-order $\beta$-matching is solvable, where
 \begin{itemize}
 \item $F_\frakR := \lambda x.\lambda y.y \begin{array}[t]{l}
 (\lambda u.x\,\underbracket{I \ldots I}_{L \text{ times}}\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I)\\
 (x\,\underbracket{H_R \ldots H_R}_{L \text{ times}}\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet)\\
 (x\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_{1}\,G_\star\,\delta_\bullet)\\
-(x\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_{1}\,G_\star\,\delta_\0)\\
-(x\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_{1}\,G_\star\,\delta_\1)
+(x\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_{1}\,G_\star\,\delta_\1)\\
+(x\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_{1}\,G_\star\,\delta_\0)
 \end{array}$
-\item $N_\frakR := \lambda y.y\,(\lambda u.u)\,\pi_\$\,\pi_\$\,\pi_\1\,\pi_\0$
+\item $N_\frakR := \lambda y.y\,(\lambda u.u)\,\pi_\$\,\pi_\$\,\pi_\0\,\pi_\1$
 \item $\sigma_\frakR := \Gamma_1(r_1) \to \cdots \to \Gamma_1(r_L) \to \Gamma_1(z_\0) \to \Gamma_1(z_\1) \to \Gamma_1(z_\star) \to \Gamma_1(p_1) \to \kappa$
 \item $\tau_\frakR := ((\kappa \to \kappa) \to \kappa \to \kappa \to \kappa \to \kappa \to \ga) \to \ga$
 \item $\emptyset \vdash F_\frakR : \sigma_\frakR \to \tau_\frakR$
@@ -753,7 +773,7 @@ By reduction from the undecidable Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$
 \end{proof}
 
 
-TODO move
+TODO conclude with uniform proposition for three problems hom, inhabitation and definability
 \begin{remark}\label{rem:H}
 Terms in the above Definition~\ref{def:H} realize certain finite functions as follows.
 \begin{itemize}
