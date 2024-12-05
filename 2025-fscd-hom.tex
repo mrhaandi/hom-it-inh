@@ -38,6 +38,7 @@
 \relatedversion{} %optional, e.g. full version hosted on arXiv, HAL, or other respository/website
 %\relatedversiondetails[linktext={opt. text shown instead of the URL}, cite=DBLP:books/mk/GrayR93]{Classification (e.g. Full Version, Extended Version, Previous Version}{URL to related version} %linktext and cite are optional
 
+\supplementdetails[subcategory={Source Code},linktext={coq-library-undecidability}]{Software}{https://github.com/uds-psl/coq-library-undecidability/} %linktext, cite, and subcategory are optional
 %\supplement{}%optional, e.g. related research data, source code, ... hosted on a repository like zenodo, figshare, GitHub, ...
 %\supplementdetails[linktext={opt. text shown instead of the URL}, cite=DBLP:books/mk/GrayR93, subcategory={Description, Subcategory}, swhid={Software Heritage Identifier}]{General Classification (e.g. Software, Dataset, Model, ...)}{URL to related version} %linktext, cite, and subcategory are optional
 
@@ -383,20 +384,23 @@ This results in undecidability, of higher-order $\beta$-matching by reduction fr
 
 Loader's generalization is quite sophisticated, as it requires construction principles to restrict shapes of realizers of arbitrary finite functions of arbitrary order.
 In the present work, we focus on a fragment, which can be identified identified by Urzyczyn and Salvati et.al.
-Thsi leads to a simpler proof and a connection between undecidability of HOmachting, intersection type inhabitation, and lambda-definability.
+This leads to a simpler proof and a connection between undecidability of HOmachting, intersection type inhabitation, and lambda-definability.
 
 \newpage
 
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+
 \section{Undecidability of Higher-order $\beta$-Matching}
-In this section we develop out main result (Theorem~\ref{thm:ssts_to_hom}): a reduction from the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to Higher-order $\beta$-Matching.
+In this section we develop our main result (Theorem~\ref{thm:ssts_to_hom}): a reduction from the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to Higher-order $\beta$-Matching.
 
 For the remainder of the section we fix the simple semi-Thue system $\frakR := \{R_1, \ldots, R_L\}$ with $L > 0$ rules over the finite alphabet $\{\0, \1, \2, \ldots, \mathbf{K}\}$.
-Our goal is to construct simply typed terms which capture the two main aspects of the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$: the search for a sufficiently long starting sequence of $\0$s, and the individual rewriting steps to the resulting sequence of $\1$s.
+Our approach is to construct simply typed terms which capture the two main aspects of the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$: the search for a sufficiently long starting sequence of $\0$s, and the individual rewriting steps to the resulting sequence of $\1$s.
 
 The remainder of the present section is structured as follows.
 First, we fix basic notation, encoding, and properties of the rewriting in the system $\frakR$.
 Second, we constraint the shape of potential solutions for the constructed matching instance, similarly to Example~\ref{xmp:no-ad-hoc}.
-Third, for the restricted solutions shape we capture the functional properties of the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$.
+Third, for solutions of restricted shape we capture the functional properties of the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$.
 
 \subsection*{Notation}
 
@@ -411,49 +415,49 @@ For $k \in \bbN$, distinct $i_1, \ldots, i_k \in \calA$, and terms $M_1, \ldots,
 &\text{ where } N_i = \begin{cases} M_j & \text{if } i = i_j\\M & \text{otherwise}\end{cases}
 \end{align*}
 \end{definition}
+A particular term $\delta_i$ for $i \in \calA$, which we will use commonly is:
+\[\delta_i := \lambda x.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{x}{\top \mapsto s_i}{s_\bot}\]
+We have $\emptyset \vdash \delta_i : \kappa \to \kappa$, and the following Lemma~\ref{lem:delta} specifies the behavior of $\delta_i$.
 
-A particular term, which we will use commonly is $\delta_i := \lambda x.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{x}{\top \mapsto s_i}{s_\bot} \text{ for } i \in \calA$.
-The key property of $\delta_i$ is
-$\delta_i\,\pi_j =_\beta \begin{cases}
-\pi_i & \text{if } j = \top\\
-\pi_\bot & \text{if } j \neq \top
-\end{cases}$ for $i, j \in \calA$.
+\begin{lemma}\label{lem:delta}
+For $i, j \in \calA$ such that $i \neq j$ we have
+$\delta_i\,\pi_\top =_\beta \pi_i$ and $\delta_i\,\pi_j =_\beta \pi_\bot$.
+\end{lemma}
 
-As is usual, we abbreviate $\lambda x.x$ by $I$, and assign to it the simple type $\kappa \to \kappa$.
-
-TODO $\emptyset \vdash \delta_i : \Gamma_m(p_j)$ for $i \in \calA$ and $j \in \{1, \ldots, m\}$
+As is usual, we define $I := \lambda x.x$, and for the remainder of the present section we assign the simple type $\kappa \to \kappa$ to each occurrence of $I$.
 
 \subsection*{Syntactic Constrains}
-First, we identify the shape of \enquote{well-formed} terms, suitable to represent rewriting.
+We identify the shape of \enquote{well-formed} terms, suitable to represent rewriting.
 In the following Definition~\ref{def:ring} terms in the set $\calQ_m$ capture consecutive rule application for a word of length $m + 1$, ending in the word $\1^{m+1}$ (represented by $z_\1 \in \calQ_m$).
 The subterm $r_i\,p_j$ (and $r_i\,(\lambda w.p_j\,w)$) for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$ indicates an application of the rule $R_i$ at position $j$.
 Additionally, terms in the set $\calR_m$ capture consecutive increase of word length starting with $m+1$, and initialization with $\0$s before rewriting (represented by $z_\0\,N\,M \in \calR_m$ for $M \in \calQ_m$).
 Specifically, the subterm $(z_\star\,N\,(\lambda p_{m+1}.M))$ introduces an additional bound variable $p_{m+1}$ in order the argue about rule application at position $m+1$ in the longer word.
 As a special case, terms in $\calR_1$ represent candidates witnessing an arbitrary expansion of a word of length $2$, followed by initialization with $\0$s, and consecutively rewritten to $\1$s.
 
-\begin{definition}[$\calQ_m$, $\calR_m$]\label{def:ring}
-For $m > 0$ let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules.
+\begin{definition}[Sets $\calQ_m$, $\calR_m$ of Terms]\label{def:ring}
+For $m > 0$ let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules:
 \begin{itemize}
 \item $z_\1 \in \calQ_m$
-\item $M \in \calQ_m \implies (r_i\,p_j\,M) \in \calQ_m$ for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$
-\item $M \in \calQ_m \implies (r_i\,(\lambda w.p_j\,w)\,M) \in \calQ_m$ for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$
-\item $M \in \calQ_m \implies (z_\0\,N\,M) \in \calR_m$
-\item $M \in \calR_{m+1} \implies (z_\star\,N\,(\lambda p_{m+1}.M)) \in \calR_m$
+\item If $M \in \calQ_m$ then $(r_i\,p_j\,M) \in \calQ_m$ for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$
+\item If $M \in \calQ_m$ then $(r_i\,(\lambda w.p_j\,w)\,M) \in \calQ_m$ for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$
+\item If $M \in \calQ_m$ then $(z_\0\,N\,M) \in \calR_m$
+\item If $M \in \calR_{m+1}$ then $(z_\star\,N\,(\lambda p_{m+1}.M)) \in \calR_m$
 \end{itemize}
 \end{definition}
 
-\begin{remark}
-Terms in $\calR_1$ closely resemble candidate inhabitants in a refinement~\cite[Lemma~4.4]{DudenhefnerR19} of Urzyczyn's undecidability result for intersection type inhabitation~\cite{Urzyczyn09}.
+\begin{remark}\label{rem:R1}
+Terms in $\calR_1$ are inspired by inhabitants in a refinement~\cite[Lemma~4.4]{DudenhefnerR19} of Urzyczyn's undecidability result for intersection type inhabitation~\cite{Urzyczyn09}.
 \end{remark}
 
 Free variables occurring in terms in $\calQ_m$ and $\calR_m$ are assigned simple types according to the following type environment $\Gamma_m$.
 
 \begin{definition}[Type Environment $\Gamma_m$]\label{def:Gamma}
+For $m > 0$ let
 \begin{align*}
 \Gamma_m &:= \{ \begin{aligned}[t]
 &z_\1 : \kappa, z_\0 : (\kappa \to \kappa) \to \kappa \to \kappa, z_\star : (\kappa \to \kappa) \to ((\kappa \to \kappa) \to \kappa) \to \kappa,\\
 &p_1 : \kappa \to \kappa, \ldots, p_m : \kappa \to \kappa,\\
-&r_1 : (\kappa \to \kappa) \to \kappa \to \kappa, \ldots, r_L : (\kappa \to \kappa) \to \kappa \to \kappa\} \text{ for } m > 0
+&r_1 : (\kappa \to \kappa) \to \kappa \to \kappa, \ldots, r_L : (\kappa \to \kappa) \to \kappa \to \kappa\}
 \end{aligned}
 \end{align*}
 \end{definition}
@@ -462,9 +466,9 @@ Similarly to Example~\ref{xmp:no-ad-hoc}, we formulate typed terms (Definition~\
 
 \begin{definition}[Typed Terms $H_\star, H_\0, H_R$]\label{def:H}
 \begin{align*}
-H_\star &:= \lambda h.\lambda g.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot. \caseelse{g\,\delta_\bullet}{\$ \mapsto s_\$}{s_\bot}\\
-H_\0 &:= \lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{x}{\1 \mapsto s_\$}{s_\bot}\\
-H_R &:= \lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{h\,\pi_\top}{\bullet \mapsto \caseelse{x}{\1 \mapsto s_\1}{s_\bot} }{s_\bot}
+H_\star := &\lambda h.\lambda g.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot. \caseelse{g\,\delta_\bullet}{\$ \mapsto s_\$}{s_\bot}\\
+H_\0 := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{x}{\1 \mapsto s_\$}{s_\bot}\\
+H_R := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{h\,\pi_\top}{\bullet \mapsto \caseelse{x}{\1 \mapsto s_\1}{s_\bot} }{s_\bot}
 \end{align*}
 \[
 \emptyset \vdash H_\star : \Gamma_m(z_\star) \qquad\quad
@@ -473,7 +477,7 @@ H_R &:= \lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top
 \]
 \end{definition}
 
-We introduce substitutions $S_F$ and $S_H$ (Definition~\ref{def:SF_SH}) acting on the term variables $\{z_\star, z_\1, z_\0, r_1, \ldots, r_L\}$, which occur in terms in $\calQ_m$ and $\calR_m$.
+We introduce substitutions $S_F$ and $S_H$ acting on the term variables $\{z_\star, z_\1, z_\0, r_1, \ldots, r_L\}$, which occur in terms in $\calQ_m$ and $\calR_m$.
 
 \begin{definition}[Substitutions $S_F$, $S_H$]\label{def:SF_SH}
 ~\\
@@ -510,7 +514,7 @@ then $M \in \calQ_m$.
 \end{lemma}
 
 \begin{proof}[Proof\;\coq{L1687}.]
-By induction on the size of $M$ and exhaustive case analysis of the normal form.
+Induction on the size of $M$ and case analysis of the normal form.
 \end{proof}
 
 %(* x_star N (\x_p.M) *)
@@ -533,7 +537,7 @@ then $M \in \calR_m$.
 \end{lemma}
 
 \begin{proof}[Proof\;\coq{L1825}.]
-By induction on the size of $M$ and exhaustive case analysis of the normal form, using Lemma~\ref{lem:ring2}.
+Induction on the size of $M$, case analysis of the normal form, and Lemma~\ref{lem:ring2}.
 \end{proof}
 
 As a consequence of the above Lemma~\ref{lem:ring1}, the following Theorem~\ref{thm:shape} presents $\beta$-equivalence constraints which suffice to restrict the shape of terms under consideration.
@@ -548,33 +552,34 @@ As a consequence of the above Lemma~\ref{lem:ring1}, the following Theorem~\ref{
 %  exists N, M = lams (length rules + 4) N /\ ring1 1 N.
   
 If a term $M$ is in normal form such that\\$\emptyset \vdash M : \Gamma_1(r_1) \to \cdots \to \Gamma_1(r_L) \to \Gamma_1(z_\0) \to \Gamma_1(z_\1) \to \Gamma_1(z_\star) \to \Gamma_1(p_1) \to \kappa$,\\
-$\begin{array}{ll}
-M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u,\\
-M\,H_R \ldots H_R\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$},
-\end{array}$\\
+$M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I =_\beta u$, and
+$M\,H_R \ldots H_R\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet =_\beta \pi_{\$}$,\\
 then $M = \lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.N$ for some term $N$ such that $N \in \calR_1$.
 \end{theorem}
 
 \begin{proof}[Proof\;\coq{L1932}.]
-By induction on the size of $M$ and exhaustive case analysis of the normal form, using Lemma~\ref{lem:ring1}.
+Induction on the size of $M$, case analysis of the normal form, and Lemma~\ref{lem:ring1}.
 \end{proof}
+
+\newpage
 
 \begin{example}\label{xmp:H}
 Assume $\frakR = \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$ from Example~\ref{xmp:ssts}.
 Let $N := r_1\,p_2\,(r_2\,p_1\,(r_3\,p_3\,z_\1))$ and
 $M := z_\star\,p_1\,(\lambda p_2.z_\star\,p_2\,(\lambda p_3.z_\0\,p_3\,N))$.
-The intended meaning of $M$ is that an initial word of length $2$ is expanded twice (using $z_\star$) to a word of length $4$ and initialized to $\0$s (using $z_\0$).
-The introduced variables $p_2$ and $p_3$ are used to address positions in the longer word.
-The intended meaning of $N$ is that the first rule (using $r_1$) is applied at position $2$ (using $p_2$), followed by the second rule at position $1$ and third rule at position $3$ accordingly.
-The resulting word contains only $\1$s (indicated by $z_\1$).
-Overall, this corresponds to $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$.
-
 We have $N \in \calQ_3$ and $M \in \calR_1$.
-In congruence with Theorem~\ref{thm:shape} the following $\beta$-equivalences hold:\\
+In congruence with Theorem~\ref{thm:shape} we have:\\
 $\begin{array}{ll}
 (\lambda r_1 r_2 r_3.\lambda z_\0 z_\1 z_\star p_1.M)\,I\,I\,I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u\\
 (\lambda r_1 r_2 r_3.\lambda z_\0 z_\1 z_\star p_1.M)\,H_R\,H_R\,H_R\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$}
 \end{array}$
+
+While Theorem~\ref{thm:shape} only establishes \enquote{well-formedness}, the term $M$ has an intended meaning.
+Specifically, an initial word of length $2$ is expanded twice (using $z_\star$) to a word of length $4$ and initialized to $\0$s (using $z_\0$).
+The introduced variables $p_2$ and $p_3$ are used to address positions in the longer word.
+The intended meaning of $N$ is that the first rule (using $r_1$) is applied at position $2$ (using $p_2$), followed by the second rule at position $1$ and third rule at position $3$ accordingly.
+The resulting word contains only $\1$s (indicated by $z_\1$).
+Overall, this corresponds to $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$.
 
 \end{example}
 
@@ -583,9 +588,10 @@ Having only \enquote{well-formed} terms to consider (cf. Example~\ref{xmp:ad-hoc
 \subsection*{Semantic Constrains}
 
 We formulate typed terms (Definition~\ref{def:G}) and $\beta$-equivalence constraints characterizing word expansion (Lemma~\ref{lem:R_ssts_sem}) and rewriting (Lemma~\ref{lem:Q_ssts_sem}).
-The presented terms are functional programs which realize the intended meaning (Example~\ref{xmp:H}) of the \enquote{well-formed} terms in $\calQ_m$ and $\calR_m$.
+The presented terms are programs which realize the intended meaning (Example~\ref{xmp:H}) of \enquote{well-formed} terms in $\calQ_m$ and $\calR_m$.
+Specifically, $G_\star$ realizes word expansion, $G_\0$ realizes initialization with $\0$s, $G_{ab \Rightarrow cd}$ realizes rule application, and $G_j^i$ addresses position $i$ for rule application at position $j$.
 
-\begin{definition}[Typed Terms $G_\star$, $G_\0$, $G_{ab \to cd}$, $G_i^j$]
+\begin{definition}[Typed Terms $G_\star$, $G_\0$, $G_{ab \Rightarrow cd}$, $G_i^j$]
 \label{def:G}
 \begin{align*}
 G_\star := &\lambda h.\lambda g.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\case{h\,\pi_\top}{s_\bot\\
@@ -596,7 +602,7 @@ G_\0 := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\to
 &\quad\mid \bullet \mapsto \caseelse{x}{\0 \mapsto s_\0 \mid \1 \mapsto s_\$}{s_\bot}\\
 &\quad\mid\0 \mapsto \caseelse{x}{\0 \mapsto s_\1}{s_\bot}\\
 &\quad\mid\1 \mapsto \caseelse{x}{\0 \mapsto s_\0 }{s_\bot}}\\
-G_{ab \to cd} := &\lambda h.\lambda x.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\case{h\,\pi_\top}{s_\bot\\
+G_{ab \Rightarrow cd} := &\lambda h.\lambda x.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\case{h\,\pi_\top}{s_\bot\\
 &\quad\mid\bullet \mapsto x\,s_\0\,s_\1\, \ldots s_\K\, s_\$\, s_\bullet\, s_\top\, s_\bot\\
 &\quad\mid\0 \mapsto \caseelse{x}{d \mapsto s_b}{s_\bot}\\
 &\quad\mid\1 \mapsto \caseelse{x}{c \mapsto s_a}{s_\bot}}\\
@@ -620,6 +626,20 @@ S_G(z_\0) := G_\0 \qquad
 S_G(r_j) := G_{R_j} \text{ for } j \in {1, \ldots L}\]
 \end{definition}
 
+The following Example~\ref{xmp:rule} illustrates application of a term $G_{ab \Rightarrow cd}$.
+
+\begin{example}\label{xmp:rule}
+Consider the rule $bc \Rightarrow b'c'$ applied at position $2$ in order to rewrite the word $abcd$ to $ab'c'd$. Accordingly, we have:
+\begin{description}
+\item[Position $1$:] $G_{bc \Rightarrow b'c'}\,G_2^1\,\pi_a =_\beta \pi_a$
+\item[Position $2$:] $G_{bc \Rightarrow b'c'}\,G_2^2\,\pi_{b'} =_\beta \pi_b$
+\item[Position $3$:] $G_{bc \Rightarrow b'c'}\,G_2^3\,\pi_{c'} =_\beta \pi_c$
+\item[Position $4$:] $G_{bc \Rightarrow b'c'}\,G_2^4\,\pi_d =_\beta \pi_d$
+\end{description}
+\end{example}
+
+The above observation is generalized for terms in $\calQ_m$ in the following Lemma~\ref{lem:Q_ssts_sem}.
+
 %  m > 0 ->
 %  length v = S m ->
 %  ring2 m M ->
@@ -629,32 +649,34 @@ S_G(r_j) := G_{R_j} \text{ for } j \in {1, \ldots L}\]
 %  SSTS.multi_step rules v (repeat 1 (S m)).
 
 \begin{lemma}\label{lem:Q_ssts_sem}
-For $m > 0$ let $a_1, \ldots, a_{m + 1} \in \{\0, \1, \ldots, \K\}$. If $M \in \calQ_m$ such that $\Gamma_m \vdash M : \kappa$,\\
+For $m > 0$ let $a_1, \ldots, a_{m + 1} \in \{\0, \1, \ldots, \K\}$, and $M \in \calQ_m$. If $\Gamma_m \vdash M : \kappa$,\\
 $S_G(M)[p_1 := G_1^0, \ldots, p_m := G_m^0] =_\beta \pi_\1$, and
-$S_G(M)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_{a_i}$ for $i \in \{1, \ldots, m+1\}$,\\
+$S_G(M)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_{a_i}$ for $i \in \{1, \ldots, m+1\}$,
 then $a_1 \ldots a_{m + 1} \Rightarrow_\frakR^* \1^{m+1}$.
 \end{lemma}
 
 \begin{proof}[Proof\;\coq{L2106}.]
-By induction on the size of $M$ and exhaustive case analysis using Definition~\ref{def:ring}.
+Induction on the size of $M$ and case analysis using Definition~\ref{def:ring}.
 \end{proof}
 
-The following Example~\ref{xmp:G_Q} builds upon the previous Example~\ref{xmp:H} and illustrates the intended meaning (rewriting $\0$s to $\1$s) of a \enquote{well-formed} example term in $\calQ_3$ under the substitution $S_G$.
+The following Example~\ref{xmp:G_Q} builds upon the previous Example~\ref{xmp:H} and illustrates the intended meaning (rewriting $\0$s to $\1$s) of a \enquote{well-formed} example term in $\calQ_3$. %under the substitution $S_G$.
 
 \begin{example}\label{xmp:G_Q}
 Assume $\frakR = \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$, and consider the term $N = r_1\,p_2\,(r_2\,p_1\,(r_3\,p_3\,z_\1))$ from Example~\ref{xmp:H}.
 Replacing $G_j^i$ accordingly for $i \in \{0, \ldots, 5\}$ and $j \in \{1, 2, 3\}$, we have the following $\beta$-equivalences $(0)$ -- $(4)$.
-\begin{align*}
-(0) \quad &S_G(N)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\1 \\
-(1) \quad &S_G(N)[p_1 := \delta_\1, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\0\\
-(2) \quad &S_G(N)[p_1 := \delta_\0, p_2 := \delta_\1, p_3 := \delta_\bullet] =_\beta \pi_\0\\
-(3) \quad &S_G(N)[p_1 := \delta_\bullet, p_2 := \delta_\0, p_3 := \delta_\1] =_\beta \pi_\0\\
-(4) \quad &S_G(N)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\0] =_\beta \pi_\0
-\end{align*}
+$\begin{array}{lll}
+(0) &\quad &S_G(N)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\1 \\
+(1) &\quad &S_G(N)[p_1 := \delta_\1, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\0\\
+(2) &\quad &S_G(N)[p_1 := \delta_\0, p_2 := \delta_\1, p_3 := \delta_\bullet] =_\beta \pi_\0\\
+(3) &\quad &S_G(N)[p_1 := \delta_\bullet, p_2 := \delta_\0, p_3 := \delta_\1] =_\beta \pi_\0\\
+(4) &\quad &S_G(N)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\0] =_\beta \pi_\0
+\end{array}$
 
-In accordance with Lemma~\ref{lem:Q_ssts_sem} we have that $\0^4 \Rightarrow_\frakR^* \1^4 $.
-Equivalences $(1)$ -- $(4)$ witness the particular rewriting steps at positions $1$ -- $4$ (cf.~Example~\ref{xmp:H}).
+In accordance with Lemma~\ref{lem:Q_ssts_sem}, we have that $\0^4 \Rightarrow_\frakR^* \1^4 $.
+Equivalences $(1)$ -- $(4)$ witness the particular rewriting steps at positions $1$ -- $4$ (cf.~Example~\ref{xmp:H} and Example~\ref{xmp:rule}).
 \end{example}
+
+Complementarily to word rewriting, the following Lemma~\ref{lem:R_ssts_sem} characterizes word expansion and initialization with $\0$s.
 
 %  ring1 m N ->
 %  stlc (Gamma_A m) N A ->
@@ -678,17 +700,24 @@ $S_G(N)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_\0$ for $i \in \{1, \ldo
 \end{lemma}
 
 \begin{proof}[Proof\;\coq{L2017}.]
-Considering the general case $M \in \calR_{m'}$, by induction on the size of $M$ and exhaustive case analysis using Definition~\ref{def:ring}.
+Considering the general case $M \in \calR_{m'}$ for $m' > 0$, induction on the size of $M$ and case analysis using Definition~\ref{def:ring}.
 \end{proof}
 
-The following Example~\ref{xmp:G_R} complements the previous Example~\ref{xmp:G_Q} and illustrates the intended meaning (word expansion and initialization) of a \enquote{well-formed} example term in $\calR_1$ under the substitution $S_G$.
+The following Example~\ref{xmp:G_R} complements the previous Example~\ref{xmp:G_Q} and illustrates the intended meaning (word expansion and initialization with $\0$s) of a \enquote{well-formed} term in $\calR_1$.
 
 \begin{example}\label{xmp:G_R}
 Assume $\frakR = \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$, and consider the terms
 $M_1 := z_\star\,p_1\,(\lambda p_2.M_2)$, $M_2 := z_\star\,p_2\,(\lambda p_3.M_3)$,
 $M_3 := z_\0\,p_3\,N$, and $N := r_1\,p_2\,(r_2\,p_1\,(r_3\,p_3\,z_\1))$ from Example~\ref{xmp:G_Q}.
-We have $M_i \in \calR_i$ for $i \in \{1,2,3\}$, and the following $\beta$-equivalences hold, illustrating word expansion and initialization:
-
+Proceeding bottom up, we have $M_3 \in \calR_3$ and the following $\beta$-equivalences hold:\\
+$\begin{array}{l}
+S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\$\\
+S_G(M_3)[p_1 := \delta_\1, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\0\\
+S_G(M_3)[p_1 := \delta_\0, p_2 := \delta_\1, p_3 := \delta_\bullet] =_\beta \pi_\0\\
+S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\0, p_3 := \delta_\1] =_\beta \pi_\0\\
+S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\0] =_\beta \pi_\1
+\end{array}$\\
+Additionally, $M_2 \in \calR_2$, $M_1 \in \calR_1$, and the following $\beta$-equivalences hold:\\
 $\begin{array}{l}
 S_G(M_1)[p_1 := \delta_\bullet] =_\beta \pi_\$\\
 S_G(M_1)[p_1 := \delta_\1] =_\beta \pi_\0\\
@@ -702,22 +731,14 @@ S_G(M_2)[p_1 := \delta_\0, p_2 := \delta_\1] =_\beta \pi_\0\\
 S_G(M_2)[p_1 := \delta_\bullet, p_2 := \delta_\0] =_\beta \pi_\1
 \end{array}$
 
-$\begin{array}{l}
-S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\$\\
-S_G(M_3)[p_1 := \delta_\1, p_2 := \delta_\bullet, p_3 := \delta_\bullet] =_\beta \pi_\0\\
-S_G(M_3)[p_1 := \delta_\0, p_2 := \delta_\1, p_3 := \delta_\bullet] =_\beta \pi_\0\\
-S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\0, p_3 := \delta_\1] =_\beta \pi_\0\\
-S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\0] =_\beta \pi_\1
-\end{array}$
-
-In combination with the previous Example~\ref{xmp:G_Q}, the term $M_1 \in \calR_1$ witnesses word expansion up to length $4$, followed by initialization with $\0$s, and rewriting to $\1$s via rule application.
+In combination with the previous Example~\ref{xmp:G_Q}, the term $M_1 \in \calR_1$ represents word expansion up to length $4$, followed by initialization with $\0$s, and rewriting to $\1$s.
 \end{example}
 
 Next, we combine syntactic and semantic constraints in the following key Lemma~\ref{lem:ssts_to_constr}.
 
 \begin{lemma}\label{lem:ssts_to_constr}
 There exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ iff
-there exists a term $M$ is in normal form, such that the following conditions hold,\\
+there exists a term $M$ in normal form, such that the following conditions hold:\\
 $\emptyset \vdash M : \Gamma_1(r_1) \to \cdots \to \Gamma_1(r_L) \to \Gamma_1(z_\0) \to \Gamma_1(z_\1) \to \Gamma_1(z_\star) \to \Gamma_1(p_1) \to \kappa$,\\
 $\begin{array}{ll}
 M\,I \ldots I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u,\\
@@ -773,21 +794,21 @@ By reduction from the undecidable Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$
 \end{proof}
 
 We conclude the technical presentation with the following observation:
-the presented approach reducing Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to Higher-order $\beta$-matching 
+the presented approach reducing Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to Higher-order $\beta$-matching is easily transferred to intersection type inhabitation and $\lambda$-definability.
 
+The following Remark~\ref{rem:G} shows the structure of the underlying finite model with respect to the present construction.
 
-TODO conclude with uniform proposition for three problems hom, inhabitation and definability
-\begin{remark}\label{rem:H}
-Terms in the above Definition~\ref{def:H} realize certain finite functions as follows.
-\begin{itemize}
-\item $H_\star$ realizes a member of the family $\left(\omega \mapsto ((\top \mapsto \bullet) \mapsto \$) \mapsto \$ \right)$.
-\item $H_\0$ realizes a member of the family $(\omega \mapsto (\1 \mapsto \$))$.
-\item $H_R$ realizes a member of the family $((\top \mapsto \bullet) \mapsto (\1 \mapsto \1))$.
-\end{itemize}
-\end{remark}
+%\begin{remark}\label{rem:H}
+%Terms in the above Definition~\ref{def:H} realize certain finite functions as follows.
+%\begin{itemize}
+%\item $H_\star$ realizes a member of the family $\left(\omega \mapsto ((\top \mapsto \bullet) \mapsto \$) \mapsto \$ \right)$.
+%\item $H_\0$ realizes a member of the family $(\omega \mapsto (\1 \mapsto \$))$.
+%\item $H_R$ realizes a member of the family $((\top \mapsto \bullet) \mapsto (\1 \mapsto \1))$.
+%\end{itemize}
+%\end{remark}
 
 \begin{remark}\label{rem:G}
-Terms in the above Definition~\ref{def:G} realize certain finite functions as follows.
+Terms in Definition~\ref{def:G} realize certain finite functions as follows.
 \begin{itemize}
 \item $G_\star$ realizes a member of the family ${\small\left(\begin{array}{l}
 (\top \mapsto \bullet) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)\\
@@ -804,18 +825,31 @@ Terms in the above Definition~\ref{def:G} realize certain finite functions as fo
 (\top \mapsto \0) \mapsto (\0 \mapsto \1)\\
 (\top \mapsto \1) \mapsto (\0 \mapsto \0)
 \end{array}\right)}$.
-\item $G_{ab \to cd}$ realizes a member of the family ${\small\left(\begin{array}{l}
+\item $G_{ab \Rightarrow cd}$ realizes a member of the family ${\small\left(\begin{array}{l}
 (\top \mapsto \1) \mapsto (c \mapsto a)\\
 (\top \mapsto \0) \mapsto (d \mapsto b)
 \end{array}\right)}$ such that\\
-$G_{ab \to cd} \, \delta_\bullet \, \pi_i =_\beta \pi_i$ for $i \in \{1, \ldots, K\}$.
+$G_{ab \Rightarrow cd} \, \delta_\bullet \, \pi_i =_\beta \pi_i$ for $i \in \calA$.
 \end{itemize}
 \end{remark}
 
-\begin{remark}
-Point out that the approach is uniform for:
-given ssts present as hom, present as finit function table, present as intersection type.
-\end{remark}
+The above families finite function specifications are immediately represented by intersection types.
+Let us state in the following Proposition~\ref{prop:uniform} the relationship between simple semi-Thue system rewriting, Higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
+
+\begin{proposition}\label{prop:uniform}
+Given a simple semi-Thue system $\frakR$, one can construct simply typed terms $\emptyset \vdash F_\frakR : \sigma_\frakR \to \tau_\frakR$ and $\emptyset \vdash N_\frakR : \tau_\frakR$, a finite function $\calF_\frakR$, and an intersection type $T_\frakR$ such that the following statements are equivalent:
+\begin{enumerate}
+\item There exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$.
+\item The instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of Higher-order $\beta$-Matching is solvable.
+\item The finite function $\calF_\frakR$ is $\lambda$-definable.
+\item The intersection type $T_\frakR$ is inhabited.
+\end{enumerate}
+\end{proposition}
+
+Of course, $(1) \Rightarrow (3)$ can be concluded from undecidability of $\lambda$-definability~\cite{loader2001undecidability} and $(1) \Rightarrow (4)$ from undecidability of intersection type inhabitation~\cite{Urzyczyn09}.
+The presented approach shows $(1) \Rightarrow (2)$, and we make the following two observations.
+First, based on Remark~\ref{rem:G}, the approach is easily adapted to show $(1) \Rightarrow (3)$, such that the realizer is essentially a member of $\calR_1$.
+Second, referring to Remark~\ref{rem:R1}, the approach is easily adapted to show $(1) \Rightarrow (4)$, such that the inhabitant is essentially a member of $\calR_1$.
 
 \section{Mechanization}\label{sec:mech}
 TODO
