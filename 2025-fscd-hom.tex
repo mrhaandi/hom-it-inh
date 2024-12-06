@@ -67,6 +67,7 @@
 \usepackage{csquotes} %\enquote{} macro
 \usepackage{bussproofs}
 \usepackage{mathtools}
+\usepackage[dvipsnames]{xcolor}
 
 \theoremstyle{definition}
 \newtheorem{problem}[theorem]{Problem}
@@ -785,7 +786,7 @@ Given a simple semi-Thue system $\frakR = \{R_1, \ldots, R_L\}$ due to Lemma~\re
 \end{itemize}
 \end{proof}
 
-\begin{theorem}
+\begin{theorem}\label{thm:hom_undec}
 Higher-order $\beta$-Matching (Problem~\ref{prb:hom}) is undecidable.
 \end{theorem}
 
@@ -837,25 +838,94 @@ The above families finite function specifications are immediately represented by
 Let us state in the following Proposition~\ref{prop:uniform} the relationship between simple semi-Thue system rewriting, Higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
 
 \begin{proposition}\label{prop:uniform}
-Given a simple semi-Thue system $\frakR$, one can construct simply typed terms $\emptyset \vdash F_\frakR : \sigma_\frakR \to \tau_\frakR$ and $\emptyset \vdash N_\frakR : \tau_\frakR$, a finite function $\calF_\frakR$, and an intersection type $T_\frakR$ such that the following statements are equivalent:
+Given a simple semi-Thue system $\frakR$, one can construct simply typed terms $\emptyset \vdash F_\frakR : \sigma_\frakR \to \tau_\frakR$ and $\emptyset \vdash N_\frakR : \tau_\frakR$, an intersection type $T_\frakR$, and a finite function $\calF_\frakR$ such that the following statements are equivalent:
 \begin{enumerate}
 \item There exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$.
 \item The instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of Higher-order $\beta$-Matching is solvable.
-\item The finite function $\calF_\frakR$ is $\lambda$-definable.
 \item The intersection type $T_\frakR$ is inhabited.
+\item The finite function $\calF_\frakR$ is $\lambda$-definable.
 \end{enumerate}
 \end{proposition}
 
-Of course, $(1) \Rightarrow (3)$ can be concluded from undecidability of $\lambda$-definability~\cite{loader2001undecidability} and $(1) \Rightarrow (4)$ from undecidability of intersection type inhabitation~\cite{Urzyczyn09}.
+Of course, $(1) \Rightarrow (3)$ can be concluded from undecidability of intersection type inhabitation~\cite{Urzyczyn09} and $(1) \Rightarrow (4)$ from undecidability of $\lambda$-definability~\cite{loader2001undecidability}.
 The presented approach shows $(1) \Rightarrow (2)$, and we make the following two observations.
-First, based on Remark~\ref{rem:G}, the approach is easily adapted to show $(1) \Rightarrow (3)$, such that the realizer is essentially a member of $\calR_1$.
-Second, referring to Remark~\ref{rem:R1}, the approach is easily adapted to show $(1) \Rightarrow (4)$, such that the inhabitant is essentially a member of $\calR_1$.
+First, referring to Remark~\ref{rem:R1}, the approach is inspired by and easily adapted to show $(1) \Rightarrow (3)$, such that the inhabitant is essentially a member of $\calR_1$.
+Second, based on Remark~\ref{rem:G}, the approach can be adapted to show $(1) \Rightarrow (4)$, such that the realizer is essentially a member of $\calR_1$.
+This is supported by the known equivalence between (a fragment of) intersection type inhabitation and $\lambda$-definability~\cite{SalvatiMGB12}.
+
+\newpage
 
 \section{Mechanization}\label{sec:mech}
-TODO
+\lstset{
+comment=[l]{(*},
+basicstyle=\ttfamily\footnotesize,
+keywordstyle=\color{blue},
+morekeywords={Inductive,Type,Theorem,Definition,exists,fun},
+commentstyle=\color{OliveGreen},
+backgroundcolor=\color{yellow!5},
+framerule=0.4pt,
+frame=single,
+inputencoding=utf8,
+extendedchars=false,}
+
+This section provides a brief overview over the mechanization of undecidability of Higher-order $\beta$-Matching (Theorem~\ref{thm:hom_undec}) using the Coq proof assistant~\cite{Coq_2023}.
+The mechanization is axiom-free and spans approximately $4000$ lines of code, consisting of the following parts:
+\begin{itemize}
+\item \texttt{HOMatching.v} contains definitions of the simply typed $\lambda$-calculus~\coqextra{LambdaCalculus/HOMatching.v\#L31} and Higher-order $\beta$-matching~\coqextra{LambdaCalculus/HOMatching.v\#L37}.
+\item \texttt{Util/stlc\_facts.v} and \texttt{Util/term\_facts.v} contain basic properties of the simply typed $\lambda$-calculus, such as confluence of $\beta$-reduction~\coqextra{LambdaCalculus/Util/term\_facts.v\#L1056}, substitution lemmas~\coqextra{LambdaCalculus/Util/stlc\_facts.v\#L100}, and type preservation properties~\coqextra{LambdaCalculus/Util/stlc\_facts.v\#L116}.
+\item \texttt{Reductions/SSTS01\_to\_HOMbeta.v} contains the reduction from Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to Higher-order $\beta$-Matching~\coq{L2880}.
+\item \texttt{HOMatching\_undec.v} contains the undecidability result for Higher-order $\beta$-Matching~\coqextra{LambdaCalculus/HOMatching\_undec.v\#L16}.
+\end{itemize}
+
+The simple type system \texttt{stlc} is mechanized in \texttt{HOMatching.v}, borrowing the existing term definitions from the library~\coqextra{L/L.v\#L8}, for which variable binding is addressed via the unscoped de Bruijn approach~\cite{deBruijn72}.
+The proposition \texttt{stlc~Gamma~M~t} mechanizes that the term \texttt{M} is assigned the simple type~\texttt{t} in the simple type environment \texttt{Gamma}.
+\begin{lstlisting}[mathescape]
+Inductive ty : Type :=
+  | atom (* type variable *)
+  | arr (s t : ty). (* function type *)
+
+Inductive term : Type :=
+  | var (n : nat) : term (* term variable *)
+  | app (s : term) (t : term) : term (* application *)
+  | lam (s : term). (* abstraction *)
+
+Inductive stlc (Gamma : list ty) : term -> ty -> Prop :=
+  | stlc_var x t : nth_error Gamma x = Some t ->
+      stlc Gamma (var x) t (* variable rule *)
+  | stlc_app M N s t : stlc Gamma M (arr s t) -> stlc Gamma N s ->
+      stlc Gamma (app M N) t (* application rule *)
+  | stlc_lam M s t : stlc (cons s Gamma) M t ->
+      stlc Gamma (lam M) (arr s t). (* abstraction rule *)
+\end{lstlisting}
+
+Higher-order $\beta$-Matching is mechanized as the predicate \texttt{HOMbeta}: given terms \texttt{F} of type \texttt{arr s t} and \texttt{N} of type \texttt{t}, is there a simply typed term \texttt{M} of type \texttt{s} such that \texttt{app F M} is $\beta$-equivalent (reflexive, symmetric, transitive closure of \texttt{step}) to \texttt{N}?
+\begin{lstlisting}[mathescape]
+Definition HOMbeta : { '(s, t, F, N) : (ty * ty * term * term) 
+  | stlc nil F (arr s t) /\ stlc nil N t } -> Prop :=
+    fun '(exist _ (s, t, F, N) _) =>
+      exists (M : term), stlc nil M s /\
+        clos_refl_sym_trans term step (app F M) N.
+\end{lstlisting}
+
+The proposition \lstinline|undecidable HOMbeta|~\coqextra{LambdaCalculus/HOMatching\_undec.v\#L16} mechanizes the undecidability of the predicate \texttt{HOMbeta}, relying on the following library definition~\cite{CLUP20}.
+A predicate \texttt{p} is undecidable, if existence of a computable decider for \texttt{p} implies recursive co-enumerability of the (Turing machine) Halting Problem.
+\begin{lstlisting}[mathescape]
+Definition undecidable {X} (p : X -> Prop) :=
+  decidable p -> enumerable (complement SBTM_HALT).
+\end{lstlisting}
+Since the Halting Problem is recursively enumerable, decidability of \texttt{p} would imply decidability of the Halting Problem.
 
 \section{Conclusion}\label{sec:concl}
-TODO
+There are three interdependent aspects of the proof of \texttt{Theorem nitlc\_type\_inference} which highlight the utility of the Coq proof assistant.
+\begin{itemize}
+\item The definition of the -reduction (\Cref{def:redkp}) allows for an expansion lemma.
+\item The inductive hypothesis for the expansion lemma (cf.~\Cref{lem:redk-expansion-u}) is chosen carefully.
+\item The particular inductive proof involves extensive, nested case analyses for the chosen definition and inductive hypothesis.
+\end{itemize}
+In all three aspects the development of the proof was guided by the proof assistant:
+the technical details listed by the tool motivated the particular definition of the -reduction.
+In fact, the proof was developed via interaction with the mechanized statement 
+prior to being transcribed into a traditional written format.
 
 \section{Appendix}
 
