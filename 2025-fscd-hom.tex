@@ -38,7 +38,7 @@
 \relatedversion{} %optional, e.g. full version hosted on arXiv, HAL, or other respository/website
 %\relatedversiondetails[linktext={opt. text shown instead of the URL}, cite=DBLP:books/mk/GrayR93]{Classification (e.g. Full Version, Extended Version, Previous Version}{URL to related version} %linktext and cite are optional
 
-\supplementdetails[subcategory={Source Code},linktext={coq-library-undecidability}]{Software}{https://github.com/uds-psl/coq-library-undecidability/} %linktext, cite, and subcategory are optional
+\supplementdetails[subcategory={Source Code},linktext={github/uds-psl/coq-library-undecidability}]{Software}{https://github.com/uds-psl/coq-library-undecidability/} %linktext, cite, and subcategory are optional
 %\supplement{}%optional, e.g. related research data, source code, ... hosted on a repository like zenodo, figshare, GitHub, ...
 %\supplementdetails[linktext={opt. text shown instead of the URL}, cite=DBLP:books/mk/GrayR93, subcategory={Description, Subcategory}, swhid={Software Heritage Identifier}]{General Classification (e.g. Software, Dataset, Model, ...)}{URL to related version} %linktext, cite, and subcategory are optional
 
@@ -140,29 +140,63 @@ The presented undecidability proof is mechanized in the Coq proof assistant and 
 \end{abstract}
 
 \lstset{
+comment=[l]{(*},
 basicstyle=\ttfamily\footnotesize,
 keywordstyle=\color{blue},
-morekeywords={Inductive,Type,Theorem},}
+morekeywords={Inductive,Type,Theorem,Definition,exists,fun},
+commentstyle=\color{OliveGreen},
+backgroundcolor=\color{yellow!5},
+framerule=0.4pt,
+frame=single,
+inputencoding=utf8,
+extendedchars=false,}
 
-\section{Preliminaries}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
 
-\subsection*{Simply-typed $\lambda$-Calculus}
+\section{Introduction}
 
-\begin{definition}[$\lambda$-Terms]
+\begin{remark}
+Loaders proof introduces some additional machinery
+\begin{itemize}
+\item \emph{myopic} $\lambda\bot$-terms and \emph{myopic} order
+\item characterization of $1$-lifts and $7$-lifts by \emph{checker} $\lambda\bot$-terms
+\item characterization of finite models by $(7+1)$-lifted terms\qedhere
+\end{itemize}
+\end{remark}
+
+\subparagraph*{Paper organization} The present work is structured as follows: 
+\begin{description}
+\item[Section~\ref{sec:prelim}:] Preliminaries for the simply typed $\lambda$-calculus, Higher-order $\beta$-Matching, and simple semi-Thue systems (including the undecidable Problem $\0^+ \Rightarrow^*_\frakR \1^+$).
+\item[Section~\ref{sec:loader}:] Examples on constraints TODO.
+\item[Section~\ref{sec:undec}:] Reduction from Problem $\0^+ \Rightarrow^*_\frakR \1^+$ to Higher-order $\beta$-Matching.
+\item[Section~\ref{sec:mech}:] Overview over the mechanization in the Coq proof assistant.
+\item[Section~\ref{sec:concl}:] Concluding remarks.
+\end{description}
+
+\newpage
+
+\section{Preliminaries}\label{sec:prelim}
+In the present section we fix preliminaries and basic notation, following standard literature~\cite{Barendregt13book}.
+\paragraph*{Higher-order $\beta$-Matching in the Simply typed $\lambda$-Calculus}
+
+The syntax of untyped $\lambda$-terms is given in the following Definition~\ref{def:terms}.
+
+\begin{definition}[$\lambda$-Terms]\label{def:terms}
 \[
-\begin{array}{rcl}
-M, N &::= &x \mid M \, N \mid \lambda x.M
-\end{array}
+M, N ::= x \mid M \, N \mid \lambda x.M
 \]
 \end{definition}
+Substitution of the term variable $x$ in the term $M$ by the term $N$ is denoted $M[x := N]$.
 
-\begin{definition}[$\beta$-Reduction]~
-\begin{itemize}
-\item $\to_\beta$ is the contextual closure of $(\lambda x.M)\,N \to_\beta M[x := N]$
-\item $\twoheadrightarrow_\beta$ is the reflexive, transitive closure of $\to_\beta$
-\item $=_\beta$ is the reflexive, transitive, symmetric closure of $\to_\beta$
-\end{itemize}
+\begin{definition}[$\beta$-Reduction]
+The relation $\to_\beta$ on terms is the contextual closure of $(\lambda x.M)\,N \to_\beta M[x := N]$.
 \end{definition}
+The $\beta$-equivalence relation $=_\beta$ is the reflexive, transitive, symmetric closure of $\to_\beta$.
+
+In the simply typed $\lambda$-calculus we may assign to a term $M$ a simple type $\tau$ in type environment $\Gamma$, written $\Gamma \vdash M : \tau$.
+Similarly to prior work~\cite{Loader03}, one ground atom $\ga$ in the construction of simple types suffices for the negative result in the present work.
+Definition~\ref{def:stlc} contains the rules (Var), ($\to$I), and ($\to$E) of the simple type system.
 
 \begin{definition}[Simple Types with Ground Atom $\ga$]
 \[
@@ -180,19 +214,20 @@ M, N &::= &x \mid M \, N \mid \lambda x.M
 \]
 \end{definition}
 
-\begin{definition}[Simple Type System]~\\
+\begin{definition}[Simple Type System]\label{def:stlc}
+~\\
 \begin{tabular}{ccc}
-{%\RightLabel{\textnormal{(Var)}}
+{\RightLabel{\textnormal{(Var)}}
 \AxiomC{$(x : \sigma) \in \Gamma$}
 \UnaryInfC{$\Gamma \vdash x : \sigma$}
 \DisplayProof}
 &
-{%\RightLabel{\textnormal{($\to$I)}}
+{\RightLabel{\textnormal{($\to$I)}}
 \AxiomC{$\Gamma, x : \sigma \vdash M : \tau$}
 \UnaryInfC{$\Gamma \vdash \lambda x.M : \sigma \to \tau$}
 \DisplayProof}
 &
-{%\RightLabel{\textnormal{($\to$E)}}
+{\RightLabel{\textnormal{($\to$E)}}
 \AxiomC{$\Gamma \vdash M : \sigma \to \tau$}
 \AxiomC{$\Gamma \vdash N : \sigma$}
 \BinaryInfC{$\Gamma \vdash M\,N : \tau$}
@@ -200,39 +235,70 @@ M, N &::= &x \mid M \, N \mid \lambda x.M
 \end{tabular}
 \end{definition}
 
-\subsection*{Higher-order $\beta$-Matching}
+Higher-order $\beta$-Matching is the following typed unification problem, for which only one side is instantiated. 
 
 \begin{problem}[Higher-order $\beta$-Matching (${F}\,\mathsf{X} = N$)]\label{prb:hom}
 Given terms $F, N$ and simple types $\sigma, \tau$ such that $\emptyset \vdash F : \sigma \to \tau$ and $\emptyset \vdash N : \tau$, is there a term $M$ such that $\emptyset \vdash M : \sigma$ and $F\,M =_\beta N$?
 \end{problem}
 
+Undecidability of Higher-order $\beta$-Matching is shown by Loader~\cite{Loader03} using a reduction from a variant of $\lambda$-definability.
+
 \begin{theorem}[{\cite[Theorem~5.5]{Loader03}}]
-Higher-order $\beta$-matching is undecidable.
+Higher-order $\beta$-Matching is undecidable.
 \end{theorem}
 
-\begin{proof}[Proof Outline]
-Many-one reduction from an ad-hoc variant of $\lambda$-definability.
-\end{proof}
+\begin{example}
+
+\end{example}
+
+
+TODO example
+
+
+
+
+\paragraph*{Simple Semi-Thue Systems}
+
+A simple semi-Thue system (Definition~\ref{def:ssts}) is a rewriting system of restricted shape, introduced by Urzyczyn~\cite{Urzyczyn09} in order to show undecidability of intersection type inhabitation.
+
+\begin{definition}[Simple Semi-Thue System]\label{def:ssts}
+A semi-Thue system $\frakR$ over an alphabet $\calA$ is \emph{simple}, if each rule has the form $ab \Rightarrow cd$ for $a,b,c,d \in \calA$.
+\end{definition}
+
+\begin{example}\label{xmp:ssts}
+Let $\frakR  := \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1,\2\}$.
+We have $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$. Additionally, we have $\0^n \;{\not\Rightarrow}_\frakR^*\; \1^n$ for $n \in \{1, 2, 3\}$.
+\end{example}
+
+For simple semi-Thue systems it is undecidable whether some sequence TODO
+
+\begin{problem}[$\0^+ \Rightarrow^*_\frakR \1^+$]\label{prb:ssts01}
+Given a simple semi-Thue system $\frakR$, does $\0^n \Rightarrow^*_\frakR \1^n$ hold for some $n > 0$?
+\end{problem}
+
+
 
 \begin{remark}
-Artifacts
+Problem~\ref{prb:ssts01} used as a starting point in~\cite{DudenhefnerR19} by Dudenhefner.
+\end{remark}
+
+\begin{theorem}[{\cite[Lemma~3.3]{DudenhefnerR19}}]\label{thm:ssts_undec}
+Problem $\0^+ \Rightarrow^*_\calR \1^+$ is undecidable.
+\end{theorem}
+
+\begin{remark}~
 \begin{itemize}
-\item \emph{myopic} $\lambda\bot$-terms and \emph{myopic} order
-\item characterization of $1$-lifts and $7$-lifts by \emph{checker} $\lambda\bot$-terms
-\item characterization of finite models by $(7+1)$-lifted terms\qedhere
+\item similar to \cite[Lemma~2]{Urzyczyn09}
+\item mechanized in Coq~\cite[\texttt{SSTS01}]{CLUP20}
 \end{itemize}
 \end{remark}
 
-\begin{definition}[Matching Constraint]
-$\mathsf{X}\,F_1 \ldots F_n = N$\\
-TODO: is this needed?
-\end{definition}
+\newpage
 
-\begin{lemma}
-Given matching constraints $\mathsf{X}\,F_1^1 \ldots F_n^1 = N^1, \ldots, \mathsf{X}\,F_1^m \ldots F_n^m = N^m$, the matching problem instance $F\,\mathsf{X} = N$ is solvable iff 
-\end{lemma}
+\section{Shape Constraint and Loader}\label{sec:loader}
+Before we present an alternative approach to undecidability of higher-order $\beta$-matching, let us first get familiar with tools at our disposal.
 
-\subsection*{Finite Models}
+\paragraph*{Finite Models}
 
 \begin{definition}[Finite Model]
 Fix a finite set $\calM_\ga$, $\calM_{\sigma \to \tau}$ is the finite set of all functions from $\calM_\sigma$ to $\calM_\tau$.
@@ -272,49 +338,6 @@ As a side note, there is a $\lambda$-definable member of $\left({\small\left(\be
 2 \mapsto 3
 \end{array}\right)} \mapsto (1 \mapsto 3)\right)$ realized by the $\lambda$-term $\lambda f.\lambda x.f\,(f\,x)$.
 \end{example}
-
-\subsection*{Simple Semi-Thue Systems}
-
-\begin{definition}[Simple Semi-Thue System]
-A semi-Thue system $\calR$ over an alphabet $\calA$ is \emph{simple}, if each rule has the form $ab \Rightarrow cd$ for $a,b,c,d \in \calA$.
-\end{definition}
-
-\begin{remark}
-Simple Semi-Thue System inspired by \enquote{\emph{Inhabitation of Low-Rank Intersection Types}}~[\cite{Urzyczyn09}]
-and \enquote{\emph{Loader and Urzyczyn Are Logically Related}}~[\cite{SalvatiMGB12}].
-\end{remark}
-
-
-\begin{example}\label{xmp:ssts}
-Let $\frakR  := \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1,\2\}$.
-We have $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$. Additionally, we have $\0^n \;{\not\Rightarrow}_\frakR^*\; \1^n$ for $n \in \{1, 2, 3\}$.
-\end{example}
-
-\begin{problem}[$\0^+ \Rightarrow^*_\calR \1^+$]\label{prb:ssts01}
-Given a simple semi-Thue system $\frakR$, does $\0^n \Rightarrow^*_\frakR \1^n$ hold for some $n > 0$?
-\end{problem}
-
-\begin{remark}
-Problem~\ref{prb:ssts01} used as a starting point in~\cite{DudenhefnerR19} by Dudenhefner.
-\end{remark}
-
-\begin{theorem}[{\cite[Lemma~3.3]{DudenhefnerR19}}]\label{thm:ssts_undec}
-Problem $\0^+ \Rightarrow^*_\calR \1^+$ is undecidable.
-\end{theorem}
-
-\begin{remark}~
-\begin{itemize}
-\item similar to \cite[Lemma~2]{Urzyczyn09}
-\item mechanized in Coq~\cite[\texttt{SSTS01}]{CLUP20}
-\end{itemize}
-\end{remark}
-
-\newpage
-
-\section{Shape Constraint and Loader}
-Before we present an alternative approach to undecidability of higher-order $\beta$-matching, let us first get familiar with tools at our disposal.
-
-
 
 Two examples.
 First, in which there is only a semantic constraint and where the solution is wrong and arbitrary syntax.
@@ -389,10 +412,7 @@ This leads to a simpler proof and a connection between undecidability of HOmacht
 
 \newpage
 
-\setlength{\abovedisplayskip}{3pt}
-\setlength{\belowdisplayskip}{3pt}
-
-\section{Undecidability of Higher-order $\beta$-Matching}
+\section{Undecidability of Higher-order $\beta$-Matching}\label{sec:undec}
 In this section we develop our main result (Theorem~\ref{thm:ssts_to_hom}): a reduction from the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to Higher-order $\beta$-Matching.
 
 For the remainder of the section we fix the simple semi-Thue system $\frakR := \{R_1, \ldots, R_L\}$ with $L > 0$ rules over the finite alphabet $\{\0, \1, \2, \ldots, \mathbf{K}\}$.
@@ -856,17 +876,6 @@ This is supported by the known equivalence between (a fragment of) intersection 
 \newpage
 
 \section{Mechanization}\label{sec:mech}
-\lstset{
-comment=[l]{(*},
-basicstyle=\ttfamily\footnotesize,
-keywordstyle=\color{blue},
-morekeywords={Inductive,Type,Theorem,Definition,exists,fun},
-commentstyle=\color{OliveGreen},
-backgroundcolor=\color{yellow!5},
-framerule=0.4pt,
-frame=single,
-inputencoding=utf8,
-extendedchars=false,}
 
 This section provides a brief overview over the mechanization of undecidability of Higher-order $\beta$-Matching (Theorem~\ref{thm:hom_undec}) using the Coq proof assistant~\cite{Coq_2023}.
 The mechanization is axiom-free and spans approximately $4000$ lines of code, consisting of the following parts:
