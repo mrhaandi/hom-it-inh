@@ -178,18 +178,18 @@ Loaders proof introduces some additional machinery
 
 \section{Preliminaries}\label{sec:prelim}
 In the present section we fix preliminaries and basic notation, following standard literature~\cite{Barendregt13book}.
-\paragraph*{Higher-order $\beta$-Matching in the Simply typed $\lambda$-Calculus}
+\paragraph*{Higher-order $\beta$-Matching in the Simply Typed $\lambda$-Calculus}
 
 The syntax of untyped $\lambda$-terms is given in the following Definition~\ref{def:terms}.
 
-\begin{definition}[$\lambda$-Terms]\label{def:terms}
+\begin{definition}[$\lambda$-Terms\;\coqextra{L/L.v\#L8}]\label{def:terms}
 \[
 M, N ::= x \mid M \, N \mid \lambda x.M
 \]
 \end{definition}
 Substitution of the term variable $x$ in the term $M$ by the term $N$ is denoted $M[x := N]$.
 
-\begin{definition}[$\beta$-Reduction]
+\begin{definition}[$\beta$-Reduction\;\coqextra{LambdaCalculus/Lambda.v\#L53}]
 The relation $\to_\beta$ on terms is the contextual closure of $(\lambda x.M)\,N \to_\beta M[x := N]$.
 \end{definition}
 The $\beta$-equivalence relation $=_\beta$ is the reflexive, transitive, symmetric closure of $\to_\beta$.
@@ -198,24 +198,20 @@ In the simply typed $\lambda$-calculus we may assign to a term $M$ a simple type
 Similarly to prior work~\cite{Loader03}, one ground atom $\ga$ in the construction of simple types suffices for the negative result in the present work.
 Definition~\ref{def:stlc} contains the rules (Var), ($\to$I), and ($\to$E) of the simple type system.
 
-\begin{definition}[Simple Types with Ground Atom $\ga$]
+\begin{definition}[Simple Types with Ground Atom $\ga$\;\coqextra{LambdaCalculus/HOMatching.v\#L23}]
 \[
-\begin{array}{rcl}
-\sigma, \tau &::= &\ga \mid \sigma \to \tau
-\end{array}
+\sigma, \tau ::= \ga \mid \sigma \to \tau
 \]
 \end{definition}
 
 \begin{definition}[Type Environments]
 \[
-\begin{array}{rcl}
-\Gamma &::= &\{x_1 : \sigma_1, \ldots, x_n : \sigma_n\}
-\end{array}
+\Gamma ::= \{x_1 : \sigma_1, \ldots, x_n : \sigma_n\}
 \]
 \end{definition}
 
-\begin{definition}[Simple Type System]\label{def:stlc}
-~\\
+\begin{definition}[Simple Type System\;\coqextra{LambdaCalculus/HOMatching.v\#L31}]\label{def:stlc}
+~\\[4pt]
 \begin{tabular}{ccc}
 {\RightLabel{\textnormal{(Var)}}
 \AxiomC{$(x : \sigma) \in \Gamma$}
@@ -235,10 +231,10 @@ Definition~\ref{def:stlc} contains the rules (Var), ($\to$I), and ($\to$E) of th
 \end{tabular}
 \end{definition}
 
-Higher-order $\beta$-Matching is the following typed unification problem, for which only one side is instantiated. 
+Higher-order $\beta$-Matching is the following typed unification problem, for which only one side is subject to instantiation. 
 
-\begin{problem}[Higher-order $\beta$-Matching (${F}\,\mathsf{X} = N$)]\label{prb:hom}
-Given terms $F, N$ and simple types $\sigma, \tau$ such that $\emptyset \vdash F : \sigma \to \tau$ and $\emptyset \vdash N : \tau$, is there a term $M$ such that $\emptyset \vdash M : \sigma$ and $F\,M =_\beta N$?
+\begin{problem}[Higher-order $\beta$-Matching (${F}\,\mathsf{X} = N$)\;\coqextra{LambdaCalculus/HOMatching.v\#L37}]\label{prb:hom}
+Given terms $F, N$ and simple types~$\sigma, \tau$ such that $\emptyset \vdash F : \sigma \to \tau$ and $\emptyset \vdash N : \tau$, is there a term $M$ such that $\emptyset \vdash M : \sigma$ and $F\,M =_\beta N$?
 \end{problem}
 
 Undecidability of Higher-order $\beta$-Matching is shown by Loader~\cite{Loader03} using a reduction from a variant of $\lambda$-definability.
@@ -247,50 +243,49 @@ Undecidability of Higher-order $\beta$-Matching is shown by Loader~\cite{Loader0
 Higher-order $\beta$-Matching is undecidable.
 \end{theorem}
 
-\begin{example}
+The following Example~\ref{xmp:hom} illustrates a positive instance of Higher-order $\beta$-Matching.
 
+\begin{example}\label{xmp:hom}
+Consider the terms $F := \lambda x.\lambda y.x\,y\,(\lambda z.z)$ and $N := \lambda y.y$.\\
+We have $\emptyset \vdash F : (\ga \to (\ga \to \ga) \to \ga) \to (\ga \to \ga)$ and $\emptyset \vdash N : \ga \to \ga$.
+
+The instance ${F}\,\mathsf{X} = N$ of Higher-order $\beta$-Matching is solvable, including the solution $M := \lambda u.\lambda f.f\,u$.
+In particular, we have the following two properties:
+\begin{itemize}
+\item $\emptyset \vdash M : \ga \to (\ga \to \ga) \to \ga$
+\item $F\,M =_\beta \lambda y.(\lambda u.\lambda f.f\,u)\,y\,(\lambda z.z) =_\beta \lambda y.(\lambda z.z)\,y =_\beta N$
+\end{itemize}
 \end{example}
-
-
-TODO example
-
-
 
 
 \paragraph*{Simple Semi-Thue Systems}
 
 A simple semi-Thue system (Definition~\ref{def:ssts}) is a rewriting system of restricted shape, introduced by Urzyczyn~\cite{Urzyczyn09} in order to show undecidability of intersection type inhabitation.
 
-\begin{definition}[Simple Semi-Thue System]\label{def:ssts}
+\begin{definition}[Simple Semi-Thue System\;\coqextra{StringRewriting/SSTS.v\#L23}]\label{def:ssts}
 A semi-Thue system $\frakR$ over an alphabet $\calA$ is \emph{simple}, if each rule has the form $ab \Rightarrow cd$ for $a,b,c,d \in \calA$.
 \end{definition}
 
-\begin{example}\label{xmp:ssts}
-Let $\frakR  := \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1,\2\}$.
-We have $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$. Additionally, we have $\0^n \;{\not\Rightarrow}_\frakR^*\; \1^n$ for $n \in \{1, 2, 3\}$.
-\end{example}
+For arbitrary simple semi-Thue systems it is undecidable whether some non-empty sequence of $\0$s can be transformed into a sequence of $\1$s.
 
-For simple semi-Thue systems it is undecidable whether some sequence TODO
-
-\begin{problem}[$\0^+ \Rightarrow^*_\frakR \1^+$]\label{prb:ssts01}
+\begin{problem}[$\0^+ \Rightarrow^*_\frakR \1^+$\;\coqextra{StringRewriting/SSTS.v\#L37}]\label{prb:ssts01}
 Given a simple semi-Thue system $\frakR$, does $\0^n \Rightarrow^*_\frakR \1^n$ hold for some $n > 0$?
 \end{problem}
 
-
-
-\begin{remark}
-Problem~\ref{prb:ssts01} used as a starting point in~\cite{DudenhefnerR19} by Dudenhefner.
-\end{remark}
-
-\begin{theorem}[{\cite[Lemma~3.3]{DudenhefnerR19}}]\label{thm:ssts_undec}
-Problem $\0^+ \Rightarrow^*_\calR \1^+$ is undecidable.
+\begin{theorem}[{\cite[Lemma~3.3\;\coqextra{StringRewriting/SSTS\_undec.v\#L21}]{DudenhefnerR19}}]\label{thm:ssts_undec}
+Problem $\0^+ \Rightarrow^*_\frakR \1^+$ is undecidable.
 \end{theorem}
 
-\begin{remark}~
-\begin{itemize}
-\item similar to \cite[Lemma~2]{Urzyczyn09}
-\item mechanized in Coq~\cite[\texttt{SSTS01}]{CLUP20}
-\end{itemize}
+The following Example~\ref{xmp:ssts} illustrates a positive instance of Problem $\0^+ \Rightarrow^*_\frakR \1^+$.
+
+\begin{example}\label{xmp:ssts}
+Let $\frakR  := \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1,\2\}$.
+We have $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$. As a side note, we have $\0^n \;{\not\Rightarrow}_\frakR^*\; \1^n$ for $n \in \{1, 2, 3\}$.
+\end{example}
+
+\begin{remark}
+Problem $\0^+ \Rightarrow^*_\frakR \1^+$ used as a starting point in a refinement~\cite[Lemma~4.4]{DudenhefnerR19} of Urzyczyn's undecidability result for intersection type inhabitation~\cite{Urzyczyn09}.
+Undecidability of Problem $\0^+ \Rightarrow^*_\frakR \1^+$ is mechanized as part of Coq Library of Undecidability Proofs~\cite{CLUP20}, making it a good starting point for further mechanized undecidability results.
 \end{remark}
 
 \newpage
