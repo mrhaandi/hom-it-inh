@@ -243,6 +243,8 @@ Undecidability of Higher-order $\beta$-Matching is shown by Loader~\cite{Loader0
 Higher-order $\beta$-Matching is undecidable.
 \end{theorem}
 
+TODO the follo9wing examples discuss properties of HOM and techniques
+
 The following Example~\ref{xmp:hom} illustrates a positive instance of Higher-order $\beta$-Matching.
 
 \begin{example}\label{xmp:hom}
@@ -404,6 +406,60 @@ This results in undecidability, of higher-order $\beta$-matching by reduction fr
 Loader's generalization is quite sophisticated, as it requires construction principles to restrict shapes of realizers of arbitrary finite functions of arbitrary order.
 In the present work, we focus on a fragment, which can be identified identified by Urzyczyn and Salvati et.al.
 This leads to a simpler proof and a connection between undecidability of HOmachting, intersection type inhabitation, and lambda-definability.
+
+\newpage
+
+
+\begin{example}\label{xmp:ad-hoc}
+Let us associate elements of the set $\{1, 2, 3\}$ with projections $\pi_1 := \lambda xyz.x$, $\pi_2 := \lambda xyz.y$, and $\pi_3 := \lambda xyz.z$ respectively.
+For the term $G := \lambda h.\lambda x y z.h\,y\,z\,x$ we have
+$G\,\pi_1 =_\beta \pi_2$, $G\,\pi_2 =_\beta \pi_3$, and $G\,\pi_3 =_\beta \pi_1$.
+Therefore, $G$ realizes a finite function $f_G : \{1, 2, 3\} \to \{1, 2, 3\}$ with the function table {\small$\begin{tabular}{c|c|c}
+1 & 2 & 3\\\hline
+2 & 3 & 1
+\end{tabular}$}.
+
+Let $\kappa := \ga \to \ga \to \ga \to \ga$ be a simple type for which we have $\emptyset \vdash \pi_i : \kappa$ for $i \in \{1,2,3\}$.
+Consider the instance $(\lambda t.t\,G\,\pi_1)\,\mathsf{X} = \pi_3$ where $\emptyset \vdash \lambda t.t\,G\,\pi_1 : ((\kappa \to \kappa) \to \kappa \to \kappa) \to \kappa$.\linebreak
+A solution for this instance is $\lambda f.\lambda s.f\,(f\,s)$ for which we have $(\lambda t.t\,G\,\pi_1)\,(\lambda f.\lambda s.f\,(f\,s)) =_\beta \pi_3$.
+This solution follows the intended \enquote{meaning} of the underlying representation, constructing the element $3$ via $f_G(f_G(1))$.
+Another solution is $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$, which utilizes $f_G(f_G(f_G(f_G(f_G(1))))) = 3$.
+
+Unfortunately, there are solutions to the above matching instance which behave differently.
+One such solution is $\lambda f.\lambda s.\pi_3$ for which we also have $(\lambda t.t\,G\,\pi_1)\,(\lambda f.\lambda s.\pi_3) =_\beta \pi_3$.
+In this solution, the element $3$ is constructed \enquote{ad-hoc}, with no reference to the provided arguments.
+Another solution is the term $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$.
+This solution exploits the exact representation of elements via projections, disregarding the intended \enquote{meaning} of the underlying representation.
+\end{example}
+
+\begin{example}\label{xmp:no-ad-hoc}
+Consider a term $M$ in normal form such that $M\,I\,u =_\beta u$ where $u$ is a term variable, and $\emptyset \vdash M : (\kappa \to \kappa) \to \kappa \to \kappa$.
+By case analysis on $M$ we have that $M = \lambda f.\lambda s.N$ for some term $N$ in normal form.
+Furthermore, $\{f : \kappa \to \kappa, s : \kappa\} \vdash N : \kappa$ and $N[f := \lambda x.x, s := u] =_\beta u$.
+Therefore, the term $N$ is not an abstraction.
+By induction on the size of $N$ and case analysis we have that $N = s$ or $N = f\,(\ldots(f\,s)\ldots)$.
+\end{example}
+
+
+\begin{example}\label{xmp:no-ad-hoc}
+$F := \lambda t.\lambda r.r\,(t\,G\,\pi_1)\,(\lambda u.t\,I\,u)$ and $N := \lambda r.r\,\pi_3\,(\lambda u.u)$.
+
+$F\,\mathsf{X} = N$.
+
+$\emptyset \vdash F : ((\kappa \to \kappa) \to \kappa \to \kappa) \to (\kappa \to (\kappa \to \kappa) \to \ga) \to \ga$
+
+$\emptyset \vdash N : (\kappa \to (\kappa \to \kappa) \to \ga) \to \ga$
+
+The instance $F\,\mathsf{X} = N$ combines the matching instance from Example~\ref{xmp:ad-hoc} with the additional property from Example~\ref{xmp:no-ad-hoc}. 
+
+Therefore, solutions such as $\lambda f.\lambda s.f\,(f\,s)$ and $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$ from Example~\ref{xmp:ad-hoc} which follow the intended \enquote{meaning} of the underlying representation still solve $F\,\mathsf{X} = N$.
+
+However, ad-hoc solutions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$ from Example~\ref{xmp:ad-hoc} do not solve $F\,\mathsf{X} = N$ because such solutions contain too many abstractions (cf.~Example~\ref{xmp:no-ad-hoc}).
+\end{example}
+
+The observation in above example can be made systema
+
+
 
 \newpage
 
@@ -922,11 +978,11 @@ Since the Halting Problem is recursively enumerable, decidability of \texttt{p} 
 \section{Conclusion}\label{sec:concl}
 The present work presents a new, mechanized proof of the undecidability of Higher-order $\beta$-matching.
 %Building upon existing work, we obtain a certified many-one reduction from the Turing machine Halting Problem to Higher-order $\beta$-matching.
-The mechanization contributed to the existing Coq Library of Undecidability Proofs~\cite{CLUP20}.
+The mechanization is contributed to the existing Coq Library of Undecidability Proofs~\cite{CLUP20}.
 
 While the previous proof by Loader~\cite{Loader03} is based on (a variant of) $\lambda$-definability, the presented proof reduces a rewriting problem (Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$) to Higher-order $\beta$-matching.
 As a result, the proof is simpler to verify in full detail and yields a concise mechanization.
-Additionally, undecidability of the particular rewriting problem is already mechanized, and is part the the Coq Library of Undecidability Proofs.
+Additionally, undecidability of the particular rewriting problem is already mechanized, and is part the Coq Library of Undecidability Proofs.
 
 Besides the main technical result, we argue that the present approach is uniformly applicable to show undecidability of intersection type inhabitation and $\lambda$-definability.
 The former is already established as refinement~\cite{DudenhefnerR19} of Urzyczyn's undecidability result~\cite{Urzyczyn09}.
@@ -935,8 +991,8 @@ The latter is an application of the known correspondence between intersection ty
 The \emph{order} of a type is the maximal nesting depth of the arrow type constructor to the left, starting by $\text{order}(\ga) = 1$.
 The present approach agrees with Loader's result that $\beta$-Matching is undecidable at order $6$.
 While Loader conjectures that order $5$ may suffice, the present work suggests that this might not be the case.
-Constraining the shape of candidate solutions in the present work (as well as in Loader's proof) seems to require order $6$.
-Still, decidability of $\beta$-Matching at order $5$ remains open.
+Constraining the shape of candidate solutions both in the present work as well as in Loader's proof seems to necessitate order $6$.
+Still, decidability of $\beta$-Matching at order $5$ remains an open question.
 
 Interaction with a proof assistant supported the formation process of the present approach.
 While proofs of the individual lemmas are quite simplistic, they involve exhaustive case analyses and are sensitive to the exact details of the underlying construction.
