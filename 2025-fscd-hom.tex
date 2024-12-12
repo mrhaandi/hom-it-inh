@@ -123,17 +123,16 @@
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
 Higher-order $\beta$-matching is the following decision problem: given two simply typed $\lambda$-terms, can the first term be instantiated to be $\beta$-equivalent to the second term?
-This problem was formulated by Huet in the 1970s and shown undecidable by Loader in 2003.
-The particular proof is by reduction from a definability problem for finite models of the simply typed $\lambda$-calculus.
+This problem was formulated by Huet in the 1970s and shown undecidable by Loader in 2003 by reduction from $\lambda$-definability.
 
-The present work presents a novel undecidability proof of higher-order $\beta$-matching, in an effort to verify this result by means of a proof assistant in full detail.
+The present work presents a novel undecidability proof for higher-order $\beta$-matching, in an effort to verify this result by means of a proof assistant in full detail.
 Rather than starting from $\lambda$-definability, the presented proof encodes a restricted form of string rewriting as higher-order $\beta$-matching.
 The particular approach is similar to Urzyczyn's undecidability result for intersection type inhabitation.
 
-The presented approach has several benefits.
+The presented approach has several advantages.
 First, the proof is simpler to verify in full detail due to the simple form of rewriting systems, which serve as a starting point.
 Second, undecidability of the considered problem in string rewriting is already certified using the Coq proof assistant.
-Building upon the existing work, we obtain a certified many-one reduction from the (Turing machine) Halting Problem to higher-order $\beta$-matching.
+Building upon the existing work, we obtain a certified many-one reduction from the Halting Problem to higher-order $\beta$-matching.
 Third, the presented approach identifies a uniform construction which shows undecidability of higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
 
 The presented undecidability proof is mechanized in the Coq proof assistant and contributed to the existing Coq Library of Undecidability Proofs.
@@ -157,7 +156,7 @@ extendedchars=false,}
 \section{Introduction}
 
 Higher-order $\beta$-unification in the simply typed $\lambda$-calculus is the following decision problem: given two simply typed $\lambda$-terms $M, N$, is there a substitution $S$ such that the term $S(M)$ is $\beta$-equivalent to the term $S(N)$?
-Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether the corresponding $\beta$-matching problem~\cite{Huet75} (only the left-hand side term $M$ is subject to instantiation) is decidable\footnote{Dowerk~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
+Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether the corresponding $\beta$-matching problem~\cite{Huet75} (only the left-hand side term $M$ is subject to instantiation) is decidable\footnote{Dowek~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
 An equivalent presentation of higher-order $\beta$-matching (cf.\,Statman's range question~\cite{Statman82}) is: given a term $F$ which can be assigned the simple type $\sigma \to \tau$ and a term $N$ which can be assigned the simple type $\tau$, is there a term $M$ which can be assigned the simple type $\sigma$ such that $F\,M$ is $\beta$-equivalent to $N$?
 
 Decidability of higher-order $\beta$-matching was answered negatively\footnote{Not to be confused with the positive answer by Stirling~\cite{Stirling09} for higher-order $\beta\eta$-matching.} by Loader~\cite{Loader03} by reduction from a variant of $\lambda$-definability.
@@ -174,17 +173,16 @@ The present work presents a novel proof of the undecidability of higher-order $\
 The mechanization eliminates potential ambiguities and errors, complementing existing work on mechanized undecidability of higher-order $\beta$-unification~\cite{Spies020}.
 
 The presented proof is not based on $\lambda$-definability;
-rather, we consider a rewriting problem in a restricted class of semi-Thue systems as a starting point.
-This particular rewriting problem was identified by Urzyczyn~\cite{Urzyczyn09} in his undecidability proof for intersection type inhabitation.
-As a result, the presented proof is simpler to verify in full detail and yields a concise mechanization.
-The mechanization is incorporated into the existing Coq Library of Undecidability Proofs~\cite{CLUP20}, alongside the existing mechanization of undecidability of $\0^+ \Rightarrow^*_\frakR \1^+$.
+rather, we consider a rewriting problem in a restricted class of semi-Thue systems~\cite[Lemma~2]{Urzyczyn09} as a starting point.
+The specific rewriting problem, referred to as $\0^+ \Rightarrow^*_\frakR \1^+$, is: given a collection $\frakR$ of rules of shape $ab \Rightarrow cd$, where $a,b,c,d$ are alphabet symbols, is there a non-empty sequence of $\0$s which can be transformed into a sequence of $\1$s?
+As a consequence of the different starting point, the presented proof is simpler to verify in full detail and yields a concise mechanization.
+The mechanization is incorporated into the existing Coq Library of Undecidability Proofs~\cite{CLUP20}, alongside the existing mechanization\footnote{The (Turing machine) Halting Problem is easily presented as problem $\0^+ \Rightarrow^*_\frakR \1^+$~\cite[Lemma~3.3]{DudenhefnerR19}.} of undecidability of the problem $\0^+ \Rightarrow^*_\frakR \1^+$.
 %This entails a certified many-one reduction from the Turing machine Halting Problem to higher-order $\beta$-matching.
 
-Urzyczyn's undecidability proof for intersection type inhabitation serves as the main inspiration for the novel approach in the present work.
-Considering the relationship between intersection type inhabitation finite model theory~\cite{SalvatiMGB12}, the approach in the present work has an additional benefit.
-In particular, the presented technique is uniformly applicable to higher-order $\beta$-matching,  intersection type inhabitation, and $\lambda$-definability.
+Urzyczyn's undecidability proof for intersection type inhabitation~\cite{Urzyczyn09} serves as the main inspiration for the novel approach in the present work.
+Considering the relationship between intersection type inhabitation and finite model theory~\cite{SalvatiMGB12}, the approach in the present work has an additional benefit:
+it is uniformly applicable to higher-order $\beta$-matching, intersection type inhabitation, and $\lambda$-definability.
 
-TODO: say that ssts01 is related to turing machine computation \cite[Lemma~3.3]{DudenhefnerR19}
 
 \subparagraph*{Paper organization} The present work is structured as follows: 
 \begin{description}
@@ -193,6 +191,8 @@ TODO: say that ssts01 is related to turing machine computation \cite[Lemma~3.3]{
 \item[Section~\ref{sec:mech}:] Overview over the mechanization in the Coq proof assistant.
 \item[Section~\ref{sec:concl}:] Concluding remarks.
 \end{description}
+
+Statements and proofs in the digital version of the present work are linked to the corresponding mechanization, marked by the symbol\;\coqextra{LambdaCalculus/HOMatching.v}.
 
 \newpage
 
@@ -308,8 +308,8 @@ Another solution is the term $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$.
 This solution exploits the exact representation of elements via projections, disregarding the intended \enquote{meaning} of the underlying representation.
 \end{example}
 
-As shown in the above Example~\ref{xmp:ad-hoc}, we would like to exclude certain \enquote{ad-hoc} solutions.
-The following Example~\ref{xmp:no-ad-hoc} shows how to restrict the shape of solutions.
+In the above Example~\ref{xmp:ad-hoc} we would like to exclude certain \enquote{ad-hoc} solutions.
+Towards this aim, a technique how to restrict the shape of solutions is shown in the following Example~\ref{xmp:no-ad-hoc}.
 
 \begin{example}\label{xmp:no-ad-hoc}
 Consider a term $M$ in normal form such that $M\,I\,u =_\beta u$ where $u$ is a term variable, and $\emptyset \vdash M : (\kappa \to \kappa) \to \kappa \to \kappa$.
@@ -319,7 +319,7 @@ Therefore, the term $N$ is not an abstraction.
 By induction on the size of $N$ and case analysis we have that $N = s$ or $N = f\,(\ldots(f\,s)\ldots)$.
 \end{example}
 
-Combining Example~\ref{xmp:ad-hoc} with Example~\ref{xmp:no-ad-hoc} we can formulate in the following Example~\ref{xmp:no-ad-hoc-combo} a matching instance which faithfully encodes functional behavior.
+Combining Example~\ref{xmp:ad-hoc} with Example~\ref{xmp:no-ad-hoc}, we formulate in the following Example~\ref{xmp:no-ad-hoc-combo} a matching instance which faithfully encodes the desired functional behavior.
 
 \begin{example}\label{xmp:no-ad-hoc-combo}
 Let $F := \lambda t.\lambda r.r\,(t\,G\,\pi_1)\,(\lambda u.t\,I\,u)$ and $N := \lambda r.r\,\pi_3\,(\lambda u.u)$ where the term $G = \lambda h.\lambda x y z.h\,y\,z\,x$ is from Example~\ref{xmp:ad-hoc}. We have
@@ -335,7 +335,7 @@ However, ad-hoc solutions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lam
 The observation from the above Example~\ref{xmp:no-ad-hoc-combo} is generalized by Loader to encode arbitrary families of finite functions.
 This results in undecidability, of higher-order $\beta$-matching by reduction from (a variant of) $\lambda$-definability.
 Loader's generalization is quite sophisticated, as it requires construction principles to restrict shapes of realizers of arbitrary higher-order finite functions.
-In the present work, we focus on a fragment, which can be identified identified by inspection of intersection types occurring in the undecidability of intersection type inhabitation~\cite{Urzyczyn09,DudenhefnerR19} and their relationship to finite model theory~\cite{SalvatiMGB12}.
+In the present work, we focus on a fragment, which can be identified by inspection of intersection types occurring in the undecidability of intersection type inhabitation~\cite{Urzyczyn09,DudenhefnerR19} and their relationship to finite model theory~\cite{SalvatiMGB12}.
 This leads to a simpler undecidability proof and reveals a connection between matching, intersection type inhabitation, and $\lambda$-definability.
 
 \begin{remark}\label{rem:eta-break}
