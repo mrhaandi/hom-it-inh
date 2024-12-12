@@ -122,21 +122,21 @@
 
 %TODO mandatory: add short abstract of the document
 \begin{abstract}
-Higher-order beta-matching is the following decision problem: given two simply typed lambda-terms, can the first term be instantiated to be beta-equivalent to the second term?
+Higher-order $\beta$-matching is the following decision problem: given two simply typed $\lambda$-terms, can the first term be instantiated to be $\beta$-equivalent to the second term?
 This problem was formulated by Huet in the 1970s and shown undecidable by Loader in 2003.
-The particular proof is by reduction from an ad-hoc definability problem for finite models of the simply-typed lambda-calculus.
+The particular proof is by reduction from a definability problem for finite models of the simply typed $\lambda$-calculus.
 
-The present work presents a novel undecidability proof of higher-order beta-matching, in an effort to verify this result by means of a proof assistant in full detail.
-Rather than starting from lambda-definability, the presented proof encodes a restricted form of string rewriting as higher-order beta-matching.
+The present work presents a novel undecidability proof of higher-order $\beta$-matching, in an effort to verify this result by means of a proof assistant in full detail.
+Rather than starting from $\lambda$-definability, the presented proof encodes a restricted form of string rewriting as higher-order $\beta$-matching.
 The particular approach is similar to Urzyczyn's undecidability result for intersection type inhabitation.
 
 The presented approach has several benefits.
 First, the proof is simpler to verify in full detail due to the simple form of rewriting systems, which serve as a starting point.
 Second, undecidability of the considered problem in string rewriting is already certified using the Coq proof assistant.
-Building upon the existing work, we obtain a certified many-one reduction from the (Turing machine) Halting Problem to Higher-order $\beta$-Matching.
-Third, the presented approach identifies a uniform construction which shows undecidability of higher-order beta-matching, lambda-definability, and intersection type inhabitation.
+Building upon the existing work, we obtain a certified many-one reduction from the (Turing machine) Halting Problem to higher-order $\beta$-matching.
+Third, the presented approach identifies a uniform construction which shows undecidability of higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
 
-The presented undecidability proof is mechanized in the Coq proof assistant and contributed to the existing Coq library of undecidability proofs.
+The presented undecidability proof is mechanized in the Coq proof assistant and contributed to the existing Coq Library of Undecidability Proofs.
 \end{abstract}
 
 \lstset{
@@ -156,14 +156,35 @@ extendedchars=false,}
 
 \section{Introduction}
 
-\begin{remark}
-Loaders proof introduces some additional machinery
-\begin{itemize}
-\item \emph{myopic} $\lambda\bot$-terms and \emph{myopic} order
-\item characterization of $1$-lifts and $7$-lifts by \emph{checker} $\lambda\bot$-terms
-\item characterization of finite models by $(7+1)$-lifted terms\qedhere
-\end{itemize}
-\end{remark}
+Higher-order $\beta$-unification in the simply typed $\lambda$-calculus is the following decision problem: given two simply typed $\lambda$-terms $M, N$, is there a substitution $S$ such that the term $S(M)$ is $\beta$-equivalent to the term $S(N)$?
+Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether the corresponding $\beta$-matching problem~\cite{Huet75} (only the left-hand side term $M$ is subject to instantiation) is decidable\footnote{Dowerk~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
+An equivalent presentation of higher-order $\beta$-matching (cf.\,Statman's range question~\cite{Statman82}) is: given a term $F$ which can be assigned the simple type $\sigma \to \tau$ and a term $N$ which can be assigned the simple type $\tau$, is there a term $M$ which can be assigned the simple type $\sigma$ such that $F\,M$ is $\beta$-equivalent to $N$?
+
+Decidability of higher-order $\beta$-matching was answered negatively\footnote{Not to be confused with the positive answer by Stirling~\cite{Stirling09} for higher-order $\beta\eta$-matching.} by Loader~\cite{Loader03} by reduction from a variant of $\lambda$-definability.
+Loader's proof introduces intricate machinery to encode arbitrary finite functions as higher-order $\beta$-matching.
+A later approach by Joly~\cite{Joly05} refines Loader's result, shifting technical challenges to undecidability of the underlying $\lambda$-definability problem.
+Both approaches render verification of the negative result in full detail (for example, by means of a mechanization in a proof assistant) quite challenging.
+
+%Second-order matching was established as decidable by Huet and Lang, providing a foundation for analyzing restricted cases of higher-order problems.
+%Third-order matching was shown to be decidable by Dowek, while fourth-order matching was tackled by Padovani, who provided decision procedures for specific subclasses.
+%The decisive shift occurs at higher orders. Loader’s seminal work demonstrated the undecidability of higher-order β-matching at order six, relying on intricate reductions and logical constructions. Loader’s proof extends to the encoding of definability problems in finite models, leveraging the complexity of these definability questions to establish undecidability.
+%The distinction between β-equivalence and beta-eta-equivalence adds further complexity to the landscape. While beta-eta-equivalence is more robust and often considered in the context of semantic equality, the undecidability results established by Loader pertain strictly to β-equivalence, leaving the status of beta-eta-matching undecided.
+
+The present work presents a novel proof of the undecidability of higher-order $\beta$-matching, which is mechanized using the Coq proof assistant~\cite{Coq_2023}.
+The mechanization eliminates potential ambiguities and errors, complementing existing work on mechanized undecidability of higher-order $\beta$-unification~\cite{Spies020}.
+
+The presented proof is not based on $\lambda$-definability;
+rather, we consider a rewriting problem in a restricted class of semi-Thue systems as a starting point.
+This particular rewriting problem was identified by Urzyczyn~\cite{Urzyczyn09} in his undecidability proof for intersection type inhabitation.
+As a result, the presented proof is simpler to verify in full detail and yields a concise mechanization.
+The mechanization is incorporated into the existing Coq Library of Undecidability Proofs~\cite{CLUP20}, alongside the existing mechanization of undecidability of $\0^+ \Rightarrow^*_\frakR \1^+$.
+%This entails a certified many-one reduction from the Turing machine Halting Problem to higher-order $\beta$-matching.
+
+Urzyczyn's undecidability proof for intersection type inhabitation serves as the main inspiration for the novel approach in the present work.
+Considering the relationship between intersection type inhabitation finite model theory~\cite{SalvatiMGB12}, the approach in the present work has an additional benefit.
+In particular, the presented technique is uniformly applicable to higher-order $\beta$-matching,  intersection type inhabitation, and $\lambda$-definability.
+
+TODO: say that ssts01 is related to turing machine computation \cite[Lemma~3.3]{DudenhefnerR19}
 
 \subparagraph*{Paper organization} The present work is structured as follows: 
 \begin{description}
@@ -244,6 +265,7 @@ Higher-order $\beta$-Matching is undecidable.
 
 For the remainder of the present work we use the term \emph{matching} in order to refer to Higher-order $\beta$-Matching.
 
+Since simply typed terms are strongly normalizing and $\beta$-reduction is confluent~\cite{Barendregt13book}, it suffices to consider matching solutions in normal form.
 Let us get familiar with matching by means of several illustrating examples.
 The following Example~\ref{xmp:hom} illustrates a positive matching instance.
 
@@ -313,7 +335,7 @@ However, ad-hoc solutions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lam
 The observation from the above Example~\ref{xmp:no-ad-hoc-combo} is generalized by Loader to encode arbitrary families of finite functions.
 This results in undecidability, of higher-order $\beta$-matching by reduction from (a variant of) $\lambda$-definability.
 Loader's generalization is quite sophisticated, as it requires construction principles to restrict shapes of realizers of arbitrary higher-order finite functions.
-In the present work, we focus on a fragment, which can be identified identified by inspection of intersection types occurring in the undecidability of intersection type inhabitation~\cite{Urzyczyn09,DudenhefnerR19} and their relationship to fine model theory~\cite{SalvatiMGB12}.
+In the present work, we focus on a fragment, which can be identified identified by inspection of intersection types occurring in the undecidability of intersection type inhabitation~\cite{Urzyczyn09,DudenhefnerR19} and their relationship to finite model theory~\cite{SalvatiMGB12}.
 This leads to a simpler undecidability proof and reveals a connection between matching, intersection type inhabitation, and $\lambda$-definability.
 
 \begin{remark}\label{rem:eta-break}
@@ -784,7 +806,7 @@ The following Remark~\ref{rem:G} shows the structure of the underlying finite mo
 \begin{remark}\label{rem:G}
 Terms in Definition~\ref{def:G} realize certain finite functions as follows.
 \begin{itemize}
-\item $G_\star$ realizes a member of the family ${\small\left(\begin{array}{l}
+\item $G_\star$ realizes a member of the finite function family ${\small\left(\begin{array}{l}
 (\top \mapsto \bullet) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)\\
 (\top \mapsto \bullet) \mapsto \left(\left(\begin{array}{l}
 (\top \mapsto \bullet) \mapsto \$\\
@@ -793,13 +815,13 @@ Terms in Definition~\ref{def:G} realize certain finite functions as follows.
 (\top \mapsto \0) \mapsto ((\top \mapsto \1) \mapsto \0) \mapsto \1)\\
 (\top \mapsto \1) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)
 \end{array}\right)}$.
-\item $G_\0$ realizes a member of the family ${\small\left(\begin{array}{l}
+\item $G_\0$ realizes a member of the finite function family ${\small\left(\begin{array}{l}
 (\top \mapsto \bullet) \mapsto (\0 \mapsto \0)\\
 (\top \mapsto \bullet) \mapsto (\1 \mapsto \$)\\
 (\top \mapsto \0) \mapsto (\0 \mapsto \1)\\
 (\top \mapsto \1) \mapsto (\0 \mapsto \0)
 \end{array}\right)}$.
-\item $G_{ab \Rightarrow cd}$ realizes a member of the family ${\small\left(\begin{array}{l}
+\item $G_{ab \Rightarrow cd}$ realizes a member of the finite function family ${\small\left(\begin{array}{l}
 (\top \mapsto \1) \mapsto (c \mapsto a)\\
 (\top \mapsto \0) \mapsto (d \mapsto b)
 \end{array}\right)}$ such that\\
@@ -808,7 +830,7 @@ $G_{ab \Rightarrow cd} \, \delta_\bullet \, \pi_i =_\beta \pi_i$ for $i \in \cal
 \end{remark}
 
 The above families finite function specifications are immediately represented by intersection types.
-Let us state in the following Proposition~\ref{prop:uniform} the relationship between simple semi-Thue system rewriting, Higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
+Let us state in the following Proposition~\ref{prop:uniform} the relationship between simple semi-Thue system rewriting, higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
 
 \begin{proposition}\label{prop:uniform}
 Given a simple semi-Thue system $\frakR$, one can construct simply typed terms $\emptyset \vdash F_\frakR : \sigma_\frakR \to \tau_\frakR$ and $\emptyset \vdash N_\frakR : \tau_\frakR$, an intersection type $T_\frakR$, and a finite function $\calF_\frakR$ such that the following statements are equivalent:
@@ -879,7 +901,6 @@ Since the Halting Problem is recursively enumerable, decidability of \texttt{p} 
 
 \section{Conclusion}\label{sec:concl}
 The present work presents a new, mechanized proof of the undecidability of Higher-order $\beta$-matching.
-%Building upon existing work, we obtain a certified many-one reduction from the Turing machine Halting Problem to Higher-order $\beta$-matching.
 The mechanization is contributed to the existing Coq Library of Undecidability Proofs~\cite{CLUP20}.
 
 While the previous proof by Loader~\cite{Loader03} is based on (a variant of) $\lambda$-definability, the presented proof reduces a rewriting problem (Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$) to Higher-order $\beta$-matching.
@@ -892,7 +913,7 @@ The latter is an application of the known correspondence between intersection ty
 
 The \emph{order} of a type is the maximal nesting depth of the arrow type constructor to the left, starting by $\text{order}(\ga) = 1$.
 The present approach agrees with Loader's result that $\beta$-Matching is undecidable at order $6$.
-While Loader conjectures that order $5$ may suffice, the present work suggests that this might not be the case.
+While Loader conjectures that order $5$ may suffice, neither Loader's technique (as observed by Joly~\cite[Section~5]{Joly05}), nor the present approach are applicable at order $5$.
 Constraining the shape of candidate solutions both in the present work as well as in Loader's proof seems to necessitate order $6$.
 Still, decidability of $\beta$-Matching at order $5$ remains an open question.
 
