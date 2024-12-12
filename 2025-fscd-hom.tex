@@ -900,22 +900,22 @@ Definition undecidable {X} (p : X -> Prop) :=
 Since the Halting Problem is recursively enumerable, decidability of \texttt{p} would imply decidability of the Halting Problem.
 
 \section{Conclusion}\label{sec:concl}
-The present work presents a new, mechanized proof of the undecidability of Higher-order $\beta$-matching.
+The present work presents a new, mechanized proof of the undecidability of higher-order $\beta$-matching.
 The mechanization is contributed to the existing Coq Library of Undecidability Proofs~\cite{CLUP20}.
 
-While the previous proof by Loader~\cite{Loader03} is based on (a variant of) $\lambda$-definability, the presented proof reduces a rewriting problem (Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$) to Higher-order $\beta$-matching.
+While the previous proof by Loader~\cite{Loader03} is based on a variant of $\lambda$-definability, the presented proof reduces a rewriting problem (Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$) to higher-order $\beta$-matching.
 As a result, the proof is simpler to verify in full detail and yields a concise mechanization.
-Additionally, undecidability of the particular rewriting problem is already mechanized, and is part the Coq Library of Undecidability Proofs.
+Additionally, undecidability of Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ is already mechanized, and is part the Coq Library of Undecidability Proofs.
 
 Besides the main technical result, we argue that the present approach is uniformly applicable to show undecidability of intersection type inhabitation and $\lambda$-definability.
 The former is already established as refinement~\cite{DudenhefnerR19} of Urzyczyn's undecidability result~\cite{Urzyczyn09}.
 The latter is an application of the known correspondence between intersection type inhabitation and $\lambda$-definability~\cite{SalvatiMGB12}.
 
 The \emph{order} of a type is the maximal nesting depth of the arrow type constructor to the left, starting by $\text{order}(\ga) = 1$.
-The present approach agrees with Loader's result that $\beta$-Matching is undecidable at order $6$.
+The present approach agrees with Loader's result that $\beta$-matching is undecidable at order $6$.
 While Loader conjectures that order $5$ may suffice, neither Loader's technique (as observed by Joly~\cite[Section~5]{Joly05}), nor the present approach are applicable at order $5$.
 Constraining the shape of candidate solutions both in the present work as well as in Loader's proof seems to necessitate order $6$.
-Still, decidability of $\beta$-Matching at order $5$ remains an open question.
+While $\beta$-matching at order $4$ is decidable~\cite{Padovani00}, decidability at order $5$ remains an open question.
 
 Interaction with a proof assistant supported the formation process of the present approach.
 While proofs of the individual lemmas are quite simplistic, they involve exhaustive case analyses and are sensitive to the exact details of the underlying construction.
