@@ -242,9 +242,10 @@ Undecidability of Higher-order $\beta$-Matching is shown by Loader~\cite{Loader0
 Higher-order $\beta$-Matching is undecidable.
 \end{theorem}
 
-TODO the follo9wing examples discuss properties of HOM and techniques
+For the remainder of the present work we use the term \emph{matching} in order to refer to Higher-order $\beta$-Matching.
 
-The following Example~\ref{xmp:hom} illustrates a positive instance of Higher-order $\beta$-Matching.
+Let us get familiar with matching by means of several illustrating examples.
+The following Example~\ref{xmp:hom} illustrates a positive matching instance.
 
 \begin{example}\label{xmp:hom}
 Consider the terms $F := \lambda x.\lambda y.x\,y\,(\lambda z.z)$ and $N := \lambda y.y$.\\
@@ -259,6 +260,9 @@ In particular, we have the following two properties:
 \end{example}
 
 \newpage
+
+Commonly, we encode certain functional behavior as a matching instance.
+The following Example~\ref{xmp:ad-hoc} shows a naive approach to such an encoding and its limitations. 
 
 \begin{example}\label{xmp:ad-hoc}
 Let us associate elements of the set $\{1, 2, 3\}$ with projections $\pi_1 := \lambda xyz.x$, $\pi_2 := \lambda xyz.y$, and $\pi_3 := \lambda xyz.z$ respectively.
@@ -282,6 +286,9 @@ Another solution is the term $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$.
 This solution exploits the exact representation of elements via projections, disregarding the intended \enquote{meaning} of the underlying representation.
 \end{example}
 
+As shown in the above Example~\ref{xmp:ad-hoc}, we would like to exclude certain \enquote{ad-hoc} solutions.
+The following Example~\ref{xmp:no-ad-hoc} shows how to restrict the shape of solutions.
+
 \begin{example}\label{xmp:no-ad-hoc}
 Consider a term $M$ in normal form such that $M\,I\,u =_\beta u$ where $u$ is a term variable, and $\emptyset \vdash M : (\kappa \to \kappa) \to \kappa \to \kappa$.
 By case analysis on $M$ we have that $M = \lambda f.\lambda s.N$ for some term $N$ in normal form.
@@ -290,29 +297,24 @@ Therefore, the term $N$ is not an abstraction.
 By induction on the size of $N$ and case analysis we have that $N = s$ or $N = f\,(\ldots(f\,s)\ldots)$.
 \end{example}
 
+Combining Example~\ref{xmp:ad-hoc} with Example~\ref{xmp:no-ad-hoc} we can formulate in the following Example~\ref{xmp:no-ad-hoc-combo} a matching instance which faithfully encodes functional behavior.
 
 \begin{example}\label{xmp:no-ad-hoc-combo}
-$F := \lambda t.\lambda r.r\,(t\,G\,\pi_1)\,(\lambda u.t\,I\,u)$ and $N := \lambda r.r\,\pi_3\,(\lambda u.u)$.
-
-$F\,\mathsf{X} = N$.
-
-$\emptyset \vdash F : ((\kappa \to \kappa) \to \kappa \to \kappa) \to (\kappa \to (\kappa \to \kappa) \to \ga) \to \ga$
-
-$\emptyset \vdash N : (\kappa \to (\kappa \to \kappa) \to \ga) \to \ga$
-
-The instance $F\,\mathsf{X} = N$ combines the matching instance from Example~\ref{xmp:ad-hoc} with the additional property from Example~\ref{xmp:no-ad-hoc}. 
-
+Let $F := \lambda t.\lambda r.r\,(t\,G\,\pi_1)\,(\lambda u.t\,I\,u)$ and $N := \lambda r.r\,\pi_3\,(\lambda u.u)$ where the term $G = \lambda h.\lambda x y z.h\,y\,z\,x$ is from Example~\ref{xmp:ad-hoc}. We have
+\begin{itemize}
+\item $\emptyset \vdash F : ((\kappa \to \kappa) \to \kappa \to \kappa) \to (\kappa \to (\kappa \to \kappa) \to \ga) \to \ga$
+\item $\emptyset \vdash N : (\kappa \to (\kappa \to \kappa) \to \ga) \to \ga$
+\end{itemize}
+The matching instance $F\,\mathsf{X} = N$ combines the matching instance from Example~\ref{xmp:ad-hoc} with the additional property from Example~\ref{xmp:no-ad-hoc}. 
 Therefore, solutions such as $\lambda f.\lambda s.f\,(f\,s)$ and $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$ from Example~\ref{xmp:ad-hoc} which follow the intended \enquote{meaning} of the underlying representation still solve $F\,\mathsf{X} = N$.
-
 However, ad-hoc solutions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$ from Example~\ref{xmp:ad-hoc} do not solve $F\,\mathsf{X} = N$ because such solutions contain too many abstractions (cf.~Example~\ref{xmp:no-ad-hoc}).
 \end{example}
 
 The observation from the above Example~\ref{xmp:no-ad-hoc-combo} is generalized by Loader to encode arbitrary families of finite functions.
 This results in undecidability, of higher-order $\beta$-matching by reduction from (a variant of) $\lambda$-definability.
 Loader's generalization is quite sophisticated, as it requires construction principles to restrict shapes of realizers of arbitrary higher-order finite functions.
-In the present work, we focus on a fragment, which can be identified identified by Urzyczyn and Salvati et.al.
-This leads to a simpler proof and a connection between undecidability of HOmachting, intersection type inhabitation, and lambda-definability.
-
+In the present work, we focus on a fragment, which can be identified identified by inspection of intersection types occurring in the undecidability of intersection type inhabitation~\cite{Urzyczyn09,DudenhefnerR19} and their relationship to fine model theory~\cite{SalvatiMGB12}.
+This leads to a simpler undecidability proof and reveals a connection between matching, intersection type inhabitation, and $\lambda$-definability.
 
 \begin{remark}\label{rem:eta-break}
 Example~\ref{xmp:no-ad-hoc} demonstrates how to restrict the number of abstractions in solutions.
@@ -330,8 +332,6 @@ M\,(\lambda x.x)\,u &=_\beta& \big(\lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 
 &=_\beta& \lambda xyz.u\,(\pi_1 x\,z\,y)\,y\,z &=_\beta& \lambda xyz.u\,x\,y\,z \to_\eta^* u
 \end{array}$.
 \end{remark}
-
-\newpage
 
 \paragraph*{Simple Semi-Thue Systems}
 
