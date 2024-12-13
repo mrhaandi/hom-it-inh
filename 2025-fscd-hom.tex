@@ -155,12 +155,12 @@ extendedchars=false,}
 
 \section{Introduction}
 
-Higher-order $\beta$-unification in the simply typed $\lambda$-calculus is the following decision problem: given two simply typed $\lambda$-terms $M, N$, is there a substitution $S$ such that the term $S(M)$ is $\beta$-equivalent to the term $S(N)$?
-Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether the corresponding $\beta$-matching problem~\cite{Huet75} (only the left-hand side term $M$ is subject to instantiation) is decidable\footnote{Dowek~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
+Higher-order $\beta$-unification in the simply typed $\lambda$-calculus is the following decision problem: given two simply typed $\lambda$-terms $M, N$, is there a substitution $S$ such that the instance $S(M)$ is $\beta$-equivalent to the instance $S(N)$?
+Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether the $\beta$-matching problem~\cite{Huet75} (only the left-hand side term $M$ is subject to instantiation) is decidable\footnote{Dowek~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
 An equivalent presentation of higher-order $\beta$-matching (cf.\,Statman's range question~\cite{Statman82}) is: given a term $F$ which can be assigned the simple type $\sigma \to \tau$ and a term $N$ which can be assigned the simple type $\tau$, is there a term $M$ which can be assigned the simple type $\sigma$ such that $F\,M$ is $\beta$-equivalent to $N$?
 
 Decidability of higher-order $\beta$-matching was answered negatively\footnote{Not to be confused with the positive answer by Stirling~\cite{Stirling09} for higher-order $\beta\eta$-matching.} by Loader~\cite{Loader03} by reduction from a variant of $\lambda$-definability.
-Loader's proof introduces intricate machinery to encode arbitrary finite functions as higher-order $\beta$-matching.
+Loader's proof introduces intricate machinery to formulate $\beta$-matching constraints which specify arbitrary finite functions.
 A later approach by Joly~\cite{Joly05} refines Loader's result, shifting technical challenges to undecidability of the underlying $\lambda$-definability problem.
 Both approaches render verification of the negative result in full detail (for example, by means of a mechanization in a proof assistant) quite challenging.
 
@@ -173,15 +173,15 @@ The present work presents a novel proof of the undecidability of higher-order $\
 The mechanization eliminates potential ambiguities and errors, complementing existing work on mechanized undecidability of higher-order $\beta$-unification~\cite{Spies020}.
 
 The presented proof is not based on $\lambda$-definability;
-rather, we consider a rewriting problem in a restricted class of semi-Thue systems~\cite[Lemma~2]{Urzyczyn09} as a starting point.
+rather, we consider a known rewriting problem in a restricted class of semi-Thue systems~\cite[Lemma~2]{Urzyczyn09} as a starting point.
 The specific rewriting problem, referred to as $\0^+ \Rightarrow^*_\frakR \1^+$, is: given a collection $\frakR$ of rules of shape $ab \Rightarrow cd$, where $a,b,c,d$ are alphabet symbols, is there a non-empty sequence of $\0$s which can be transformed into a sequence of $\1$s?
 As a consequence of the different starting point, the presented proof is simpler to verify in full detail and yields a concise mechanization.
 The mechanization is incorporated into the existing Coq Library of Undecidability Proofs~\cite{CLUP20}, alongside the existing mechanization\footnote{The (Turing machine) Halting Problem is easily presented as problem $\0^+ \Rightarrow^*_\frakR \1^+$~\cite[Lemma~3.3]{DudenhefnerR19}.} of undecidability of the problem $\0^+ \Rightarrow^*_\frakR \1^+$.
 %This entails a certified many-one reduction from the Turing machine Halting Problem to higher-order $\beta$-matching.
 
-Urzyczyn's undecidability proof for intersection type inhabitation~\cite{Urzyczyn09} serves as the main inspiration for the novel approach in the present work.
-Considering the relationship between intersection type inhabitation and finite model theory~\cite{SalvatiMGB12}, the approach in the present work has an additional benefit:
-it is uniformly applicable to higher-order $\beta$-matching, intersection type inhabitation, and $\lambda$-definability.
+The main inspiration for the novel approach in the present work is Urzyczyn's undecidability proof for intersection type inhabitation~\cite{Urzyczyn09}.
+Considering the relationship between the intersection type discipline and finite model theory~\cite{SalvatiMGB12}, the approach in the present work has an additional benefit:
+it is uniformly applicable to prove undecidability of higher-order $\beta$-matching, intersection type inhabitation, and $\lambda$-definability.
 
 
 \subparagraph*{Paper organization} The present work is structured as follows: 
@@ -189,6 +189,7 @@ it is uniformly applicable to higher-order $\beta$-matching, intersection type i
 \item[Section~\ref{sec:prelim}:] Preliminaries for the simply typed $\lambda$-calculus, higher-order $\beta$-matching, and simple semi-Thue systems (including the undecidable Problem $\0^+ \Rightarrow^*_\frakR \1^+$).
 \item[Section~\ref{sec:undec}:] Reduction from Problem $\0^+ \Rightarrow^*_\frakR \1^+$ to higher-order $\beta$-matching.
 \item[Section~\ref{sec:mech}:] Overview over the mechanization in the Coq proof assistant.
+\item[Section~\ref{sec:uniform}:] Applicability to intersection type inhabitation and $\lambda$-definability.
 \item[Section~\ref{sec:concl}:] Concluding remarks.
 \end{description}
 
@@ -789,65 +790,6 @@ Higher-order $\beta$-Matching (Problem~\ref{prb:hom}) is undecidable.
 By reduction from the undecidable Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ (Theorem~\ref{thm:ssts_undec} and Theorem~\ref{thm:ssts_to_hom}).
 \end{proof}
 
-We conclude the technical presentation with the following observation:
-the presented approach reducing Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to Higher-order $\beta$-matching is easily transferred to intersection type inhabitation and $\lambda$-definability.
-
-The following Remark~\ref{rem:G} shows the structure of the underlying finite model with respect to the present construction.
-
-%\begin{remark}\label{rem:H}
-%Terms in the above Definition~\ref{def:H} realize certain finite functions as follows.
-%\begin{itemize}
-%\item $H_\star$ realizes a member of the family $\left(\omega \mapsto ((\top \mapsto \bullet) \mapsto \$) \mapsto \$ \right)$.
-%\item $H_\0$ realizes a member of the family $(\omega \mapsto (\1 \mapsto \$))$.
-%\item $H_R$ realizes a member of the family $((\top \mapsto \bullet) \mapsto (\1 \mapsto \1))$.
-%\end{itemize}
-%\end{remark}
-
-\begin{remark}\label{rem:G}
-Terms in Definition~\ref{def:G} realize certain finite functions as follows.
-\begin{itemize}
-\item $G_\star$ realizes a member of the finite function family ${\small\left(\begin{array}{l}
-(\top \mapsto \bullet) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)\\
-(\top \mapsto \bullet) \mapsto \left(\left(\begin{array}{l}
-(\top \mapsto \bullet) \mapsto \$\\
-(\top \mapsto \0) \mapsto \1
-\end{array}\right) \mapsto \$\right)\\
-(\top \mapsto \0) \mapsto ((\top \mapsto \1) \mapsto \0) \mapsto \1)\\
-(\top \mapsto \1) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)
-\end{array}\right)}$.
-\item $G_\0$ realizes a member of the finite function family ${\small\left(\begin{array}{l}
-(\top \mapsto \bullet) \mapsto (\0 \mapsto \0)\\
-(\top \mapsto \bullet) \mapsto (\1 \mapsto \$)\\
-(\top \mapsto \0) \mapsto (\0 \mapsto \1)\\
-(\top \mapsto \1) \mapsto (\0 \mapsto \0)
-\end{array}\right)}$.
-\item $G_{ab \Rightarrow cd}$ realizes a member of the finite function family ${\small\left(\begin{array}{l}
-(\top \mapsto \1) \mapsto (c \mapsto a)\\
-(\top \mapsto \0) \mapsto (d \mapsto b)
-\end{array}\right)}$ such that\\
-$G_{ab \Rightarrow cd} \, \delta_\bullet \, \pi_i =_\beta \pi_i$ for $i \in \calA$.
-\end{itemize}
-\end{remark}
-
-The above families finite function specifications are immediately represented by intersection types.
-Let us state in the following Proposition~\ref{prop:uniform} the relationship between simple semi-Thue system rewriting, higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
-
-\begin{proposition}\label{prop:uniform}
-Given a simple semi-Thue system $\frakR$, one can construct simply typed terms $\emptyset \vdash F_\frakR : \sigma_\frakR \to \tau_\frakR$ and $\emptyset \vdash N_\frakR : \tau_\frakR$, an intersection type $T_\frakR$, and a finite function $\calF_\frakR$ such that the following statements are equivalent:
-\begin{enumerate}
-\item There exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$.
-\item The instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of Higher-order $\beta$-Matching is solvable.
-\item The intersection type $T_\frakR$ is inhabited.
-\item The finite function $\calF_\frakR$ is $\lambda$-definable.
-\end{enumerate}
-\end{proposition}
-
-Of course, $(1) \Rightarrow (3)$ can be concluded from undecidability of intersection type inhabitation~\cite{Urzyczyn09} and $(1) \Rightarrow (4)$ from undecidability of $\lambda$-definability~\cite{loader2001undecidability}.
-The presented approach shows $(1) \Rightarrow (2)$, and we make the following two observations.
-First, referring to Remark~\ref{rem:R1}, the approach is inspired by and easily adapted to show $(1) \Rightarrow (3)$, such that the inhabitant is essentially a member of $\calR_1$.
-Second, based on Remark~\ref{rem:G}, the approach can be adapted to show $(1) \Rightarrow (4)$, such that the realizer is essentially a member of $\calR_1$.
-This is supported by the known equivalence between (a fragment of) intersection type inhabitation and $\lambda$-definability~\cite{SalvatiMGB12}.
-
 \newpage
 
 \section{Mechanization}\label{sec:mech}
@@ -898,6 +840,77 @@ Definition undecidable {X} (p : X -> Prop) :=
   decidable p -> enumerable (complement SBTM_HALT).
 \end{lstlisting}
 Since the Halting Problem is recursively enumerable, decidability of \texttt{p} would imply decidability of the Halting Problem.
+
+\newpage
+
+\section{On Intersection Type Inhabitation and $\lambda$-Definability}\label{sec:uniform}
+
+We conclude the technical presentation with the following observation:
+the presented approach reducing Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to higher-order $\beta$-matching is easily transferred to intersection type inhabitation and $\lambda$-definability.
+
+The following Remark~\ref{rem:G} shows the structure of the corresponding finite model with respect to the present construction.
+
+%\begin{remark}\label{rem:H}
+%Terms in the above Definition~\ref{def:H} realize certain finite functions as follows.
+%\begin{itemize}
+%\item $H_\star$ realizes a member of the family $\left(\omega \mapsto ((\top \mapsto \bullet) \mapsto \$) \mapsto \$ \right)$.
+%\item $H_\0$ realizes a member of the family $(\omega \mapsto (\1 \mapsto \$))$.
+%\item $H_R$ realizes a member of the family $((\top \mapsto \bullet) \mapsto (\1 \mapsto \1))$.
+%\end{itemize}
+%\end{remark}
+
+\begin{remark}\label{rem:G}
+Terms in Definition~\ref{def:G} realize certain finite functions as follows.
+\begin{itemize}
+\item $\delta_i$ for $i \in \calA$ realizes a member of the finite function family specified by the partial function table ${\small\left(\begin{array}{l}
+\top \mapsto i\end{array}\right)}$.
+\item $G_\0$ realizes a member of the family specified by ${\small\left(\begin{array}{l}
+(\top \mapsto \bullet) \mapsto (\0 \mapsto \0)\\
+(\top \mapsto \bullet) \mapsto (\1 \mapsto \$)\\
+(\top \mapsto \0) \mapsto (\0 \mapsto \1)\\
+(\top \mapsto \1) \mapsto (\0 \mapsto \0)
+\end{array}\right)}$.
+\item $G_{ab \Rightarrow cd}$ realizes a member of the family specified by ${\small\left(\begin{array}{l}
+(\top \mapsto \1) \mapsto (c \mapsto a)\\
+(\top \mapsto \0) \mapsto (d \mapsto b)
+\end{array}\right)}$.
+% such that $G_{ab \Rightarrow cd} \, \delta_\bullet \, \pi_i =_\beta \pi_i$ for $i \in \calA$.
+\item $G_\star$ realizes a member of the family specified by ${\setlength{\arraycolsep}{1pt}\small\left(\begin{array}{l}
+(\top \mapsto \bullet) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)\\
+(\top \mapsto \bullet) \mapsto \left(\left(\begin{array}{l}
+(\top \mapsto \bullet) \mapsto \$\\
+(\top \mapsto \0) \mapsto \1
+\end{array}\right) \mapsto \$\right)\\
+(\top \mapsto \0) \mapsto ((\top \mapsto \1) \mapsto \0) \mapsto \1)\\
+(\top \mapsto \1) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)
+\end{array}\right)}$.
+\end{itemize}
+\end{remark}
+
+The above specifications follow the intended meaning (Example~\ref{xmp:H}) of the corresponding programs, when used in \enquote{well-formed} terms in $\calQ_m$ and $\calR_m$.
+For example, we have $G_\0\,\delta_\bullet\,\pi_1 =_\beta \pi_\$$, in agreement with the above Remark~\ref{rem:G}.
+
+Let us state the relationship between simple semi-Thue system rewriting, higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
+
+\begin{proposition}\label{prop:uniform}
+Given a simple semi-Thue system $\frakR$, one can construct simply typed terms $F_\frakR$ and $N_\frakR$, an intersection type $T_\frakR$, and a finite function $\calF_\frakR$ such that the following statements are equivalent:
+\begin{enumerate}
+\item There exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$.
+\item The instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of higher-order $\beta$-matching is solvable.
+\item The intersection type $T_\frakR$ is inhabited.
+\item The finite function $\calF_\frakR$ is $\lambda$-definable.
+\end{enumerate}
+\end{proposition}
+
+The presented approach shows $(1) \Rightarrow (2)$.
+Of course, $(1) \Rightarrow (3)$ can be concluded from undecidability of intersection type inhabitation~\cite{Urzyczyn09} and $(1) \Rightarrow (4)$ from undecidability of $\lambda$-definability~\cite{loader2001undecidability}.
+However, we make the following two observations regarding an alternative, uniform argument.
+First, based on Remark~\ref{rem:R1}, the approach is easily adapted to show $(1) \Rightarrow (3)$, such that the inhabitant is essentially a member of $\calR_1$.
+This is done in the existing mechanized reduction from Problem $\0^+ \Rightarrow_\frakR^* \1^+$ to intersection type inhabitation\;\coqextra{IntersectionTypes/Reductions/SSTS01\_to\_CD\_INH.v}.
+Second, based on Remark~\ref{rem:G}, the approach can be adapted to show $(1) \Rightarrow (4)$, such that the realizer is essentially a member of $\calR_1$.
+This is further supported by the known correspondence between intersection type inhabitation (in the fragment at hand) and $\lambda$-definability~\cite{SalvatiMGB12}.
+
+\newpage
 
 \section{Conclusion}\label{sec:concl}
 The present work presents a new, mechanized proof of the undecidability of higher-order $\beta$-matching.
