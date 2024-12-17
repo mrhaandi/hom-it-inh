@@ -156,7 +156,7 @@ extendedchars=false,}
 \section{Introduction}
 
 Higher-order $\beta$-unification in the simply typed $\lambda$-calculus is the following decision problem: given two simply typed $\lambda$-terms $M, N$, is there a substitution $S$ such that the instance $S(M)$ is $\beta$-equivalent to the instance $S(N)$?
-Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether the $\beta$-matching problem~\cite{Huet75} (only the left-hand side term $M$ is subject to instantiation) is decidable\footnote{Dowek~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
+Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether the $\beta$-matching problem~\cite{Huet75} (the right-hand side term $N$ does not contain free variables) is decidable\footnote{Dowek~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
 An equivalent presentation of higher-order $\beta$-matching (cf.\,Statman's range question~\cite{Statman82}) is: given a term $F$ which can be assigned the simple type $\sigma \to \tau$ and a term $N$ which can be assigned the simple type $\tau$, is there a term $M$ which can be assigned the simple type $\sigma$ such that $F\,M$ is $\beta$-equivalent to $N$?
 
 Decidability of higher-order $\beta$-matching was answered negatively\footnote{Not to be confused with the positive answer by Stirling~\cite{Stirling09} for higher-order $\beta\eta$-matching.} by Loader~\cite{Loader03} by reduction from a variant of $\lambda$-definability.
@@ -334,9 +334,9 @@ This solution exploits the exact representation of elements via projections, dis
 \end{example}
 
 In the above Example~\ref{xmp:ad-hoc} we would like to exclude certain ad-hoc solutions, in order to faithfully encode intended functional behavior.
-Towards this aim, a technique how to restrict the shape of solutions is shown in the following Example~\ref{xmp:no-ad-hoc}.
+Towards this aim, a known technique how to restrict the shape of solutions is illustrated in the following Example~\ref{xmp:no-ad-hoc}.
 
-\begin{example}\label{xmp:no-ad-hoc}
+\begin{example}[{\cite[Proposition~3.4]{Dowek01}}]\label{xmp:no-ad-hoc}
 Consider a term $M$ in normal form such that $M\,I\,u =_\beta u$ where $u$ is a term variable, and $\emptyset \vdash M : (\kappa \to \kappa) \to \kappa \to \kappa$.
 By case analysis on $M$ we have that $M = \lambda f.\lambda s.N$ for some term $N$ in normal form.
 Furthermore, $\{f : \kappa \to \kappa, s : \kappa\} \vdash N : \kappa$ and $N[f := \lambda x.x, s := u] =_\beta u$.
@@ -358,6 +358,12 @@ Therefore, solutions such as $\lambda f.\lambda s.f\,(f\,s)$ and $\lambda f.\lam
 However, ad-hoc solutions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$ from Example~\ref{xmp:ad-hoc} do not solve $F\,\mathsf{X} = N$ because such solutions contain too many $\lambda$-abstractions (cf.~Example~\ref{xmp:no-ad-hoc}).
 \end{example}
 
+\begin{remark}\label{rem:typing-break}
+Without the restriction $\emptyset \vdash M : (\kappa \to \kappa) \to \kappa \to \kappa$ in Example~\ref{xmp:no-ad-hoc} the term $M := \lambda f.\lambda s.f\,f\,s$ satisfies $M\,I\,u =_\beta u$.
+However, Example~\ref{xmp:no-ad-hoc-combo} does not admit $M$ as a solution.
+The present work relies on well-typedness, but might be adapted to an untyped scenario.
+\end{remark}
+
 \newpage
 
 The observation from the above Example~\ref{xmp:no-ad-hoc-combo} is generalized by Loader to encode arbitrary families of finite functions.
@@ -368,6 +374,8 @@ This leads to a simpler undecidability proof and reveals a connection between ma
 The presented approach has similarities with Joly's~\cite{Joly05} refinement of Loader's proof.
 However, Joly shifts the technical burden to a particular $\lambda$-definability problem, which then is simpler to handle.
 In the present work, we avoid $\lambda$-definability altogether and use a rewriting problem in a restricted class of semi-Thue systems as a starting point.
+
+The following Remark~\ref{rem:eta-break} shows how the addition of $\eta$-reduction would invalidate the technique from Example~\ref{xmp:no-ad-hoc-combo}, as well as Loader's approach.
 
 \begin{remark}\label{rem:eta-break}
 Example~\ref{xmp:no-ad-hoc} demonstrates how to restrict the number of abstractions in solutions.
@@ -396,6 +404,7 @@ A simple semi-Thue system (Definition~\ref{def:ssts}) is a rewriting system of r
 A semi-Thue system $\frakR$ over an alphabet $\calA$ is \emph{simple}, if each rule has the form $ab \Rightarrow cd$ for $a,b,c,d \in \calA$.
 \end{definition}
 
+The reflexive, transitive closure of the rewriting relation for a given simple semi-Thue system~$\frakR$ is denoted $\Rightarrow_\frakR^*$.
 For arbitrary simple semi-Thue systems it is undecidable whether some non-empty sequence of $\0$s can be transformed into a sequence of $\1$s.
 
 \begin{problem}[$\0^+ \Rightarrow^* \1^+$\;\coqextra{StringRewriting/SSTS.v\#L37}]\label{prb:ssts01}
@@ -405,7 +414,6 @@ Given a simple semi-Thue system $\frakR$, does $\0^n \Rightarrow^*_\frakR \1^n$ 
 \begin{theorem}[{\cite[Lemma~3.3\;\coqextra{StringRewriting/SSTS\_undec.v\#L21}]{DudenhefnerR19}}]\label{thm:ssts_undec}
 Problem $\0^+ \Rightarrow^* \1^+$ is undecidable.
 \end{theorem}
-
 The following Example~\ref{xmp:ssts} illustrates a positive instance of Problem $\0^+ \Rightarrow^* \1^+$.
 
 \begin{example}\label{xmp:ssts}
@@ -421,15 +429,15 @@ Undecidability of Problem $\0^+ \Rightarrow^* \1^+$ is mechanized as part of Coq
 \newpage
 
 \section{Undecidability of Higher-order $\beta$-Matching}\label{sec:undec}
-In this section we develop our main result (Theorem~\ref{thm:ssts_to_hom}): a reduction from the rewriting problem $\0^+ \Rightarrow^* \1^+$ to Higher-order $\beta$-Matching.
+In this section we develop our main result (Theorem~\ref{thm:ssts_to_hom}): a reduction from the rewriting problem $\0^+ \Rightarrow^* \1^+$ to higher-order $\beta$-matching.
 
 For the remainder of the section we fix the simple semi-Thue system $\frakR := \{R_1, \ldots, R_L\}$ with $L > 0$ rules over the finite alphabet $\{\0, \1, \2, \ldots, \mathbf{K}\}$.
-Our approach is to construct simply typed terms which capture the two main aspects of the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$: the search for a sufficiently long starting sequence of $\0$s, and the individual rewriting steps to the resulting sequence of $\1$s.
+Our approach is to construct simply typed terms which capture the two main aspects of the rewriting problem $\0^+ \Rightarrow^* \1^+$: the search for a sufficiently long starting sequence of $\0$s, and the individual rewriting steps to the resulting sequence of $\1$s.
 
 The remainder of the present section is structured as follows.
 First, we fix basic notation, encoding, and properties of the rewriting in the system $\frakR$.
 Second, we constraint the shape of potential solutions for the constructed matching instance, similarly to Example~\ref{xmp:no-ad-hoc}.
-Third, for solutions of restricted shape we capture the functional properties of the rewriting problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$.
+Third, for solutions of restricted shape we capture the functional properties of the rewriting problem $\0^+ \Rightarrow^* \1^+$.
 
 \subsection*{Notation}
 
@@ -878,7 +886,7 @@ Since the Halting Problem is recursively enumerable, decidability of \texttt{p} 
 \section{On Intersection Type Inhabitation and $\lambda$-Definability}\label{sec:uniform}
 
 We conclude the technical presentation with the following observation:
-the presented approach reducing Problem $\0^+ \Rightarrow_\mathfrak{R}^* \1^+$ to higher-order $\beta$-matching is easily transferred to intersection type inhabitation and $\lambda$-definability.
+the presented approach reducing Problem $\0^+ \Rightarrow^* \1^+$ to higher-order $\beta$-matching is easily transferred to intersection type inhabitation and $\lambda$-definability.
 
 The following Remark~\ref{rem:G} shows the structure of the corresponding finite model with respect to the present construction.
 
@@ -934,12 +942,12 @@ Given a simple semi-Thue system $\frakR$, one can construct simply typed terms $
 \end{enumerate}
 \end{proposition}
 
-The presented approach shows $(1) \Rightarrow (2)$.
-Of course, $(1) \Rightarrow (3)$ can be concluded from undecidability of intersection type inhabitation~\cite{Urzyczyn09} and $(1) \Rightarrow (4)$ from undecidability of $\lambda$-definability~\cite{loader2001undecidability}.
+The presented approach shows $(1) \iff (2)$.
+Of course, $(1) \iff (3)$ can be concluded from undecidability of intersection type inhabitation~\cite{Urzyczyn09} and $(1) \iff (4)$ from undecidability of $\lambda$-definability~\cite{loader2001undecidability}, along with corresponding constructions.
 However, we make the following two observations regarding an alternative, uniform argument.
-First, based on Remark~\ref{rem:R1}, the approach is easily adapted to show $(1) \Rightarrow (3)$, such that the inhabitant is essentially a member of $\calR_1$.
-This is done in the existing mechanized reduction from Problem $\0^+ \Rightarrow_\frakR^* \1^+$ to intersection type inhabitation\;\coqextra{IntersectionTypes/Reductions/SSTS01\_to\_CD\_INH.v}.
-Second, based on Remark~\ref{rem:G}, the approach can be adapted to show $(1) \Rightarrow (4)$, such that the realizer is essentially a member of $\calR_1$.
+First, based on Remark~\ref{rem:R1}, the approach is easily adapted to show $(1) \iff (3)$, such that the inhabitant is essentially a member of $\calR_1$.
+This is already done in the existing mechanized reduction from Problem $\0^+ \Rightarrow^* \1^+$ to intersection type inhabitation\;\coqextra{IntersectionTypes/Reductions/SSTS01\_to\_CD\_INH.v}.
+Second, based on Remark~\ref{rem:G}, the approach can be adapted to show $(1) \iff (4)$, such that the realizer is essentially a member of $\calR_1$.
 This is further supported by the known correspondence between intersection type inhabitation (in the fragment at hand) and $\lambda$-definability~\cite{SalvatiMGB12}.
 
 \newpage
@@ -962,11 +970,17 @@ While Loader conjectures that order $5$ may suffice, neither Loader's technique 
 Constraining the shape of candidate solutions both in the present work as well as in Loader's proof seems to necessitate order $6$.
 While $\beta$-matching at order $4$ is decidable~\cite{Padovani00}, decidability at order $5$ remains an open question.
 
+As pointed out in Remark~\ref{rem:typing-break}, the presented approach might be adapted to an untyped scenario.
+This would require more effort with respect to syntactic constraints (cf.\,Section~\ref{sec:undec}), and presents an interesting direction for further exploration.
+
 Interaction with a proof assistant supported the formation process of the present approach.
 While proofs of the individual lemmas are quite simplistic, they involve exhaustive case analyses and are sensitive to the exact details of the underlying construction.
 Bookkeeping capabilities of the Coq proof assistant and quick adaptability to an evolving construction were of great benefit.
 Additionally, once all cases are covered, there is no room for doubt that the construction is correct.
 As a result, the proof was developed via interaction with the proof assistant prior to being transcribed into a traditional written format.
+
+
+
 
 %\newpage
 
