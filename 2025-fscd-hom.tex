@@ -46,7 +46,7 @@
 
 %\acknowledgements{I want to thank \dots}%optional
 
-%\nolinenumbers %uncomment to disable line numbering
+\nolinenumbers %uncomment to disable line numbering
 
 %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \EventEditors{John Q. Open and Joan R. Access}
@@ -432,11 +432,11 @@ Undecidability of Problem $\0^+ \Rightarrow^* \1^+$ is mechanized as part of Coq
 In this section we develop our main result (Theorem~\ref{thm:ssts_to_hom}): a reduction from the rewriting problem $\0^+ \Rightarrow^* \1^+$ to higher-order $\beta$-matching.
 
 For the remainder of the section we fix the simple semi-Thue system $\frakR := \{R_1, \ldots, R_L\}$ with $L > 0$ rules over the finite alphabet $\{\0, \1, \2, \ldots, \mathbf{K}\}$.
-Our approach is to construct simply typed terms which capture the two main aspects of the rewriting problem $\0^+ \Rightarrow^* \1^+$: the search for a sufficiently long starting sequence of $\0$s, and the individual rewriting steps to the resulting sequence of $\1$s.
+Our approach is to construct simply typed terms which capture the two main aspects of the rewriting problem $\0^+ \Rightarrow^* \1^+$: the search for a sufficiently long starting sequence of $\0$s, and the individual rewriting steps to the desired sequence of $\1$s.
 
 The remainder of the present section is structured as follows.
 First, we fix basic notation, encoding, and properties of the rewriting in the system $\frakR$.
-Second, we constraint the shape of potential solutions for the constructed matching instance, similarly to Example~\ref{xmp:no-ad-hoc}.
+Second, we restrict the shape of potential solutions for the constructed matching instance, similarly to Example~\ref{xmp:no-ad-hoc}.
 Third, for solutions of restricted shape we capture the functional properties of the rewriting problem $\0^+ \Rightarrow^* \1^+$.
 
 \subsection*{Notation}
@@ -452,7 +452,7 @@ For $k \in \bbN$, distinct $i_1, \ldots, i_k \in \calA$, and terms $M_1, \ldots,
 &\text{ where } N_i = \begin{cases} M_j & \text{if } i = i_j\\M & \text{otherwise}\end{cases}
 \end{align*}
 \end{definition}
-A particular term $\delta_i$ for $i \in \calA$, which we will use commonly is:
+A particular term $\delta_i$ for $i \in \calA$, which we use commonly is:
 \[\delta_i := \lambda x.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{x}{\top \mapsto s_i}{s_\bot}\]
 We have $\emptyset \vdash \delta_i : \kappa \to \kappa$, and the following Lemma~\ref{lem:delta} specifies the behavior of $\delta_i$.
 
@@ -468,8 +468,8 @@ We identify the shape of \enquote{well-formed} terms, suitable to represent rewr
 In the following Definition~\ref{def:ring} terms in the set $\calQ_m$ capture consecutive rule application for a word of length $m + 1$, ending in the word $\1^{m+1}$ (represented by $z_\1 \in \calQ_m$).
 The subterm $r_i\,p_j$ (and $r_i\,(\lambda w.p_j\,w)$) for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$ indicates an application of the rule $R_i$ at position $j$.
 Additionally, terms in the set $\calR_m$ capture consecutive increase of word length starting with $m+1$, and initialization with $\0$s before rewriting (represented by $z_\0\,N\,M \in \calR_m$ for $M \in \calQ_m$).
-Specifically, the subterm $(z_\star\,N\,(\lambda p_{m+1}.M))$ introduces an additional bound variable $p_{m+1}$ in order the argue about rule application at position $m+1$ in the longer word.
-As a special case, terms in $\calR_1$ represent candidates witnessing an arbitrary expansion of a word of length $2$, followed by initialization with $\0$s, and consecutively rewritten to $\1$s.
+Specifically, the subterm $z_\star\,N\,(\lambda p_{m+1}.M)$ introduces an additional bound variable $p_{m+1}$ in order the argue about rule application at position $m+1$ in the longer word.
+Consequently, terms in $\calR_1$ represent witnesses for an arbitrary expansion of a word starting with length $2$, followed by initialization with $\0$s, and consecutive rule application (potentially ending in $\1$s).
 
 \begin{definition}[Sets $\calQ_m$, $\calR_m$ of Terms]\label{def:ring}
 For $m > 0$ let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules:
@@ -622,7 +622,7 @@ Overall, this corresponds to $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\
 
 Having only \enquote{well-formed} terms to consider (cf. Example~\ref{xmp:ad-hoc} and Example~\ref{xmp:no-ad-hoc}), we can focus on the functional part of rewriting.
 
-\subsection*{Semantic Constrains}
+\subsection*{Semantic Constraints}
 
 We formulate typed terms (Definition~\ref{def:G}) and $\beta$-equivalence constraints characterizing word expansion (Lemma~\ref{lem:R_ssts_sem}) and rewriting (Lemma~\ref{lem:Q_ssts_sem}).
 The presented terms are programs which realize the intended meaning (Example~\ref{xmp:H}) of \enquote{well-formed} terms in $\calQ_m$ and $\calR_m$.
