@@ -100,6 +100,9 @@
 \newcommand{\0}{\mathbf{0}}
 \newcommand{\1}{\mathbf{1}}
 \newcommand{\2}{\mathbf{2}}
+\newcommand{\3}{\mathbf{3}}
+\newcommand{\4}{\mathbf{4}}
+\newcommand{\5}{\mathbf{5}}
 \newcommand{\K}{\mathbf{K}}
 
 \newcommand{\case}[2]{\ensuremath{\textnormal{\textbf{case }} #1 \textnormal{\textbf{ of }} \langle #2 \rangle}}
@@ -471,14 +474,14 @@ Additionally, terms in the set $\calR_m$ capture consecutive increase of word le
 Specifically, the subterm $z_\star\,N\,(\lambda p_{m+1}.M)$ introduces an additional bound variable $p_{m+1}$ in order the argue about rule application at position $m+1$ in the longer word.
 Consequently, terms in $\calR_1$ represent witnesses for an arbitrary expansion of a word starting with length $2$, followed by initialization with $\0$s, and consecutive rule application (potentially ending in $\1$s).
 
-\begin{definition}[Sets $\calQ_m$, $\calR_m$ of Terms]\label{def:ring}
+\begin{definition}[Sets $\calQ_m$\;\coq{L1593}, $\calR_m$\;\coq{L1600} of Terms]\label{def:ring}
 For $m > 0$ let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules:
 \begin{itemize}
 \item $z_\1 \in \calQ_m$
-\item If $M \in \calQ_m$ then $(r_i\,p_j\,M) \in \calQ_m$ for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$
-\item If $M \in \calQ_m$ then $(r_i\,(\lambda w.p_j\,w)\,M) \in \calQ_m$ for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$
-\item If $M \in \calQ_m$ then $(z_\0\,N\,M) \in \calR_m$
-\item If $M \in \calR_{m+1}$ then $(z_\star\,N\,(\lambda p_{m+1}.M)) \in \calR_m$
+\item if $M \in \calQ_m$ then $(r_i\,p_j\,M) \in \calQ_m$ for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$
+\item if $M \in \calQ_m$ then $(r_i\,(\lambda w.p_j\,w)\,M) \in \calQ_m$ for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$
+\item if $M \in \calQ_m$ then $(z_\0\,N\,M) \in \calR_m$
+\item if $M \in \calR_{m+1}$ then $(z_\star\,N\,(\lambda p_{m+1}.M)) \in \calR_m$
 \end{itemize}
 \end{definition}
 
@@ -488,7 +491,7 @@ Terms in $\calR_1$ are inspired by inhabitants in a refinement~\cite[Lemma~4.4]{
 
 Free variables occurring in terms in $\calQ_m$ and $\calR_m$ are assigned simple types according to the following type environment $\Gamma_m$.
 
-\begin{definition}[Type Environment $\Gamma_m$]\label{def:Gamma}
+\begin{definition}[Type Environment $\Gamma_m$\;\coq{L459}]\label{def:Gamma}
 For $m > 0$ let
 \begin{align*}
 \Gamma_m &:= \{ \begin{aligned}[t]
@@ -501,7 +504,7 @@ For $m > 0$ let
 
 Similarly to Example~\ref{xmp:no-ad-hoc}, we formulate typed terms (Definition~\ref{def:H}) and $\beta$-equivalence constraints characterizing members of $\calQ_m$ (Lemma~\ref{lem:ring2}) and $\calR_m$ (Lemma~\ref{lem:ring1}).
 
-\begin{definition}[Typed Terms $H_\star, H_\0, H_R$]\label{def:H}
+\begin{definition}[Typed Terms $H_\star$\;\coq{L597}, $H_\0$\;\coq{L598}, $H_R$\;\coq{L599}]\label{def:H}
 \begin{align*}
 H_\star := &\lambda h.\lambda g.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot. \caseelse{g\,\delta_\bullet}{\$ \mapsto s_\$}{s_\bot}\\
 H_\0 := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{x}{\1 \mapsto s_\$}{s_\bot}\\
@@ -516,7 +519,7 @@ H_R := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top
 
 We introduce substitutions $S_F$ and $S_H$ acting on the term variables $\{z_\star, z_\1, z_\0, r_1, \ldots, r_L\}$, which occur in terms in $\calQ_m$ and $\calR_m$.
 
-\begin{definition}[Substitutions $S_F$, $S_H$]\label{def:SF_SH}
+\begin{definition}[Substitutions $S_F$\;\coq{L519}, $S_H$\;\coq{L602}]\label{def:SF_SH}
 ~\\
 $\begin{array}{lllllll}
 S_F(z_\star) := \lambda h.\lambda g.g\,I &\quad&
@@ -609,12 +612,11 @@ In congruence with Theorem~\ref{thm:shape} we have:\\
 $\begin{array}{ll}
 (\lambda r_1 r_2 r_3.\lambda z_\0 z_\1 z_\star p_1.M)\,I\,I\,I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u\\
 (\lambda r_1 r_2 r_3.\lambda z_\0 z_\1 z_\star p_1.M)\,H_R\,H_R\,H_R\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$}
-\end{array}$
-
-While Theorem~\ref{thm:shape} only establishes \enquote{well-formedness}, the term $M$ has an intended meaning.
-Specifically, an initial word of length $2$ is expanded twice (using $z_\star$) to a word of length $4$ and initialized to $\0$s (using $z_\0$).
+\end{array}$\\
+While Theorem~\ref{thm:shape} only establishes \enquote{well-formedness}, the term $M$ has an intended meaning:
+An initial word of length $2$ is expanded twice (using $z_\star$) to a word of length $4$ and initialized to $\0$s (using $z_\0$).
 The introduced variables $p_2$ and $p_3$ are used to address positions in the longer word.
-The intended meaning of $N$ is that the first rule (using $r_1$) is applied at position $2$ (using $p_2$), followed by the second rule at position $1$ and third rule at position $3$ accordingly.
+The intended meaning of $N$ is that the first rule (using $r_1$) is applied at position $2$ (using $p_2$), followed by the second rule at position $1$, and third rule at position $3$ accordingly.
 The resulting word contains only $\1$s (indicated by $z_\1$).
 Overall, this corresponds to $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$.
 
@@ -628,7 +630,7 @@ We formulate typed terms (Definition~\ref{def:G}) and $\beta$-equivalence constr
 The presented terms are programs which realize the intended meaning (Example~\ref{xmp:H}) of \enquote{well-formed} terms in $\calQ_m$ and $\calR_m$.
 Specifically, $G_\star$ realizes word expansion, $G_\0$ realizes initialization with $\0$s, $G_{ab \Rightarrow cd}$ realizes rule application, and $G_j^i$ addresses position $i$ for rule application at position $j$.
 
-\begin{definition}[Typed Terms $G_\star$, $G_\0$, $G_{ab \Rightarrow cd}$, $G_i^j$]
+\begin{definition}[Typed Terms $G_\star$\;\coq{L794}, $G_\0$\;\coq{L812}, $G_{ab \Rightarrow cd}$\;\coq{L823}, $G_i^j$\;\coq{L788}]
 \label{def:G}
 \begin{align*}
 G_\star := &\lambda h.\lambda g.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\case{h\,\pi_\top}{s_\bot\\
@@ -651,27 +653,27 @@ G_j^i := &\begin{cases}
 \end{align*}
 \[\emptyset \vdash G_\star : \Gamma_m(z_\star) \qquad\quad
 \emptyset \vdash G_\0 : \Gamma_m(z_\0) \qquad\quad
-\emptyset \vdash G_{ab \to cd} : \Gamma_m(r_i) \text{ for } i \in \{1, \ldots, L\}\]
+\emptyset \vdash G_{ab \Rightarrow cd} : \Gamma_m(r_i) \text{ for } i \in \{1, \ldots, L\}\]
 \end{definition}
 
 Similarly to substitutions $S_F$ and $S_H$, we introduce the following substitution $S_G$.
 
-\begin{definition}[Substitution $S_G$]\label{def:S_G}
+\begin{definition}[Substitution $S_G$\;\coq{L834}]\label{def:S_G}
 \[S_G(z_\star) := G_\star \qquad
 S_G(z_\1) := \pi_\1 \qquad
 S_G(z_\0) := G_\0 \qquad
 S_G(r_j) := G_{R_j} \text{ for } j \in {1, \ldots L}\]
 \end{definition}
 
-The following Example~\ref{xmp:rule} illustrates application of a term $G_{ab \Rightarrow cd}$.
+The following Example~\ref{xmp:rule} illustrates how the term $G_{ab \Rightarrow cd}$ represents rule application.
 
 \begin{example}\label{xmp:rule}
-Consider the rule $bc \Rightarrow b'c'$ applied at position $2$ in order to rewrite the word $abcd$ to $ab'c'd$. Accordingly, we have:
+Consider for symbols $\0, \1, \ldots, \5$ an application of the rule $\1\2 \Rightarrow \4\5$ at position $2$ in order to rewrite the word $\0\1\2\3$ to $\0\4\5\3$. Accordingly, we have:
 \begin{description}
-\item[Position $1$:] $G_{bc \Rightarrow b'c'}\,G_2^1\,\pi_a =_\beta \pi_a$
-\item[Position $2$:] $G_{bc \Rightarrow b'c'}\,G_2^2\,\pi_{b'} =_\beta \pi_b$
-\item[Position $3$:] $G_{bc \Rightarrow b'c'}\,G_2^3\,\pi_{c'} =_\beta \pi_c$
-\item[Position $4$:] $G_{bc \Rightarrow b'c'}\,G_2^4\,\pi_d =_\beta \pi_d$
+\item[Position $1$:] $G_{\1\2 \Rightarrow \4\5}\,G_2^1\,\pi_\0 =_\beta \pi_\0$
+\item[Position $2$:] $G_{\1\2 \Rightarrow \4\5}\,G_2^2\,\pi_{\4} =_\beta \pi_\1$
+\item[Position $3$:] $G_{\1\2 \Rightarrow \4\5}\,G_2^3\,\pi_{\5} =_\beta \pi_\2$
+\item[Position $4$:] $G_{\1\2 \Rightarrow \4\5}\,G_2^4\,\pi_\3 =_\beta \pi_\3$
 \end{description}
 \end{example}
 
@@ -686,7 +688,7 @@ The above observation is generalized for terms in $\calQ_m$ in the following Lem
 %  SSTS.multi_step rules v (repeat 1 (S m)).
 
 \begin{lemma}\label{lem:Q_ssts_sem}
-For $m > 0$ let $a_1, \ldots, a_{m + 1} \in \{\0, \1, \ldots, \K\}$, and $M \in \calQ_m$. If $\Gamma_m \vdash M : \kappa$,\\
+For $m > 0$ let $a_1, \ldots, a_{m + 1} \in \{\0, \1, \ldots, \K\}$ and $M \in \calQ_m$. If $\Gamma_m \vdash M : \kappa$,\\
 $S_G(M)[p_1 := G_1^0, \ldots, p_m := G_m^0] =_\beta \pi_\1$, and
 $S_G(M)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_{a_i}$ for $i \in \{1, \ldots, m+1\}$,
 then $a_1 \ldots a_{m + 1} \Rightarrow_\frakR^* \1^{m+1}$.
@@ -756,16 +758,16 @@ S_G(M_3)[p_1 := \delta_\bullet, p_2 := \delta_\bullet, p_3 := \delta_\0] =_\beta
 \end{array}$\\
 Additionally, $M_2 \in \calR_2$, $M_1 \in \calR_1$, and the following $\beta$-equivalences hold:\\
 $\begin{array}{l}
-S_G(M_1)[p_1 := \delta_\bullet] =_\beta \pi_\$\\
-S_G(M_1)[p_1 := \delta_\1] =_\beta \pi_\0\\
-S_G(M_1)[p_1 := \delta_\0] =_\beta \pi_\1
-\end{array}$
-\qquad
-$\begin{array}{l}
 S_G(M_2)[p_1 := \delta_\bullet, p_2 := \delta_\bullet] =_\beta \pi_\$\\
 S_G(M_2)[p_1 := \delta_\1, p_2 := \delta_\bullet] =_\beta \pi_\0\\
 S_G(M_2)[p_1 := \delta_\0, p_2 := \delta_\1] =_\beta \pi_\0\\
 S_G(M_2)[p_1 := \delta_\bullet, p_2 := \delta_\0] =_\beta \pi_\1
+\end{array}$
+\qquad
+$\begin{array}{l}
+S_G(M_1)[p_1 := \delta_\bullet] =_\beta \pi_\$\\
+S_G(M_1)[p_1 := \delta_\1] =_\beta \pi_\0\\
+S_G(M_1)[p_1 := \delta_\0] =_\beta \pi_\1
 \end{array}$
 
 In combination with the previous Example~\ref{xmp:G_Q}, the term $M_1 \in \calR_1$ represents word expansion up to length $4$, followed by initialization with $\0$s, and rewriting to $\1$s.
@@ -794,10 +796,10 @@ Then, the solution is $M := \lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1
 
 The direction from right to left is proceeds in two steps.
 First, by Theorem~\ref{thm:shape} we have $\lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.M'$ for some $M' \in \calR_1$.
-Second, by Lemma~\ref{lem:R_ssts_sem} and Lemma~\ref{lem:Q_ssts_sem} we have $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ for some $n > 0$.
+Second, by Lemma~\ref{lem:R_ssts_sem} and Lemma~\ref{lem:Q_ssts_sem} we have $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ for some $n \in \bbN$.
 \end{proof}
 
-Finally, we present constraints from the above Lemma~\ref{lem:ssts_to_constr} as an instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of Higher-order $\beta$-Matching.
+Finally, we present the combination constraints from the above Lemma~\ref{lem:ssts_to_constr} as a matching instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$.
 This constitutes the main result of the present work.
 
 \begin{theorem}\label{thm:ssts_to_hom}
@@ -807,9 +809,9 @@ Problem $\0^+ \Rightarrow^* \1^+$ many-one reduces to higher-order $\beta$-match
 \begin{proof}[Proof\;\coq{L2880}.]
 Given a simple semi-Thue system $\frakR = \{R_1, \ldots, R_L\}$ due to Lemma~\ref{lem:ssts_to_constr} there exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ iff the instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of higher-order $\beta$-matching is solvable, where
 \begin{itemize}
-\item $F_\frakR := \lambda x.\lambda y.y \begin{array}[t]{l}
-(\lambda u.x\,\underbracket{I \ldots I}_{L \text{ times}}\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I)\\
-(x\,\underbracket{H_R \ldots H_R}_{L \text{ times}}\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet)\\
+\item $F_\frakR := \lambda x.\lambda y.y\,\begin{array}[t]{@{}l}
+(\lambda u.x \underbracket{I \ldots I}_{L \text{ times}}\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I)\\
+(x \underbracket{H_R \ldots H_R}_{L \text{ times}}\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet)\\
 (x\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_{1}\,G_\star\,\delta_\bullet)\\
 (x\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_{1}\,G_\star\,\delta_\1)\\
 (x\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_{1}\,G_\star\,\delta_\0)
@@ -823,7 +825,7 @@ Given a simple semi-Thue system $\frakR = \{R_1, \ldots, R_L\}$ due to Lemma~\re
 \end{proof}
 
 \begin{theorem}\label{thm:hom_undec}
-Higher-order $\beta$-Matching (Problem~\ref{prb:hom}) is undecidable.
+Higher-order $\beta$-matching (Problem~\ref{prb:hom}) is undecidable.
 \end{theorem}
 
 \begin{proof}[Proof\;\coqextra{LambdaCalculus/HOMatching\_undec.v\#L16}]
@@ -902,7 +904,7 @@ The following Remark~\ref{rem:G} shows the structure of the corresponding finite
 \begin{remark}\label{rem:G}
 Terms in Definition~\ref{def:G} realize certain finite functions as follows.
 \begin{itemize}
-\item $\delta_i$ for $i \in \calA$ realizes a member of the finite function family specified by the partial function table ${\small\left(\begin{array}{l}
+\item $\delta_i$ for $i \in \calA$ realizes a member of the finite function family specified by the partial function table ${\setlength{\arraycolsep}{1pt}\small\left(\begin{array}{l}
 \top \mapsto i\end{array}\right)}$.
 \item $G_\0$ realizes a member of the family specified by ${\small\left(\begin{array}{l}
 (\top \mapsto \bullet) \mapsto (\0 \mapsto \0)\\
@@ -961,7 +963,7 @@ As a result, the proof is simpler to verify in full detail and yields a concise 
 Additionally, undecidability of Problem $\0^+ \Rightarrow^* \1^+$ is already mechanized, and is part the Coq Library of Undecidability Proofs.
 
 Besides the main technical result, we argue that the present approach is uniformly applicable to show undecidability of intersection type inhabitation and $\lambda$-definability.
-The former is already established as refinement~\cite{DudenhefnerR19} of Urzyczyn's undecidability result~\cite{Urzyczyn09}.
+The former is already established and implemented as refinement~\cite{DudenhefnerR19} of Urzyczyn's undecidability result~\cite{Urzyczyn09}.
 The latter is an application of the known correspondence between intersection type inhabitation and $\lambda$-definability~\cite{SalvatiMGB12}.
 
 The \emph{order} of a type is the maximal nesting depth of the arrow type constructor to the left, starting by $\text{order}(\ga) = 1$.
