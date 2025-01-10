@@ -159,8 +159,8 @@ extendedchars=false,}
 \section{Introduction}
 
 Higher-order $\beta$-unification in the simply typed $\lambda$-calculus is the following decision problem: given two simply typed $\lambda$-terms $M, N$, is there a substitution $S$ such that the instance $S(M)$ is $\beta$-equivalent to the instance $S(N)$?
-Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether the $\beta$-matching problem~\cite{Huet75} (the right-hand side term $N$ does not contain free variables) is decidable\footnote{Dowek~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
-An equivalent presentation of higher-order $\beta$-matching (cf.\,Statman's range question~\cite{Statman82}) is: given a term $F$ which can be assigned the simple type $\sigma \to \tau$ and a term $N$ which can be assigned the simple type $\tau$, is there a term $M$ which can be assigned the simple type $\sigma$ such that $F\,M$ is $\beta$-equivalent to $N$?
+Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether $\beta$-matching~\cite{Huet75} (the right-hand side term $N$ does not contain free variables) is decidable\footnote{Dowek~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
+An equivalent presentation of higher-order $\beta$-matching (cf.\,Statman's range question~\cite{Statman82}) is: given a term~$F$ typed by the simple type $\sigma \to \tau$ and a term $N$ typed by the simple type $\tau$, is there a term~$M$ typed by the simple type $\sigma$ such that $F\,M$ is $\beta$-equivalent to $N$?
 
 Decidability of higher-order $\beta$-matching was answered negatively\footnote{Not to be confused with the positive answer by Stirling~\cite{Stirling09} for higher-order $\beta\eta$-matching.} by Loader~\cite{Loader03} by reduction from a variant of $\lambda$-definability.
 Loader's proof introduces intricate machinery to formulate $\beta$-matching constraints which specify arbitrary finite functions.
@@ -200,7 +200,7 @@ Statements and proofs in the digital version of the present work are linked to t
 %\newpage
 
 \section{Preliminaries}\label{sec:prelim}
-In the present section we fix preliminaries and basic notation, following standard literature~\cite{Barendregt13book}.
+In this section we fix preliminaries and basic notation, following standard literature~\cite{Barendregt13book}.
 \paragraph*{Higher-order $\beta$-Matching in the Simply Typed $\lambda$-Calculus}
 
 The syntax of untyped $\lambda$-terms is given in the following Definition~\ref{def:terms}.
@@ -331,12 +331,12 @@ Another solution is $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$, which utiliz
 
 Unfortunately, there are solutions to the above matching instance which behave differently.
 One such solution is $\lambda f.\lambda s.\pi_3$, for which we also have $F\,(\lambda f.\lambda s.\pi_3) =_\beta \pi_3$.
-In this case, the element $3$ is constructed \enquote{ad-hoc}, with no reference to the provided arguments.
+In this case, the element $3$ is constructed \enquote{ad hoc}, with no reference to the provided arguments.
 Another solution is the term $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$.
 This solution exploits the exact representation of elements via projections, disregarding any intended meaning of the underlying representation.
 \end{example}
 
-In the above Example~\ref{xmp:ad-hoc} we would like to exclude certain ad-hoc solutions, in order to faithfully encode intended functional behavior.
+In the above Example~\ref{xmp:ad-hoc} we would like to exclude certain ad hoc solutions, in order to faithfully encode intended functional behavior.
 Towards this aim, a known technique how to restrict the shape of solutions is illustrated in the following Example~\ref{xmp:no-ad-hoc}.
 
 \begin{example}[{\cite[Proposition~3.4]{Dowek01}}]\label{xmp:no-ad-hoc}
@@ -345,7 +345,7 @@ By case analysis on $M$ we have that $M = \lambda f.\lambda s.N$ for some term $
 Furthermore, $\{f : \kappa \to \kappa, s : \kappa\} \vdash N : \kappa$ and $N[f := \lambda x.x, s := u] =_\beta u$.
 Therefore, the term $N$ is not an abstraction.
 By induction on the size of $N$ and case analysis of the normal form we have that $N = s$ or $N = f\,(\ldots(f\,s)\ldots)$.
-Since the term $M$ contains exactly two $\lambda$-abstractions, it cannot be an ad-hoc solution from Example~\ref{xmp:ad-hoc}.
+Since the term $M$ contains exactly two $\lambda$-abstractions, it cannot be an ad hoc solution from Example~\ref{xmp:ad-hoc}.
 \end{example}
 
 Combining Example~\ref{xmp:ad-hoc} with Example~\ref{xmp:no-ad-hoc}, we formulate in the following Example~\ref{xmp:no-ad-hoc-combo} a matching instance which faithfully encodes the desired functional behavior.
@@ -358,7 +358,7 @@ Let $F := \lambda t.\lambda r.r\,(t\,G\,\pi_1)\,(\lambda u.t\,I\,u)$ and $N := \
 \end{itemize}
 The matching instance $F\,\mathsf{X} = N$ combines the matching instance from Example~\ref{xmp:ad-hoc} with the additional restriction from Example~\ref{xmp:no-ad-hoc}. 
 Therefore, solutions such as $\lambda f.\lambda s.f\,(f\,s)$ and $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$ from Example~\ref{xmp:ad-hoc} which follow the intended \enquote{meaning} of the underlying representation still solve $F\,\mathsf{X} = N$.
-However, ad-hoc solutions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$ from Example~\ref{xmp:ad-hoc} do not solve $F\,\mathsf{X} = N$ because such solutions contain too many $\lambda$-abstractions.
+However, ad hoc solutions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$ from Example~\ref{xmp:ad-hoc} do not solve $F\,\mathsf{X} = N$ because such solutions contain too many $\lambda$-abstractions.
 \end{example}
 
 \begin{remark}\label{rem:typing-break}
@@ -465,9 +465,7 @@ For $i, j \in \calA$ such that $i \neq j$ we have
 $\delta_i\,\pi_\top =_\beta \pi_i$ and $\delta_i\,\pi_j =_\beta \pi_\bot$.
 \end{lemma}
 
-%As is usual, we define $I := \lambda x.x$, and for the remainder of the present section we assign the simple type $\kappa \to \kappa$ to each occurrence of $I$.
-
-\subsection*{Syntactic Constrains}
+\subsection*{Syntactic Constraints}
 We identify the shape of \enquote{well-formed} terms, suitable to represent rewriting.
 In the following Definition~\ref{def:ring} terms in the set $\calQ_m$ capture consecutive rule application for a word of length $m + 1$, ending in the word $\1^{m+1}$ (represented by $z_\1 \in \calQ_m$).
 The subterm $r_i\,p_j$ (and $r_i\,(\lambda w.p_j\,w)$) for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$ indicates an application of the rule $R_i$ at position $j$.
@@ -797,7 +795,7 @@ First, by induction on the number of rewriting steps we construct a term $N \in 
 Second, by induction on $n$ we construct a term $M' \in \calR_1$ containing $N \in \calQ_n$ as a subterm (easy converse of Lemma~\ref{lem:R_ssts_sem}).
 Then, the solution is $M := \lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.M'$.
 
-The direction from right to left is proceeds in two steps.
+The direction from right to left proceeds in two steps.
 First, by Theorem~\ref{thm:shape} we have $\lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.M'$ for some $M' \in \calR_1$.
 Second, by Lemma~\ref{lem:R_ssts_sem} and Lemma~\ref{lem:Q_ssts_sem} we have $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ for some $n \in \bbN$.
 \end{proof}
