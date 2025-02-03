@@ -470,7 +470,7 @@ We identify the shape of \enquote{well-formed} terms, suitable to represent rewr
 In the following Definition~\ref{def:ring} terms in the set $\calQ_m$ capture consecutive rule application for a word of length $m + 1$, ending in the word $\1^{m+1}$ (represented by $z_\1 \in \calQ_m$).
 The subterm $r_i\,p_j$ (and $r_i\,(\lambda w.p_j\,w)$) for $i \in \{1, \ldots, L\}$ and $j \in \{1, \ldots, m\}$ indicates an application of the rule $R_i$ at position $j$.
 Additionally, terms in the set $\calR_m$ capture consecutive increase of word length starting with $m+1$, and initialization with $\0$s before rewriting (represented by $z_\0\,N\,M \in \calR_m$ for $M \in \calQ_m$).
-Specifically, the subterm $z_\star\,N\,(\lambda p_{m+1}.M)$ introduces an additional bound variable $p_{m+1}$ in order the argue about rule application at position $m+1$ in the longer word.
+Specifically, the subterm $z_\star\,N\,(\lambda p_{m+1}.M)$ introduces an additional bound variable $p_{m+1}$ in order to argue about rule application at position $m+1$ in the longer word.
 Consequently, terms in $\calR_1$ represent witnesses for an arbitrary expansion of a word starting with length $2$, followed by initialization with $\0$s, and consecutive rule application (potentially ending in $\1$s).
 
 \newpage
@@ -961,7 +961,7 @@ The mechanization is contributed to the existing Coq Library of Undecidability P
 
 While the existing proofs by Loader~\cite{Loader03} and by Joly~\cite{Joly05} are each based on variants of $\lambda$-definability, the presented proof reduces a rewriting problem (Problem $\0^+ \Rightarrow^* \1^+$) to higher-order $\beta$-matching.
 As a result, the proof is simpler to verify in full detail and yields a concise mechanization.
-Additionally, undecidability of Problem $\0^+ \Rightarrow^* \1^+$ is already mechanized, and is part the Coq Library of Undecidability Proofs.
+Additionally, undecidability of Problem $\0^+ \Rightarrow^* \1^+$ is already mechanized, and is part of the Coq Library of Undecidability Proofs.
 
 Besides the main technical result, we argue that the present approach is uniformly applicable to show undecidability of intersection type inhabitation and $\lambda$-definability.
 The former is already established and implemented as refinement~\cite{DudenhefnerR19} of Urzyczyn's undecidability result~\cite{Urzyczyn09}.
