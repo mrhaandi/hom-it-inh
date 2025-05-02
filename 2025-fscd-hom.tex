@@ -46,7 +46,7 @@
 
 \acknowledgements{I cincerely thank the anonymous reviewers for their constructive suggestions.}%optional
 
-%\nolinenumbers %uncomment to disable line numbering
+\nolinenumbers %uncomment to disable line numbering
 
 %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \EventEditors{John Q. Open and Joan R. Access}
@@ -110,9 +110,11 @@
 \newcommand{\ite}[4]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3 \textbf{ else } #4}}
 \newcommand{\itb}[3]{\ensuremath{\textbf{if } #1 \textbf{ is } #2 \textbf{ then } #3}}
 
-\newcommand{\coq}[1]{\textnormal{[\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/LambdaCalculus/Reductions/SSTS01\_to\_HOMbeta.v\##1}{\raisebox{-0.2em}{\includegraphics[width=0.6em]{coq-logo.pdf}}}]}}
-\newcommand{\coqextra}[1]{\textnormal{[\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/#1}{\raisebox{-0.2em}{\includegraphics[width=0.6em]{coq-logo.pdf}}}]}}
+\newcommand{\coq}[1]{\textnormal{[\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/LambdaCalculus/Reductions/SSTS01\_to\_HOMbeta.v\##1}{\raisebox{-0.2em}{\includegraphics[width=0.6em]{coq-logo-bw.pdf}}}]}}
+\newcommand{\coqextra}[1]{\textnormal{[\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/#1}{\raisebox{-0.2em}{\includegraphics[width=0.6em]{coq-logo-bw.pdf}}}]}}
 
+\newcommand{\coqleft}[1]{\mbox{}\marginpar{\raggedleft\textnormal{\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/LambdaCalculus/Reductions/SSTS01\_to\_HOMbeta.v\##1}{\raisebox{-0.09em}{\includegraphics[width=0.53em]{coq-logo-bw.pdf}}}\hspace*{-0.8em}}}}
+\newcommand{\coqextraleft}[1]{\mbox{}\marginpar{\raggedleft\textnormal{\href{https://github.com/uds-psl/coq-library-undecidability/blob/70dfc56f33a6e4835281044e68aa68279989047e/theories/#1}{\raisebox{-0.09em}{\includegraphics[width=0.53em]{coq-logo-bw.pdf}}}\hspace*{-0.8em}}}}
 \newcommand{\isep}{-0.4em}
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Abbreviations etc. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,7 +130,7 @@
 Higher-order $\beta$-matching is the following decision problem: given two simply typed $\lambda$-terms, can the first term be instantiated to be $\beta$-equivalent to the second term?
 This problem was formulated by Huet in the 1970s and shown undecidable by Loader in 2003 by reduction from $\lambda$-definability.
 
-The present work provides a novel undecidability proof for higher-order $\beta$-matching, in an effort to verify this result by means of a proof assistant in full detail.
+The present work provides a novel undecidability proof for higher-order $\beta$-matching, in an effort to verify this result by means of a proof assistant.
 Rather than starting from $\lambda$-definability, the presented proof encodes a restricted form of string rewriting as higher-order $\beta$-matching.
 The particular approach is similar to Urzyczyn's undecidability result for intersection type inhabitation.
 
@@ -162,15 +164,10 @@ Higher-order $\beta$-unification in the simply typed $\lambda$-calculus is the f
 Undecidability of higher-order $\beta$-unification was established by Huet~\cite{Huet73} in the 1970s, raising the question whether $\beta$-matching~\cite{Huet75} (the right-hand side term $N$ does not contain free variables) is decidable\footnote{Dowek~\cite{Dowek01} gives a comprehensive overview over unification and matching problems for the $\lambda$-calculus.}.
 An equivalent presentation of higher-order $\beta$-matching (cf.\,Statman's range question~\cite{Statman82}) is: given a term~$F$ typed by the simple type $\sigma \to \tau$ and a term $N$ typed by the simple type $\tau$, is there a term~$M$ typed by the simple type $\sigma$ such that $F\,M$ is $\beta$-equivalent to $N$?
 
-Decidability of higher-order $\beta$-matching was answered negatively\footnote{Not to be confused with the positive answer by Stirling~\cite{Stirling09} for higher-order $\beta\eta$-matching.} by Loader~\cite{Loader03} by reduction from a variant of $\lambda$-definability.
-Loader's proof introduces intricate machinery to formulate $\beta$-matching constraints which specify arbitrary finite functions.
-A later approach by Joly~\cite{Joly05} refines Loader's result, shifting technical challenges to undecidability of the underlying $\lambda$-definability problem.
-Both approaches render verification of the negative result in full detail (for example, by means of a mechanization in a proof assistant) quite challenging.
-
-%Second-order matching was established as decidable by Huet and Lang, providing a foundation for analyzing restricted cases of higher-order problems.
-%Third-order matching was shown to be decidable by Dowek, while fourth-order matching was tackled by Padovani, who provided decision procedures for specific subclasses.
-%The decisive shift occurs at higher orders. Loader’s seminal work demonstrated the undecidability of higher-order β-matching at order six, relying on intricate reductions and logical constructions. Loader’s proof extends to the encoding of definability problems in finite models, leveraging the complexity of these definability questions to establish undecidability.
-%The distinction between β-equivalence and beta-eta-equivalence adds further complexity to the landscape. While beta-eta-equivalence is more robust and often considered in the context of semantic equality, the undecidability results established by Loader pertain strictly to β-equivalence, leaving the status of beta-eta-matching undecided.
+Decidability of higher-order $\beta$-matching was answered negatively\footnote{Not to be confused with the positive answer by Stirling~\cite{Stirling09} for higher-order $\beta\eta$-matching.} by Loader~\cite{Loader03} by reduction from $\lambda$-definability.
+Loader introduces intricate machinery to formulate $\beta$-matching constraints which specify arbitrary finite functions.
+Later, Joly~\cite{Joly05} refined Loader's result, shifting technical challenges to underlying variant of $\lambda$-definability.
+The intricate machinery renders verification of both approaches by means of a proof assistant quite challenging.
 
 The present work presents a novel proof of the undecidability of higher-order $\beta$-matching, which is mechanized using the Coq proof assistant~\cite{Coq_2023}.
 The mechanization leaves no room for ambiguities and potential errors, complementing existing work on mechanized undecidability of higher-order $\beta$-unification~\cite{Spies020}.
@@ -195,7 +192,7 @@ it is uniformly applicable to prove undecidability of higher-order $\beta$-match
 \item[Section~\ref{sec:concl}:] Concluding remarks.
 \end{description}
 
-Statements and proofs in the digital version of the present work are linked to the corresponding mechanization, which is marked by the symbol\;\coqextra{LambdaCalculus/HOMatching.v}.
+Statements in the digital version of the present work are linked to the corresponding mechanization, which is marked by the symbol\;\coqextra{LambdaCalculus/HOMatching.v}.
 
 %\newpage
 
@@ -205,7 +202,8 @@ In this section we fix preliminaries and basic notation, following standard lite
 
 The syntax of untyped $\lambda$-terms is given in the following Definition~\ref{def:terms}.
 
-\begin{definition}[$\lambda$-Terms\;\coqextra{L/L.v\#L8}]\label{def:terms}
+\begin{definition}[$\lambda$-Terms]\label{def:terms}
+\coqextraleft{L/L.v\#L8}%
 \[
 M, N ::= x \mid M \, N \mid \lambda x.M \quad \text{where } a, \ldots, z \text{ range over term variables}
 \]
@@ -214,7 +212,8 @@ Substitution of the term variable $x$ in the term $M$ by the term $N$ is denoted
 As usual, term application associates to the left, and we may group consecutive $\lambda$-abstractions.
 We commonly refer to the term $\lambda x.x$ as $I$.
 
-\begin{definition}[$\beta$-Reduction\;\coqextra{LambdaCalculus/Lambda.v\#L53}]
+\begin{definition}[$\beta$-Reduction]
+\coqextraleft{LambdaCalculus/Lambda.v\#L53}%
 The relation $\to_\beta$ on terms is the contextual closure of $(\lambda x.M)\,N \to_\beta M[x := N]$.
 \end{definition}
 The $\beta$-equivalence relation $=_\beta$ is the reflexive, transitive, symmetric closure of $\to_\beta$.
@@ -225,7 +224,8 @@ In the simply typed $\lambda$-calculus we may assign to a term $M$ a simple type
 Similarly to prior work~\cite{Loader03}, one ground atom $\ga$ in the construction of simple types suffices for the negative result in the present work.
 Definition~\ref{def:stlc} contains the rules (Var), ($\to$I), and ($\to$E) of the simple type system.
 
-\begin{definition}[Simple Types with Ground Atom $\ga$\;\coqextra{LambdaCalculus/HOMatching.v\#L23}]
+\begin{definition}[Simple Types with Ground Atom $\ga$]
+\reversemarginpar\coqextraleft{LambdaCalculus/HOMatching.v\#L23}%
 \[
 \sigma, \tau ::= \ga \mid \sigma \to \tau
 \]
@@ -238,7 +238,8 @@ The arrow type constructor $\to$ associates to the right.
 \]
 \end{definition}
 
-\begin{definition}[Simple Type System\;\coqextra{LambdaCalculus/HOMatching.v\#L31}]\label{def:stlc}
+\begin{definition}[Simple Type System]\label{def:stlc}
+\reversemarginpar\coqextraleft{LambdaCalculus/HOMatching.v\#L31}%
 ~\\[4pt]
 \begin{tabular}{ccc}
 {\RightLabel{\textnormal{(Var)}}
@@ -279,10 +280,10 @@ The following Example~\ref{xmp:derive} illustrates a type derivation in the simp
 \end{minipage}
 \end{example}
 
-
 Higher-order $\beta$-matching is the following typed unification problem, for which only one side is subject to instantiation. 
 
-\begin{problem}[Higher-order $\beta$-Matching (${F}\,\mathsf{X} = N$)\;\coqextra{LambdaCalculus/HOMatching.v\#L37}]\label{prb:hom}
+\begin{problem}[Higher-order $\beta$-Matching (${F}\,\mathsf{X} = N$)]\label{prb:hom}
+\reversemarginpar\coqextraleft{LambdaCalculus/HOMatching.v\#L37}%
 Given terms $F, N$ and simple types~$\sigma, \tau$ such that $\emptyset \vdash F : \sigma \to \tau$ and $\emptyset \vdash N : \tau$, is there a term $M$ such that $\emptyset \vdash M : \sigma$ and $F\,M =_\beta N$?
 \end{problem}
 
@@ -404,18 +405,21 @@ Instead, we avoid $\lambda$-definability altogether and use a rewriting problem 
 
 A simple semi-Thue system (Definition~\ref{def:ssts}) is a rewriting system of restricted shape, introduced by Urzyczyn~\cite{Urzyczyn09} in order to show undecidability of intersection type inhabitation.
 
-\begin{definition}[Simple Semi-Thue System\;\coqextra{StringRewriting/SSTS.v\#L23}]\label{def:ssts}
+\begin{definition}[Simple Semi-Thue System]\label{def:ssts}
+\reversemarginpar\coqextraleft{StringRewriting/SSTS.v\#L23}%
 A semi-Thue system $\frakR$ over an alphabet $\calA$ is \emph{simple}, if each rule has the shape $ab \Rightarrow cd$ for $a,b,c,d \in \calA$.
 \end{definition}
 
 The reflexive, transitive closure of the rewriting relation for a given simple semi-Thue system~$\frakR$ is denoted $\Rightarrow_\frakR^*$.
 For arbitrary simple semi-Thue systems it is undecidable whether some non-empty sequence of $\0$s can be transformed into a non-empty sequence of $\1$s.
 
-\begin{problem}[$\0^+ \Rightarrow^* \1^+$\;\coqextra{StringRewriting/SSTS.v\#L37}]\label{prb:ssts01}
+\begin{problem}[$\0^+ \Rightarrow^* \1^+$]\label{prb:ssts01}
+\reversemarginpar\coqextraleft{StringRewriting/SSTS.v\#L37}%
 Given a simple semi-Thue system $\frakR$, does $\0^n \Rightarrow^*_\frakR \1^n$ hold for some $n > 0$?
 \end{problem}
 
-\begin{theorem}[{\cite[Lemma~3.3\;\coqextra{StringRewriting/SSTS\_undec.v\#L21}]{DudenhefnerR19}}]\label{thm:ssts_undec}
+\begin{theorem}[{\cite[Lemma~3.3]{DudenhefnerR19}}]\label{thm:ssts_undec}
+\reversemarginpar\coqextraleft{StringRewriting/SSTS\_undec.v\#L21}%
 Problem $\0^+ \Rightarrow^* \1^+$ is undecidable.
 \end{theorem}
 The following Example~\ref{xmp:ssts} illustrates a positive instance of Problem $\0^+ \Rightarrow^* \1^+$.
@@ -480,7 +484,7 @@ Consequently, terms in $\calR_1$ represent witnesses for an arbitrary expansion 
 
 \newpage
 
-\begin{definition}[Sets $\calQ_m$\;\coq{L1593}, $\calR_m$\;\coq{L1600} of Terms]\label{def:ring}
+\begin{definition}[Sets $\calQ_m$, $\calR_m$ of Terms]\label{def:ring}
 For $m > 0$, let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules:
 \begin{itemize}
 \item $z_\1 \in \calQ_m$
@@ -497,7 +501,8 @@ Terms in $\calR_1$ are inspired by inhabitants in a refinement~\cite[Lemma~4.4]{
 
 Free variables occurring in terms in $\calQ_m$ and $\calR_m$ are assigned simple types according to the following type environment $\Gamma_m$, such that terms in $\calQ_m$ and $\calR_m$ can be assigned the simple type $\kappa$.
 
-\begin{definition}[Type Environment $\Gamma_m$\;\coq{L459}]\label{def:Gamma}
+\begin{definition}[Type Environment $\Gamma_m$]\label{def:Gamma}
+\reversemarginpar\coqleft{L459}%
 For $m > 0$ let
 \begin{align*}
 \Gamma_m &:= \{ \begin{aligned}[t]
@@ -510,7 +515,7 @@ For $m > 0$ let
 
 Similarly to Example~\ref{xmp:no-ad-hoc}, we formulate typed terms (Definition~\ref{def:H}) and $\beta$-equivalence constraints characterizing members of $\calQ_m$ (Lemma~\ref{lem:ring2}) and $\calR_m$ (Lemma~\ref{lem:ring1}).
 
-\begin{definition}[Typed Terms $H_\star$\;\coq{L597}, $H_\0$\;\coq{L598}, $H_R$\;\coq{L599}]\label{def:H}
+\begin{definition}[Typed Terms $H_\star$, $H_\0$, $H_R$]\label{def:H}
 \begin{align*}
 H_\star := &\lambda h.\lambda g.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot. \caseelse{g\,\delta_\bullet}{\$ \mapsto s_\$}{s_\bot}\\
 H_\0 := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{x}{\1 \mapsto s_\$}{s_\bot}\\
@@ -525,7 +530,7 @@ H_R := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top
 
 We introduce substitutions $S_F$ and $S_H$ acting on the term variables $z_\star, z_\1, z_\0, r_1, \ldots, r_L$, which occur in terms in $\calQ_m$ and $\calR_m$.
 
-\begin{definition}[Substitutions $S_F$\;\coq{L519}, $S_H$\;\coq{L602}]\label{def:SF_SH}
+\begin{definition}[Substitutions $S_F$, $S_H$]\label{def:SF_SH}
 ~\\
 $\begin{array}{llll}
 S_F(z_\star) := \lambda h.\lambda g.g\,I ~&
@@ -547,6 +552,7 @@ S_H(r_j) := H_R \text{ for } j \in {1, \ldots L}
 %  | ring2_fin : ring2 l (var (S l)).
 
 \begin{lemma}\label{lem:ring2}
+\reversemarginpar\coqleft{L1687}%
 %Lemma construct_ring2 M m :
 %  normal_form M ->
 %  stlc (Gamma_A m) M A ->
@@ -559,7 +565,7 @@ $S_H(M)[p_1 := \delta_\bullet, \ldots, p_m := \delta_\bullet] =_\beta \pi_{\1}$,
 then $M \in \calQ_m$.
 \end{lemma}
 
-\begin{proof}[Proof\;\coq{L1687}.]
+\begin{proof}
 Induction on the size of $M$ and case analysis of the normal form.
 \end{proof}
 
@@ -570,6 +576,7 @@ Induction on the size of $M$ and case analysis of the normal form.
 %  | ring1_init M N : ring2 l M -> ring1 l (apps (var (2 + l)) [N; M]).
 
 \begin{lemma}\label{lem:ring1}
+\reversemarginpar\coqleft{L1825}%
 %Lemma construct_ring1 M m :
 %  normal_form M ->
 %  stlc (Gamma_A m) M A ->
@@ -582,13 +589,14 @@ $S_H(M)[p_1 := \delta_\bullet, \ldots, p_m := \delta_\bullet] =_\beta \pi_{\$}$,
 then $M \in \calR_m$.
 \end{lemma}
 
-\begin{proof}[Proof\;\coq{L1825}.]
+\begin{proof}
 Induction on the size of $M$, case analysis of the normal form, and Lemma~\ref{lem:ring2}.
 \end{proof}
 
 As a consequence of the above Lemma~\ref{lem:ring1}, the following Theorem~\ref{thm:shape} presents $\beta$-equivalence constraints which suffice to restrict the shape of terms under consideration.
 
 \begin{theorem}\label{thm:shape}
+\reversemarginpar\coqleft{L1932}%
 %Lemma solution_shape (M : term) :
 %  normal_form M ->
 %  (* correctly typed closed term *)
@@ -603,7 +611,7 @@ $M\,H_R \ldots H_R\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet =_\beta \pi_{\$}$,\\
 then $M = \lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.N$ for some term $N$ such that $N \in \calR_1$.
 \end{theorem}
 
-\begin{proof}[Proof\;\coq{L1932}.]
+\begin{proof}
 Induction on the size of $M$, case analysis of the normal form, and Lemma~\ref{lem:ring1}.
 \end{proof}
 
@@ -637,7 +645,7 @@ The presented terms are programs which realize the intended meaning (Example~\re
 Specifically, $G_\star$ realizes word expansion, $G_\0$ realizes initialization with $\0$s, $G_{ab \Rightarrow cd}$ realizes rule application, and $G_j^i$ controls the effect at position $i$ for rule application at position $j$.
 A~word of length $m$ is represented by $m + 1$ right-hand sides of $\beta$-equivalences.
 
-\begin{definition}[Typed Terms $G_\star$\;\coq{L794}, $G_\0$\;\coq{L812}, $G_{ab \Rightarrow cd}$\;\coq{L823}, $G_i^j$\;\coq{L788}]
+\begin{definition}[Typed Terms $G_\star$, $G_\0$, $G_{ab \Rightarrow cd}$, $G_i^j$]
 \label{def:G}
 \begin{align*}
 G_\star := &\lambda h.\lambda g.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\case{h\,\pi_\top}{s_\bot\\
@@ -665,7 +673,8 @@ G_j^i := &\begin{cases}
 
 Similarly to substitutions $S_F$ and $S_H$, we introduce the following substitution $S_G$.
 
-\begin{definition}[Substitution $S_G$\;\coq{L834}]\label{def:S_G}
+\begin{definition}[Substitution $S_G$]\label{def:S_G}
+\coqleft{L834}%
 \[S_G(z_\star) := G_\star \qquad
 S_G(z_\1) := \pi_\1 \qquad
 S_G(z_\0) := G_\0 \qquad
@@ -695,13 +704,14 @@ The above observation is generalized for terms in $\calQ_m$ in the following Lem
 %  SSTS.multi_step rules v (repeat 1 (S m)).
 
 \begin{lemma}\label{lem:Q_ssts_sem}
+\reversemarginpar\coqleft{L2106}%
 For $m > 0$, let $a_1, \ldots, a_{m + 1} \in \{\0, \1, \ldots, \K\}$ and $M \in \calQ_m$. If $\Gamma_m \vdash M : \kappa$,\\
 $S_G(M)[p_1 := G_1^0, \ldots, p_m := G_m^0] =_\beta \pi_\1$, and
 $S_G(M)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_{a_i}$ for $i \in \{1, \ldots, m+1\}$,
 then $a_1 \ldots a_{m + 1} \Rightarrow_\frakR^* \1^{m+1}$.
 \end{lemma}
 
-\begin{proof}[Proof\;\coq{L2106}.]
+\begin{proof}
 Induction on the size of $M$ and case analysis using Definition~\ref{def:ring}.
 \end{proof}
 
@@ -736,6 +746,7 @@ Complementarily to word rewriting, the following Lemma~\ref{lem:R_ssts_sem} char
 %    Forall (fun i => steps (subst (sigma_G (k + m) (S (S i))) M) (pi zero)) (seq 0 (k+m)).
 
 \begin{lemma}\label{lem:R_ssts_sem}
+\reversemarginpar\coqleft{L2017}%
 If $M \in \calR_1$ such that $\Gamma_1 \vdash M : \kappa$,\\
 $S_G(M)[p_1 := \delta_\bullet] =_\beta \pi_\$$,
 $S_G(M)[p_1 := \delta_\1] =_\beta \pi_\0$, and
@@ -745,7 +756,7 @@ $S_G(N)[p_1 := G_1^0, \ldots, p_m := G_m^0] =_\beta \pi_\1$, and
 $S_G(N)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_\0$ for $i \in \{1, \ldots, m+1\}$.
 \end{lemma}
 
-\begin{proof}[Proof\;\coq{L2017}.]
+\begin{proof}
 Considering the general case $M \in \calR_{m'}$ for $m' > 0$, induction on the size of $M$ and case analysis using Definition~\ref{def:ring}.
 \end{proof}
 
@@ -783,6 +794,7 @@ In combination with the previous Example~\ref{xmp:G_Q}, the term $M_1 \in \calR_
 Next, we combine syntactic and semantic constraints in the following key Lemma~\ref{lem:ssts_to_constr}.
 
 \begin{lemma}\label{lem:ssts_to_constr}
+\coqleft{L2758}%
 There exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ iff
 there exists a term $M$ in normal form, such that the following conditions hold:\\
 $\emptyset \vdash M : \Gamma_1(r_1) \to \cdots \to \Gamma_1(r_L) \to \Gamma_1(z_\0) \to \Gamma_1(z_\1) \to \Gamma_1(z_\star) \to \Gamma_1(p_1) \to \kappa$,\\
@@ -795,7 +807,7 @@ M\,G_{R_1} \ldots G_{R_L}\,G_\0\,\pi_\1\,G_\star\,\delta_\0 &=_\beta \pi_{\1}.
 \end{array}$
 \end{lemma}
 
-\begin{proof}[Proof\;\coq{L2758}.]
+\begin{proof}
 The direction from left to right proceeds in two steps.
 First, by induction on the number of rewriting steps we construct a term $N \in \calQ_n$ (easy converse of Lemma~\ref{lem:Q_ssts_sem}).
 Second, by induction on $n$ we construct a term $M' \in \calR_1$ containing $N \in \calQ_n$ as a subterm (easy converse of Lemma~\ref{lem:R_ssts_sem}).
@@ -810,10 +822,11 @@ Finally, we present the combination of constraints from the above Lemma~\ref{lem
 This constitutes the main result of the present work.
 
 \begin{theorem}\label{thm:ssts_to_hom}
+\coqleft{L2880}%
 Problem $\0^+ \Rightarrow^* \1^+$ many-one reduces to higher-order $\beta$-matching.
 \end{theorem}
 
-\begin{proof}[Proof\;\coq{L2880}.]
+\begin{proof}
 Given a simple semi-Thue system $\frakR = \{R_1, \ldots, R_L\}$ due to Lemma~\ref{lem:ssts_to_constr} there exists an $n \in \bbN$ such that $\0^{n+1} \Rightarrow_\frakR^* \1^{n+1}$ iff the instance $F_\frakR\,\mathsf{X} =_\beta N_\frakR$ of higher-order $\beta$-matching is solvable, where
 \begin{itemize}
 \item $F_\frakR := \lambda x.\lambda y.y\,\begin{array}[t]{@{}l}
@@ -832,10 +845,11 @@ Given a simple semi-Thue system $\frakR = \{R_1, \ldots, R_L\}$ due to Lemma~\re
 \end{proof}
 
 \begin{theorem}\label{thm:hom_undec}
+\coqextraleft{LambdaCalculus/HOMatching\_undec.v\#L16}%
 Higher-order $\beta$-matching (Problem~\ref{prb:hom}) is undecidable.
 \end{theorem}
 
-\begin{proof}[Proof\;\coqextra{LambdaCalculus/HOMatching\_undec.v\#L16}]
+\begin{proof}
 By reduction from the undecidable Problem $\0^+ \Rightarrow^* \1^+$ (Theorem~\ref{thm:ssts_undec} and Theorem~\ref{thm:ssts_to_hom}).
 \end{proof}
 
