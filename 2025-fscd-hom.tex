@@ -49,25 +49,25 @@
 \nolinenumbers %uncomment to disable line numbering
 
 %Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\EventEditors{John Q. Open and Joan R. Access}
-\EventNoEds{2}
-\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
-\EventShortTitle{CVIT 2016}
-\EventAcronym{CVIT}
-\EventYear{2016}
-\EventDate{December 24--27, 2016}
-\EventLocation{Little Whinging, United Kingdom}
+\EventEditors{Maribel Fern\'{a}ndez}
+\EventNoEds{1}
+\EventLongTitle{10th International Conference on Formal Structures for Computation and Deduction (FSCD 2025)}
+\EventShortTitle{FSCD 2025}
+\EventAcronym{FSCD}
+\EventYear{2025}
+\EventDate{July 14--20, 2025}
+\EventLocation{Birmingham, UK}
 \EventLogo{}
-\SeriesVolume{42}
-\ArticleNo{23}
+\SeriesVolume{337}
+\ArticleNo{14}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage[a-1b]{pdfx}
-\usepackage{wasysym} %\brokenvert
+%\usepackage[a-1b]{pdfx}
+%\usepackage{wasysym} %\brokenvert
 \usepackage{csquotes} %\enquote{} macro
 \usepackage{bussproofs}
 \usepackage{mathtools}
-\usepackage[dvipsnames]{xcolor}
+%\usepackage[dvipsnames]{xcolor}
 
 \theoremstyle{definition}
 \newtheorem{problem}[theorem]{Problem}
@@ -148,7 +148,7 @@ comment=[l]{(*},
 basicstyle=\ttfamily\footnotesize,
 keywordstyle=\color{blue},
 morekeywords={Inductive,Type,Theorem,Definition,exists,fun},
-commentstyle=\color{OliveGreen},
+commentstyle=\color{olive},
 backgroundcolor=\color{yellow!5},
 framerule=0.4pt,
 frame=single,
@@ -177,7 +177,6 @@ rather, we consider a known rewriting problem in a restricted class of semi-Thue
 The specific rewriting problem, referred to as $\0^+ \Rightarrow^* \1^+$, is: given a collection of rewrite rules of shape $ab \Rightarrow cd$, where $a,b,c,d$ are alphabet symbols, is there a non-empty sequence of $\0$s which can be transformed into a non-empty sequence of $\1$s?
 As a consequence of the different starting point, the presented proof is simpler to verify in full detail and yields a concise mechanization.
 The mechanization is incorporated into the existing Coq Library of Undecidability Proofs~\cite{CLUP20}, alongside the existing mechanization\footnote{The (Turing machine) Halting Problem is easily presented as Problem $\0^+ \Rightarrow^* \1^+$~\cite[Lemma~3.3]{DudenhefnerR19}.} of undecidability of the problem $\0^+ \Rightarrow^* \1^+$.
-%This entails a certified many-one reduction from the Turing machine Halting Problem to higher-order $\beta$-matching.
 
 The main inspiration for the novel approach in the present work is Urzyczyn's undecidability proof for intersection type inhabitation~\cite{Urzyczyn09}.
 Considering the relationship between the intersection type discipline and finite model theory~\cite{SalvatiMGB12}, the approach in the present work has an additional benefit:
@@ -913,32 +912,23 @@ the presented approach reducing Problem $\0^+ \Rightarrow^* \1^+$ to higher-orde
 
 The following Remark~\ref{rem:G} shows the structure of the corresponding finite model with respect to the present construction.
 
-%\begin{remark}\label{rem:H}
-%Terms in the above Definition~\ref{def:H} realize certain finite functions as follows.
-%\begin{itemize}
-%\item $H_\star$ realizes a member of the family $\left(\omega \mapsto ((\top \mapsto \bullet) \mapsto \$) \mapsto \$ \right)$.
-%\item $H_\0$ realizes a member of the family $(\omega \mapsto (\1 \mapsto \$))$.
-%\item $H_R$ realizes a member of the family $((\top \mapsto \bullet) \mapsto (\1 \mapsto \1))$.
-%\end{itemize}
-%\end{remark}
-
 \begin{remark}\label{rem:G}
 Terms in Definition~\ref{def:G} realize certain finite functions as follows.
 \begin{itemize}
-\item $\delta_i$ for $i \in \calA$ realizes a member of the finite function family specified by the partial function table ${\setlength{\arraycolsep}{1pt}\small\left(\begin{array}{l}
+\item $\delta_i$ for $i \in \calA$ realizes a member of the finite function family specified by the partial function table ${\setlength{\arraycolsep}{1pt}\left(\begin{array}{l}
 \top \mapsto i\end{array}\right)}$.
-\item $G_\0$ realizes a member of the family specified by ${\small\left(\begin{array}{l}
+\item $G_\0$ realizes a member of the family specified by ${\left(\begin{array}{l}
 (\top \mapsto \bullet) \mapsto (\0 \mapsto \0)\\
 (\top \mapsto \bullet) \mapsto (\1 \mapsto \$)\\
 (\top \mapsto \0) \mapsto (\0 \mapsto \1)\\
 (\top \mapsto \1) \mapsto (\0 \mapsto \0)
 \end{array}\right)}$.
-\item $G_{ab \Rightarrow cd}$ realizes a member of the family specified by ${\small\left(\begin{array}{l}
+\item $G_{ab \Rightarrow cd}$ realizes a member of the family specified by ${\left(\begin{array}{l}
 (\top \mapsto \1) \mapsto (c \mapsto a)\\
 (\top \mapsto \0) \mapsto (d \mapsto b)
 \end{array}\right)}$.
 % such that $G_{ab \Rightarrow cd} \, \delta_\bullet \, \pi_i =_\beta \pi_i$ for $i \in \calA$.
-\item $G_\star$ realizes a member of the family specified by ${\setlength{\arraycolsep}{1pt}\small\left(\begin{array}{l}
+\item $G_\star$ realizes a member of the family specified by ${\setlength{\arraycolsep}{1pt}\left(\begin{array}{l}
 (\top \mapsto \bullet) \mapsto ((\top \mapsto \bullet) \mapsto \0) \mapsto \0)\\
 (\top \mapsto \bullet) \mapsto \left(\left(\begin{array}{l}
 (\top \mapsto \bullet) \mapsto \$\\
@@ -1004,9 +994,6 @@ While proofs of the individual lemmas (cf.\,Section~\ref{sec:undec}) in the deve
 Bookkeeping capabilities of the Coq proof assistant, proof automation based on \texttt{auto} and \texttt{lia} tactics, and quick adaptability to an evolving construction were of great benefit.
 Additionally, once all cases are covered, there is no room for doubt that the construction is correct.
 As a result, the proof was developed via interaction with the proof assistant prior to being transcribed into a traditional written format.
-
-
-%\newpage
 
 \bibliography{bibliography}
 
