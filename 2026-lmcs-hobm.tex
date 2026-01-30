@@ -138,7 +138,20 @@ The main inspiration for the novel approach in the present work is Urzyczyn's un
 Considering the relationship between the intersection type discipline and finite model theory~\cite{SalvatiMGB12}, the approach in the present work has an additional benefit:
 it is uniformly applicable to prove undecidability of higher-order $\beta$-matching, intersection type inhabitation, and $\lambda$-definability.
 
-\subparagraph*{Paper organization} The present work is structured as follows: 
+The present work is an extended version of a conference article~\cite{Dudenhefner25}.
+TODO: It adds
+\begin{itemize}
+\item TODO: further proof details with respect to difficult cases (mechanization avalable and linked)
+\item TODO: Negative instance example: show that if term rewriting has no solution then also no matching solution
+\item TODO: xmp:H full beta equivalence, further explanations and intuitions in the text
+\item TODO: mechanization: Proof automation usage (auto, lia tactics mentioned in conclusion)
+\item TODO: code listing showing the definition of ring1 and ring2 predicates (currently only described textually)
+\item TODO: examples of intersection types inhabited iff solvable / not solvable 
+\end{itemize}
+
+ more examples (positive and negative rewriting to 
+
+\paragraph*{Paper organization} The present work is structured as follows: 
 \begin{description}
 \item[Section~\ref{sec:prelim}:] Preliminaries for the simply typed $\lambda$-calculus, higher-order $\beta$-matching, and simple semi-Thue systems (including the undecidable Problem $\0^+ \Rightarrow^* \1^+$).
 \item[Section~\ref{sec:undec}:] Reduction from Problem $\0^+ \Rightarrow^* \1^+$ to higher-order $\beta$-matching.
@@ -148,6 +161,8 @@ it is uniformly applicable to prove undecidability of higher-order $\beta$-match
 \end{description}
 
 Statements in the digital version of the present work are linked to the corresponding mechanization, which is marked by the symbol\;\coqextra{LambdaCalculus/HOMatching.v}.
+
+\newpage
 
 \section{Preliminaries}\label{sec:prelim}
 In this section we fix preliminaries and basic notation, following standard literature~\cite{Barendregt13book}.
@@ -171,9 +186,7 @@ The relation $\to_\beta$ on terms is the contextual closure of $(\lambda x.M)\,N
 \end{defi}
 The $\beta$-equivalence relation $=_\beta$ is the reflexive, transitive, symmetric closure of $\to_\beta$.
 
-\newpage
-
-In the simply typed $\lambda$-calculus we may assign to a term $M$ a simple type $\tau$ in type environment $\Gamma$, written $\Gamma \vdash M : \tau$.
+In the simply typed $\lambda$-calculus we may assign to a term $M$ a simple type $\tau$ in type environment $\Gamma$, written as the judgment $\Gamma \vdash M : \tau$.
 Similarly to prior work~\cite{Loader03}, one ground atom $\ga$ in the construction of simple types suffices for the negative result in the present work.
 Definition~\ref{def:stlc} contains the rules (Var), ($\to$I), and ($\to$E) of the simple type system.
 
@@ -216,6 +229,7 @@ The following Example~\ref{xmp:derive} illustrates a type derivation in the simp
 
 \begin{exa}\label{xmp:derive}~\\
 \begin{minipage}{\textwidth}
+\centering
 \smallskip
 \AxiomC{$(f : \ga \to \ga) \in \{u : \ga, f : \ga \to \ga\}$}
 \RightLabel{\textnormal{(Var)}}
@@ -242,12 +256,12 @@ Given terms $F, N$ and simple types~$\sigma, \tau$ such that $\emptyset \vdash F
 
 Undecidability of higher-order $\beta$-matching is shown by Loader~\cite{Loader03} using a reduction from a variant of $\lambda$-definability.
 
-\begin{thm}[{\cite[Theorem~5.5]{Loader03}}]
+\begin{thmC}[{\cite[Theorem~5.5]{Loader03}}]
 Higher-order $\beta$-matching is undecidable.
-\end{thm}
+\end{thmC}
 
 For the remainder of the present work we use the term \emph{matching} in order to refer to higher-order $\beta$-matching.
-Since simply typed terms are strongly normalizing and $\beta$-reduction is confluent~\cite{Barendregt13book}, the it suffices in Problem~\ref{prb:hom} to consider terms $F, M, N$ in normal form.
+Since simply typed terms are strongly normalizing and $\beta$-reduction is confluent~\cite{Barendregt13book}, it suffices in Problem~\ref{prb:hom} to consider terms $F, M, N$ in normal form.
 
 Let us get familiar with matching by means of several illustrating examples.
 The following Example~\ref{xmp:hom} illustrates a positive matching instance.
@@ -262,8 +276,6 @@ To be precise, we have the following two properties:
 \item $F\,M =_\beta \lambda y.(\lambda u.\lambda f.f\,u)\,y\,I =_\beta \lambda y.I\,y =_\beta N$
 \end{itemize}
 \end{exa}
-
-\newpage
 
 We want to encode certain functional behavior as a matching instance.
 The following Example~\ref{xmp:ad-hoc} shows a naive approach to such an encoding and its limitations. 
@@ -281,7 +293,7 @@ The intended \enquote{meaning} of this matching instance is: starting with the e
 One solution for this instance is the term $\lambda f.\lambda s.f\,(f\,s)$ for which we have:
 \[F\,(\lambda f.\lambda s.f\,(f\,s)) =_\beta f\,(f\,s)[f := G, s := \pi_1] =_\beta G\,\pi_2 =_\beta \pi_3\]
 This solution follows the intended meaning of the underlying representation, constructing the element $f_G(f_G(1)) = 3$.
-Another solution is $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$, which utilizes $f_G(f_G(f_G(f_G(f_G(1))))) = 3$.
+Another solution is $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$, which corresponds to $f_G(f_G(f_G(f_G(f_G(1))))) = 3$.
 
 Unfortunately, there are solutions to the above matching instance which behave differently.
 One such solution is $\lambda f.\lambda s.\pi_3$, for which we also have $F\,(\lambda f.\lambda s.\pi_3) =_\beta \pi_3$.
@@ -290,8 +302,11 @@ Another solution is the term $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$.
 This solution exploits the exact representation of elements via projections, disregarding any intended meaning of the underlying representation.
 \end{exa}
 
-In the above Example~\ref{xmp:ad-hoc} we would like to exclude certain ad hoc solutions, in order to faithfully encode intended functional behavior.
+In the above Example~\ref{xmp:ad-hoc} we would like to exclude certain unintended solutions, in order to faithfully encode intended functional behavior.
 Towards this aim, a known technique how to restrict the shape of solutions is illustrated in the following Example~\ref{xmp:no-ad-hoc}.
+We formulate an additional constraint that exclude the unintended solutions while preserving the intended ones.
+The key observation is that ad hoc solutions do not use the provided arguments or contain additional $\lambda$-abstractions (going under the hood of the encoding via projections).
+We can use a \emph{free variable}, to both enforce argument use and hinder the construction of additional $\lambda$-abstractions.
 
 \begin{exa}[{\cite[Proposition~3.4]{Dowek01}}]\label{xmp:no-ad-hoc}
 Consider a term $M$ in normal form such that $M\,I\,u =_\beta u$ where $u$ is a term variable, and $\emptyset \vdash M : (\kappa \to \kappa) \to \kappa \to \kappa$.
@@ -311,30 +326,27 @@ Let $F := \lambda t.\lambda r.r\,(t\,G\,\pi_1)\,(\lambda u.t\,I\,u)$ and $N := \
 \item $\emptyset \vdash N : (\kappa \to (\kappa \to \kappa) \to \ga) \to \ga$
 \end{itemize}
 The matching instance $F\,\mathsf{X} = N$ combines the matching instance from Example~\ref{xmp:ad-hoc} with the additional restriction from Example~\ref{xmp:no-ad-hoc}. 
-Therefore, solutions such as $\lambda f.\lambda s.f\,(f\,s)$ and $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$ from Example~\ref{xmp:ad-hoc} which follow the intended \enquote{meaning} of the underlying representation still solve $F\,\mathsf{X} = N$.
-However, ad hoc solutions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$ from Example~\ref{xmp:ad-hoc} do not solve $F\,\mathsf{X} = N$ because such solutions contain too many $\lambda$-abstractions.
+Meaningful solutions such as $\lambda f.\lambda s.f\,(f\,s)$ and $\lambda f.\lambda s.f\,(f\,(f\,(f\,(f\,s))))$ from Example~\ref{xmp:ad-hoc} still solve $F\,\mathsf{X} = N$.
+However, solutions with too many $\lambda$-abstractions such as $\lambda f.\lambda s.\pi_3$ or $\lambda f.\lambda s.\lambda x y z.f\,s\,z\,z\,z$ from Example~\ref{xmp:ad-hoc} do not.
 \end{exa}
 
 \begin{rem}\label{rem:typing-break}
-Without the restriction $\emptyset \vdash M : (\kappa \to \kappa) \to \kappa \to \kappa$ in Example~\ref{xmp:no-ad-hoc} the term $M := \lambda f.\lambda s.f\,f\,s$ satisfies $M\,I\,u =_\beta u$.
-However, Example~\ref{xmp:no-ad-hoc-combo} does not admit $M$ as a solution.
-The present work relies on well-typedness, but might be adapted to an untyped scenario.
+Without the typing restriction $\emptyset \vdash M : (\kappa \to \kappa) \to \kappa \to \kappa$ in Example~\ref{xmp:no-ad-hoc} the term $M := \lambda f.\lambda s.(f\,f)\,s$ satisfies $M\,I\,u =_\beta u$.
+While Example~\ref{xmp:no-ad-hoc-combo} does not admit the term $M$ as a solution, the present work relies on well-typedness.
 \end{rem}
 
-\newpage
-
-The following Remark~\ref{rem:eta-break} illustrates how the addition of $\eta$-reduction would make the technique from Example~\ref{xmp:no-ad-hoc-combo} (as well as Loader's approach) unsuitable.
+The following Remark~\ref{rem:eta-break} illustrates how the addition of $\eta$-reduction (contextual closure of $\lambda x.f\,x \to_\eta f$) undermines the technique from Example~\ref{xmp:no-ad-hoc-combo} (as well as Loader's approach).
 
 \begin{rem}\label{rem:eta-break}
-Example~\ref{xmp:no-ad-hoc} demonstrates how to restrict the number of abstractions in solutions.
-However, in the presence of $\eta$-reduction (contextual closure of $\lambda x.f\,x \to_\eta f$) this does not work, as shown below.
-Consider the terms $G := \lambda h.\lambda x y z.h\,y\,z\,x$, $\pi_1 = \lambda xyz.x$, $\pi_2 = \lambda xyz.y$, and $\pi_3 = \lambda xyz.z$ from Example~\ref{xmp:no-ad-hoc}.
+Example~\ref{xmp:no-ad-hoc} demonstrates how to limit abstractions in solutions.
+However, in the presence of $\eta$-reduction this does not work.
+Consider the term $G := \lambda h.\lambda x y z.h\,y\,z\,x$ from Example~\ref{xmp:no-ad-hoc}.
 The term $M := \lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 x\,z\,y)\,y\,z$ solves the matching instance in Example~\ref{xmp:no-ad-hoc-combo} because:\\
 $\arraycolsep=1.4pt\begin{array}[t]{lclcl}
 M\,G\,\pi_1 &=_\beta& \big(\lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 x\,z\,y)\,y\,z\big)\,G\,\pi_1
 &=_\beta& \lambda xyz.\pi_{1}\,(G\,\pi_1 x\,z\,y)\,y\,z\\
 &=_\beta& \lambda xyz.G\,\pi_1 x\,z\,y
-&=_\beta& \lambda xyz.\pi_1\,z\,y\,x =_\beta \lambda xyz.z = \pi_{3}
+&=_\beta& \lambda xyz.\pi_1\,z\,y\,x =_\beta \pi_{3}
 \end{array}$\\
 $\arraycolsep=1.4pt\begin{array}[t]{lclcl}
 M\,I\,u &=_\beta& \big(\lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 x\,z\,y)\,y\,z\big)\,I\,u
@@ -350,8 +362,8 @@ Loader's generalization is quite sophisticated, as it requires construction prin
 In the present work, we focus on a fragment which can be identified by inspection of intersection types occurring in the undecidability proof of intersection type inhabitation~\cite{Urzyczyn09,DudenhefnerR19} and their relationship to finite model theory~\cite{SalvatiMGB12}.
 This leads to a simpler undecidability proof and reveals a connection between matching, intersection type inhabitation, and $\lambda$-definability.
 The presented approach has similarities with Joly's~\cite{Joly05} refinement of Loader's proof.
-Joly shifts the technical burden to a particular $\lambda$-definability problem, which then is simpler to handle.
-Instead, we avoid $\lambda$-definability altogether and use a rewriting problem in a restricted class of \emph{simple} semi-Thue systems as a starting point.
+Joly shifts the technical burden to a restricted $\lambda$-definability problem.
+Instead, we avoid $\lambda$-definability altogether and use a rewriting problem in a class of \emph{simple} semi-Thue systems as a starting point.
 
 
 \paragraph*{Simple Semi-Thue Systems}
@@ -371,23 +383,40 @@ For arbitrary simple semi-Thue systems it is undecidable whether some non-empty 
 Given a simple semi-Thue system $\frakR$, does $\0^n \Rightarrow^*_\frakR \1^n$ hold for some $n > 0$?
 \end{problem}
 
-\begin{thm}[{\cite[Lemma~3.3]{DudenhefnerR19}}]\label{thm:ssts_undec}
+\begin{thmC}[{\cite[Lemma~3.3]{DudenhefnerR19}}]\label{thm:ssts_undec}
 \reversemarginpar\coqextraleft{StringRewriting/SSTS\_undec.v\#L21}%
 Problem $\0^+ \Rightarrow^* \1^+$ is undecidable.
-\end{thm}
-The following Example~\ref{xmp:ssts} illustrates a positive instance of Problem $\0^+ \Rightarrow^* \1^+$.
+\end{thmC}
+\begin{proof}[Proof Sketch]
+Reduction from the Turing machine halting problem from the empty tape.
+Rule shape $ab \Rightarrow cd$ suffices to represent any Turing machine transition function.
+For example, the transition from state $p$ to state $q$ reading symbol $x$, writing symbol $y$, and moving to the right to symbol $z$ can be represented as $(p, x)(\_, z) \Rightarrow (\_, y)(q, z)$.
+The alphabet of the corresponding simple semi-Thue system includes symbols $\0$, $\1$, and pairs of state (including a special state \enquote{$\_$}) and tape symbol.
+The Turing machine head is positioned at the pair for which the first projection is not the special state \enquote{$\_$}.
+Some care needs to be taken with respect to correct word initialization and finalization after a halting state is reached.
+The length $n > 0$ of starting word $\0^n$ is the space (length of the tape) required for the given Turing machine to reach a halting configuration.
+\end{proof}
+
+The following Example~\ref{xmp:ssts} shows a positive instance of Problem $\0^+ \Rightarrow^* \1^+$, which we will use throught Section~\ref{sec:undec} to illustate the construction.
 
 \begin{exa}\label{xmp:ssts}
 Let $\frakR  := \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1,\2\}$.
 We have $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$. As a side note, we have $\0^n \;{\not\Rightarrow}_\frakR^*\; \1^n$ for $n \in \{1, 2, 3\}$.
 \end{exa}
 
-\begin{rem}
-Problem $\0^+ \Rightarrow^* \1^+$ is used as a starting point in a refinement~\cite[Lemma~4.4]{DudenhefnerR19} of Urzyczyn's undecidability result for intersection type inhabitation~\cite{Urzyczyn09}.
-Undecidability of Problem $\0^+ \Rightarrow^* \1^+$ is mechanized as part of Coq Library of Undecidability Proofs~\cite{CLUP20}, making it a good starting point for further mechanized undecidability results.
-\end{rem}
+Complementary to Example~\ref{xmp:ssts}, the following Example~\ref{xmp:neg-ssts} shows a negative instance of Problem $\0^+ \Rightarrow^* \1^+$.
 
-\newpage
+\begin{exa}\label{xmp:neg-ssts}
+Let $\frakR  := \{\0\0 \Rightarrow \1\0, \0\1 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1\}$.
+We have that if $\0^{n+1} \Rightarrow_\frakR \1^{n}a$ for some $n$ and some symbol $a$ then $a = \0$, because the last symbol $\0$ cannot be changed by any rule in $\frakR$.
+Therefore, for any $n > 0$ we have $\0^n \not\Rightarrow_\frakR \1^n$.
+\end{exa}
+
+\begin{rem}
+Simple semi-Thue systems were introduced by Urzyczyn to establish the undecidability result for intersection type inhabitation~\cite{Urzyczyn09}.
+The exact presentation of Problem $\0^+ \Rightarrow^* \1^+$ was introduced later as a starting point in a refinement~\cite[Lemma~4.4]{DudenhefnerR19} of Urzyczyn's undecidability result for intersection type inhabitation~\cite{Urzyczyn09}.
+Undecidability of Problem $\0^+ \Rightarrow^* \1^+$ is mechanized as part of Coq Library of Undecidability Proofs~\cite{CLUP20}, making it a good starting point for mechanized undecidability results.
+\end{rem}
 
 \section{Undecidability of Higher-order $\beta$-Matching}\label{sec:undec}
 In this section we develop our main result (Theorem~\ref{thm:ssts_to_hom}): a reduction from the rewriting problem $\0^+ \Rightarrow^* \1^+$ to higher-order $\beta$-matching.
@@ -434,8 +463,6 @@ The subterm $r_i\,p_j$ (and $r_i\,(\lambda w.p_j\,w)$) for $i \in \{1, \ldots, L
 Additionally, terms in the set $\calR_m$ capture consecutive increase of word length starting with $m+1$, and initialization with $\0$s before rewriting (represented by $z_\0\,N\,M \in \calR_m$ for $M \in \calQ_m$).
 Specifically, the subterm $z_\star\,N\,(\lambda p_{m+1}.M)$ introduces an additional bound variable $p_{m+1}$ in order to argue about rule application at position $m+1$ in the longer word.
 Consequently, terms in $\calR_1$ represent witnesses for an arbitrary expansion of a word starting with length $2$, followed by initialization with $\0$s, and consecutive rule application (potentially ending in $\1$s).
-
-\newpage
 
 \begin{defi}[Sets $\calQ_m$, $\calR_m$ of Terms]\label{def:ring}
 For $m > 0$, let $\calQ_m$ and $\calR_m$ be the smallest sets of terms satisfying the following rules:
@@ -806,7 +833,6 @@ Higher-order $\beta$-matching (Problem~\ref{prb:hom}) is undecidable.
 By reduction from the undecidable Problem $\0^+ \Rightarrow^* \1^+$ (Theorem~\ref{thm:ssts_undec} and Theorem~\ref{thm:ssts_to_hom}).
 \end{proof}
 
-\newpage
 
 \section{Mechanization}\label{sec:mech}
 
@@ -856,8 +882,6 @@ Definition undecidable {X} (p : X -> Prop) :=
   decidable p -> enumerable (complement SBTM_HALT).
 \end{lstlisting}
 Since the Halting Problem is recursively enumerable, decidability of \texttt{p} would imply decidability of the Halting Problem.
-
-\newpage
 
 \section{On Intersection Type Inhabitation and $\lambda$-Definability}\label{sec:uniform}
 
@@ -917,7 +941,6 @@ This is already done in the existing mechanized reduction from Problem $\0^+ \Ri
 Second, based on Remark~\ref{rem:G}, the approach can be adapted to show $(1) \iff (4)$, such that the realizer is essentially a member of $\calR_1$.
 This is further supported by the known correspondence between intersection type inhabitation (in the fragment at hand) and $\lambda$-definability~\cite{SalvatiMGB12}.
 
-\newpage
 
 \section{Conclusion}\label{sec:concl}
 The present work presents a new, mechanized proof of the undecidability of higher-order $\beta$-matching.
