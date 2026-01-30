@@ -45,6 +45,20 @@
 \theoremstyle{definition}
 \newtheorem{problem}[thm]{Problem}
 
+\lstset{
+comment=[l]{(*},
+basicstyle=\ttfamily\scriptsize,
+keywordstyle=\color{blue},
+morekeywords={Inductive,Type,Theorem,Definition,exists,fun},
+commentstyle=\color{olive},
+backgroundcolor=\color{yellow!5},
+framerule=0.4pt,
+frame=single,
+inputencoding=utf8,
+extendedchars=false,}
+
+
+
 \begin{document}
 
 \title[Undecidability of Higher-order beta-Matching]{Mechanized Undecidability of Higher-order beta-Matching (Extended Version)}
@@ -71,21 +85,6 @@ The presented undecidability proof is mechanized in the Coq proof assistant and 
 \end{abstract}
 
 \maketitle
-
-\lstset{
-comment=[l]{(*},
-basicstyle=\ttfamily\scriptsize,
-keywordstyle=\color{blue},
-morekeywords={Inductive,Type,Theorem,Definition,exists,fun},
-commentstyle=\color{olive},
-backgroundcolor=\color{yellow!5},
-framerule=0.4pt,
-frame=single,
-inputencoding=utf8,
-extendedchars=false,}
-
-\setlength{\abovedisplayskip}{3pt}
-\setlength{\belowdisplayskip}{3pt}
 
 \section{Introduction}
 
@@ -365,7 +364,7 @@ Some care needs to be taken with respect to correct word initialization and fina
 The length $n > 0$ of starting word $\0^n$ is the space (length of the tape) required for the given Turing machine to reach a halting configuration.
 \end{proof}
 
-The following Example~\ref{xmp:ssts} shows a positive instance of Problem $\0^+ \Rightarrow^* \1^+$, which we will use throught Section~\ref{sec:undec} to illustrate the reduction from Problem $\0^+ \Rightarrow^* \1^+$ to matching.
+The following Example~\ref{xmp:ssts} shows a positive instance of Problem $\0^+ \Rightarrow^* \1^+$, which we will use throughout Section~\ref{sec:undec} to illustrate the reduction from Problem $\0^+ \Rightarrow^* \1^+$ to matching.
 
 \begin{exa}\label{xmp:ssts}
 Let $\frakR  := \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1,\2\}$.
@@ -376,7 +375,7 @@ Complementary to Example~\ref{xmp:ssts}, the following Example~\ref{xmp:neg-ssts
 
 \begin{exa}\label{xmp:neg-ssts}
 Let $\frakR  := \{\0\0 \Rightarrow \1\0, \0\1 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1\}$.
-We have that if $\0^{n+1} \Rightarrow_\frakR^* \1^{n}a$ for some $n$ and some symbol $a$ then $a = \0$, because the last symbol $\0$ cannot be changed by any rule in $\frakR$.
+After any number of rewriting steps starting with $\0^{n+1}$ the last symbol is~$\0$, because it cannot be changed by any rule in $\frakR$.
 Therefore, for any $n > 0$ we have $\0^n \not\Rightarrow_\frakR^* \1^n$.
 \end{exa}
 
@@ -488,7 +487,7 @@ H_R := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top
 \end{defi}
 
 We introduce substitutions $S_F$ and $S_H$ acting on the term variables $z_\star, z_\1, z_\0, r_1, \ldots, r_L$, which occur in terms in $\calQ_m$ and $\calR_m$.
-In particular, the term $I$ along with the free variable $u$ is used in $S_F$ analogously to Example~\ref{xmp:no-ad-hoc} in order to hinder the use of unwanted $\lambda$-abstractions. 
+In particular, the term $I$ along with the free variable~$u$ is used in $S_F$ analogously to Example~\ref{xmp:no-ad-hoc} in order to hinder the use of unwanted $\lambda$-abstractions. 
 
 \begin{defi}[Substitutions $S_F$, $S_H$]\label{def:SF_SH}
 ~\\
@@ -573,7 +572,7 @@ $\begin{array}{ll}
 (\lambda r_1 r_2.\lambda z_\0 z_\1 z_\star p_1.M)\,H_R\,H_R\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$}
 \end{array}$\\
 While the term $M$ represents a valid word expansion to length $3$ and initialization to $\0\0\0$, it does not represent a valid sequence of rewriting steps.
-While the first step $\0\0\0 \Rightarrow_\frakR \1\0\0$ is represented correctly by using the subterm $r_1\,p_1$, the subterm $r_2\,p_2\,z_1$ means that next the rule $\0\1 \Rightarrow \1\1$ is applied at position $2$, which is invalid.
+While the first step $\0\0\0 \Rightarrow_\frakR \1\0\0$ is represented correctly by using the subterm $r_1\,p_1$, the subterm $r_2\,p_2\,z_\1$ means that next the rule $\0\1 \Rightarrow \1\1$ is applied at position $2$, which is invalid.
 \end{exa}
 
 Having only \enquote{well-formed} terms to consider (cf. Example~\ref{xmp:ad-hoc} and Example~\ref{xmp:no-ad-hoc}), next we focus on the functional properties of rewriting.
@@ -624,8 +623,7 @@ S_G(r_j) := G_{R_j} \text{ for } j \in \{1, \ldots, L\}\]
 The following Example~\ref{xmp:rule} illustrates how the term $G_{ab \Rightarrow cd}$ together with the term $G_j^i$ represent the effect of rule $ab \Rightarrow cd$ applied at position $j$ on the symbol at position $i$.
 
 \begin{exa}\label{xmp:rule}
-Consider for symbols $\0, \1, \ldots, \5$ an application of the rule $\1\2 \Rightarrow \4\5$ at position $2$ in order to rewrite the word $\0\1\2\3$ to $\0\4\5\3$. 
-The terms $G_2^i$ for $i \in \{1, 2, 3, 4\}$ indicate that we are interested in the symbol at position $i$ when the rule is applied at position~$2$.
+Consider for symbols $\0, \1, \ldots, \5$ an application of the rule $\1\2 \Rightarrow \4\5$ at position $2$ in order to rewrite the word $\0\1\2\3$ to $\0\4\5\3$.
 Accordingly, we have:
 \begin{description}
 \item[Position $1$] $G_{\1\2 \Rightarrow \4\5}\,G_2^1\,\pi_\0 =_\beta \pi_\0$
@@ -779,54 +777,7 @@ Higher-order $\beta$-matching (Problem~\ref{prb:hom}) is undecidable.
 By reduction from the undecidable Problem $\0^+ \Rightarrow^* \1^+$ (Theorem~\ref{thm:ssts_undec} and Theorem~\ref{thm:ssts_to_hom}).
 \end{proof}
 
-\section{Mechanization}\label{sec:mech}
-
-This section provides a brief overview over the mechanization of undecidability of higher-order $\beta$-matching (Theorem~\ref{thm:hom_undec}) using the Coq proof assistant~\cite{Coq_2023}.
-The mechanization is axiom-free and spans approximately $4000$ lines of code, consisting of the following parts:
-\begin{itemize}
-\item \texttt{HOMatching.v} contains definitions of the simply typed $\lambda$-calculus~\coqextra{LambdaCalculus/HOMatching.v\#L31} and higher-order $\beta$-matching~\coqextra{LambdaCalculus/HOMatching.v\#L37}.
-\item \texttt{Util/stlc\_facts.v} and \texttt{Util/term\_facts.v} contain basic properties of the simply typed $\lambda$-calculus, such as confluence of $\beta$-reduction~\coqextra{LambdaCalculus/Util/term\_facts.v\#L1056}, substitution lemmas~\coqextra{LambdaCalculus/Util/stlc\_facts.v\#L100}, and type preservation properties~\coqextra{LambdaCalculus/Util/stlc\_facts.v\#L116}.
-\item \texttt{Reductions/SSTS01\_to\_HOMbeta.v} contains the reduction from Problem $\0^+ \Rightarrow^* \1^+$ to higher-order $\beta$-matching~\coq{L2880}.
-\item \texttt{HOMatching\_undec.v} contains the undecidability result for higher-order $\beta$-matching~\coqextra{LambdaCalculus/HOMatching\_undec.v\#L16}.
-\end{itemize}
-
-The simple type system \texttt{stlc} is mechanized in \texttt{HOMatching.v}, borrowing the existing term definitions from the library~\coqextra{L/L.v\#L8}, for which variable binding is addressed via the unscoped de Bruijn approach~\cite{deBruijn72}.
-The proposition \texttt{stlc~Gamma~M~t} mechanizes that the term \texttt{M} is assigned the simple type~\texttt{t} in the simple type environment \texttt{Gamma}.
-\begin{lstlisting}[mathescape]
-Inductive ty : Type :=
-  | atom (* type variable *)
-  | arr (s t : ty). (* function type *)
-
-Inductive term : Type :=
-  | var (n : nat) : term (* term variable *)
-  | app (s : term) (t : term) : term (* application *)
-  | lam (s : term). (* abstraction *)
-
-Inductive stlc (Gamma : list ty) : term -> ty -> Prop :=
-  | stlc_var x t : nth_error Gamma x = Some t ->
-      stlc Gamma (var x) t (* variable rule *)
-  | stlc_app M N s t : stlc Gamma M (arr s t) -> stlc Gamma N s ->
-      stlc Gamma (app M N) t (* application rule *)
-  | stlc_lam M s t : stlc (cons s Gamma) M t ->
-      stlc Gamma (lam M) (arr s t). (* abstraction rule *)
-\end{lstlisting}
-
-Higher-order $\beta$-matching is mechanized as the predicate \texttt{HOMbeta}: given terms \texttt{F} of type \texttt{arr s t} and \texttt{N} of type \texttt{t}, is there a simply typed term \texttt{M} of type \texttt{s} such that \texttt{app F M} is $\beta$-equivalent (reflexive, symmetric, transitive closure of \texttt{step}) to \texttt{N}?
-\begin{lstlisting}[mathescape]
-Definition HOMbeta : { '(s, t, F, N) : (ty * ty * term * term) 
-  | stlc nil F (arr s t) /\ stlc nil N t } -> Prop :=
-    fun '(exist _ (s, t, F, N) _) =>
-      exists (M : term), stlc nil M s /\
- clos_refl_sym_trans term step (app F M) N.
-\end{lstlisting}
-
-The proposition \lstinline|undecidable HOMbeta|~\coqextra{LambdaCalculus/HOMatching\_undec.v\#L16} mechanizes the undecidability of the predicate \texttt{HOMbeta}, relying on the following library definition~\cite[Chapter~19]{forster2021computability}.
-A predicate \texttt{p} is undecidable, if existence of a computable decider for \texttt{p} implies recursive co-enumerability of the (Turing machine) Halting Problem.
-\begin{lstlisting}[mathescape]
-Definition undecidable {X} (p : X -> Prop) :=
- decidable p -> enumerable (complement SBTM_HALT).
-\end{lstlisting}
-Since the Halting Problem is recursively enumerable, decidability of \texttt{p} would imply decidability of the Halting Problem.
+\input{mechanization}
 
 \section{On Intersection Type Inhabitation and $\lambda$-Definability}\label{sec:uniform}
 
@@ -864,7 +815,7 @@ Terms in Definition~\ref{def:G} realize certain finite functions as follows.
 \end{rem}
 
 The above specifications follow the intended meaning (Example~\ref{xmp:H}) of the corresponding programs, when used in \enquote{well-formed} terms in $\calQ_m$ and $\calR_m$.
-For example, we have $G_\0\,\delta_\bullet\,\pi_1 =_\beta \pi_\$$, in agreement with the above Remark~\ref{rem:G}.
+For example, we have $G_\0\,\delta_\bullet\,\pi_\1 =_\beta \pi_\$$, in agreement with the above Remark~\ref{rem:G}.
 
 Let us state the relationship between simple semi-Thue system rewriting, higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
 
