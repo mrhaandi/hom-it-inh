@@ -397,7 +397,7 @@ Some care needs to be taken with respect to correct word initialization and fina
 The length $n > 0$ of starting word $\0^n$ is the space (length of the tape) required for the given Turing machine to reach a halting configuration.
 \end{proof}
 
-The following Example~\ref{xmp:ssts} shows a positive instance of Problem $\0^+ \Rightarrow^* \1^+$, which we will use throught Section~\ref{sec:undec} to illustate the construction.
+The following Example~\ref{xmp:ssts} shows a positive instance of Problem $\0^+ \Rightarrow^* \1^+$, which we will use throught Section~\ref{sec:undec} to illustate the reduction from Problem $\0^+ \Rightarrow^* \1^+$ to matching.
 
 \begin{exa}\label{xmp:ssts}
 Let $\frakR  := \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ be a simple semi-Thue system over the alphabet $\{\0,\1,\2\}$.
@@ -425,14 +425,14 @@ For the remainder of the section we fix the simple semi-Thue system $\frakR := \
 Our approach is to construct simply typed terms which capture the two main aspects of the rewriting problem $\0^+ \Rightarrow^* \1^+$: the search for a sufficiently long starting sequence of $\0$s, and the individual rewriting steps to the desired sequence of $\1$s.
 
 The remainder of the present section is structured as follows.
-First, we fix basic notation, encoding, and properties of the rewriting in the system $\frakR$.
+First, we fix basic notation, encoding, and properties of rewriting in the system $\frakR$.
 Second, we restrict the shape of potential solutions for the constructed matching instance, similarly to Example~\ref{xmp:no-ad-hoc}.
 Third, for solutions of restricted shape we capture the functional properties of the rewriting problem $\0^+ \Rightarrow^* \1^+$.
 
 \subsection*{Notation}
 
 We introduce four additional symbols in extended alphabet $\calA := \{\0, \1, \ldots, \mathbf{K}\} \cup \{\$, \bullet, \top, \bot\}$.
-We represent an alphabet symbol $i \in \calA$ as the projection $\pi_i := \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.s_i$ typed by the simple type $\kappa := \underbracket{\ga \to \ldots \to \ga}_{|\calA|~\text{times}} \to \ga$.
+We represent a symbol $i \in \calA$ as the projection $\pi_i := \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.s_i$ typed by the simple type $\kappa := \underbracket{\ga \to \ldots \to \ga}_{|\calA|~\text{times}} \to \ga$.
 The intended meaning of the additional symbols in the extended alphabet is as follows.
 The symbol $\$$ marks the beginning of a word for word expansion,
 $\bullet$ serves as symbol different from $\0$ and $\1$ for case analysis,
@@ -447,14 +447,25 @@ For $k \in \bbN$, distinct $i_1, \ldots, i_k \in \calA$, and terms $M_1, \ldots,
 &\text{ where } N_i = \begin{cases} M_j & \text{if } i = i_j\\M & \text{otherwise}\end{cases}
 \end{align*}
 \end{defi}
+
+\begin{lem}
+Let $k \in \bbN$, let $i_1, \ldots, i_k \in \calA$ be distinct, and let $M_1, \ldots, M_k$ be some terms.
+For $j \in \calA$ we have 
+$\caseelse{\pi_j}{i_1 \mapsto M_1 \mid \ldots \mid i_k \mapsto M_k}{M} =_\beta \begin{cases} M_j \text{ if } j \in \{i_1, \ldots, i_k\}\\ M \text{ else} \end{cases}$
+\end{lem}
+
 A particular term $\delta_i$ for $i \in \calA$, which we use commonly is:
 \[\delta_i := \lambda x.\lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top s_\bot.\caseelse{x}{\top \mapsto s_i}{s_\bot}\]
 We have $\emptyset \vdash \delta_i : \kappa \to \kappa$, and the following Lemma~\ref{lem:delta} specifies the behavior of $\delta_i$.
 
 \begin{lem}\label{lem:delta}
-For $i, j \in \calA$ such that $i \neq j$ we have
+For $i, j \in \calA$ such that $j \neq \bot$ we have
 $\delta_i\,\pi_\top =_\beta \pi_i$ and $\delta_i\,\pi_j =_\beta \pi_\bot$.
 \end{lem}
+
+Intuitively, $\delta_i$ is $\pi_i$ when provided with the easily constructed $\pi_\top$.
+However, it is essential in the formulation of constraints restricting solution shape that $\delta_i$ is assigned the same simple type $\kappa \to \kappa$ as the term $I$.
+In particular, we will use the term $I$ (similarly to Example~\ref{xmp:no-ad-hoc}) of type $\kappa \to \kappa$  in combination with a free variable $u$ of type $\kappa$ in order to restrict solution shape.
 
 \subsection*{Syntactic Constraints}
 We identify the shape of \enquote{well-formed} terms, suitable to represent rewriting.
@@ -509,6 +520,7 @@ H_R := &\lambda h.\lambda x. \lambda s_\0 s_\1 \ldots s_\K s_\$ s_\bullet s_\top
 \end{defi}
 
 We introduce substitutions $S_F$ and $S_H$ acting on the term variables $z_\star, z_\1, z_\0, r_1, \ldots, r_L$, which occur in terms in $\calQ_m$ and $\calR_m$.
+In particular, the term $I$ along with the free variable $u$ is used in $S_F$ analogously to Example~\ref{xmp:no-ad-hoc} in order to hinder the use of unwanted $\lambda$-abstractions. 
 
 \begin{defi}[Substitutions $S_F$, $S_H$]\label{def:SF_SH}
 ~\\
@@ -516,11 +528,11 @@ $\begin{array}{llll}
 S_F(z_\star) := \lambda h.\lambda g.g\,I ~&
 S_F(z_\1) := u ~&
 S_F(z_\0) := \lambda h.I ~&
-S_F(r_j) := I \text{ for } j \in {1, \ldots L}\\
+S_F(r_j) := I \text{ for } j \in \{1, \ldots, L\}\\
 S_H(z_\star) := H_\star &
 S_H(z_\1) := \pi_\1 &
 S_H(z_\0) := H_\0 &
-S_H(r_j) := H_R \text{ for } j \in {1, \ldots L}
+S_H(r_j) := H_R \text{ for } j \in \{1, \ldots, L\}
 \end{array}$
 \end{defi}
 
@@ -546,7 +558,7 @@ then $M \in \calQ_m$.
 \end{lem}
 
 \begin{proof}
-Induction on the size of $M$ and case analysis of the normal form.
+Induction on the size of $M$ and case analysis of the normal form, observing that $S_F(z_\1) = u$ is the only occurrence of $u$ in $S_F$, and $S_H(z_\1)$ and $S_H(r_j)$ for $j \in \{1, \ldots, L\}$ are the only ways to construct $\pi_\1$.
 \end{proof}
 
 %(* x_star N (\x_p.M) *)
@@ -570,7 +582,7 @@ then $M \in \calR_m$.
 \end{lem}
 
 \begin{proof}
-Induction on the size of $M$, case analysis of the normal form, and Lemma~\ref{lem:ring2}.
+Induction on the size of $M$, case analysis of the normal form, and Lemma~\ref{lem:ring2}, observing that $S_H(z_\0)$ and $S_H(z_\star)$ are the only ways to construct $\pi_\$$.
 \end{proof}
 
 As a consequence of the above Lemma~\ref{lem:ring1}, the following Theorem~\ref{thm:shape} presents $\beta$-equivalence constraints which suffice to restrict the shape of terms under consideration.
@@ -594,8 +606,6 @@ then $M = \lambda r_1 \ldots r_L.\lambda z_\0 z_\1 z_\star p_1.N$ for some term 
 Induction on the size of $M$, case analysis of the normal form, and Lemma~\ref{lem:ring1}.
 \end{proof}
 
-\newpage
-
 \begin{exa}\label{xmp:H}
 Assume $\frakR = \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$ from Example~\ref{xmp:ssts}.
 Let $N := r_1\,p_2\,(r_2\,p_1\,(r_3\,p_3\,z_\1))$ and
@@ -612,11 +622,25 @@ The introduced variables $p_2$ and $p_3$ are used to address positions in the lo
 The intended meaning of $N$ is that the first rule (using $r_1$) is applied at position $2$ (using $p_2$), followed by the second rule at position $1$, and third rule at position $3$ accordingly.
 The resulting word contains only $\1$s (indicated by $z_\1$).
 Overall, this corresponds to $\0\0\0\0 \Rightarrow_\frakR \0\2\2\0 \Rightarrow_\frakR \1\1\2\0 \Rightarrow_\frakR \1\1\1\1$.
-
 \end{exa}
 
-Having only \enquote{well-formed} terms to consider (cf. Example~\ref{xmp:ad-hoc} and Example~\ref{xmp:no-ad-hoc}), we can focus on the functional properties of rewriting.
+The following Example~\ref{xmp:no-H} shows that we still need to represent actual rewriting steps, as the terms $H_R$ do not distinguish distinct rewriting rules.
 
+\begin{exa}\label{xmp:no-H}
+Assume $\frakR = \{\0\0 \Rightarrow \1\0, \0\1 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1\}$ from Example~\ref{xmp:neg-ssts}.
+Let $N := r_1\,p_1\,(r_2\,p_2\,z_\1)$ and
+$M := z_\star\,p_1\,(\lambda p_2.z_\0\,p_2\,N)$.
+We have $N \in \calQ_2$ and $M \in \calR_1$.
+In congruence with Theorem~\ref{thm:shape} we have:\\
+$\begin{array}{ll}
+(\lambda r_1 r_2.\lambda z_\0 z_\1 z_\star p_1.M)\,I\,I\,(\lambda h.I)\,u\,(\lambda h.\lambda g.g\,I)\,I &=_\beta u\\
+(\lambda r_1 r_2.\lambda z_\0 z_\1 z_\star p_1.M)\,H_R\,H_R\,H_\0\,\pi_\1\,H_\star\,\delta_\bullet &=_\beta \pi_{\$}
+\end{array}$\\
+While the term $M$ represents a valid word expansion to length $3$ and initialization to $\0\0\0$, it does not represent a valid sequence of rewriting steps.
+While the first step $\0\0\0 \Rightarrow_\frakR \1\0\0$ is represented correctly by using the subterm $r_1\,p_1$, the subterm $r_2\,p_2\,z_1$ means that next the rule $\0\1 \Rightarrow \1\1$ is applied at position $2$, which is invalid.
+\end{exa}
+
+Having only \enquote{well-formed} terms to consider (cf. Example~\ref{xmp:ad-hoc} and Example~\ref{xmp:no-ad-hoc}), next we focus on the functional properties of rewriting.
 
 \subsection*{Semantic Constraints}
 
