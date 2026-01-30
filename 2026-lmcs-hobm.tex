@@ -144,7 +144,7 @@ The syntax of untyped $\lambda$-terms is given in the following Definition~\ref{
 M, N ::= x \mid M \, N \mid \lambda x.M \quad \text{where } a, \ldots, z \text{ range over term variables}
 \]
 \end{defi}
-Substitution of the term variable $x$ in the term $M$ by the term $N$ is denoted $M[x := N]$.\linebreak
+Substitution of the term variable $x$ in the term $M$ by the term $N$ is denoted $M[x := N]$.
 As usual, term application associates to the left, and we may group consecutive $\lambda$-abstractions.
 We commonly refer to the term $\lambda x.x$ as $I$.
 
@@ -237,8 +237,8 @@ The following Example~\ref{xmp:hom} illustrates a positive matching instance.
 \begin{exa}\label{xmp:hom}
 Consider the terms $F := \lambda x.\lambda y.x\,y\,I$ and $N := I$, for which we have $\emptyset \vdash F : (\ga \to (\ga \to \ga) \to \ga) \to (\ga \to \ga)$ and $\emptyset \vdash N : \ga \to \ga$.
 
-The matching instance ${F}\,\mathsf{X} = N$ is solvable, including the solution $M := \lambda u.\lambda f.f\,u$.\linebreak
-To be precise, we have the following two properties:
+The matching instance ${F}\,\mathsf{X} = N$ is solvable, including the solution $M := \lambda u.\lambda f.f\,u$.
+More precisely, we have the following two properties:
 \begin{itemize}
 \item $\emptyset \vdash M : \ga \to (\ga \to \ga) \to \ga$ (Example~\ref{xmp:derive})
 \item $F\,M =_\beta \lambda y.(\lambda u.\lambda f.f\,u)\,y\,I =_\beta \lambda y.I\,y =_\beta N$
@@ -272,7 +272,7 @@ This solution exploits the exact representation of elements via projections, dis
 
 In the above Example~\ref{xmp:ad-hoc} we would like to exclude certain unintended solutions, in order to faithfully encode intended functional behavior.
 Towards this aim, a known technique how to restrict the shape of solutions is illustrated in the following Example~\ref{xmp:no-ad-hoc}.
-We formulate an additional constraint that exclude the unintended solutions while preserving the intended ones.
+We formulate an additional constraint that excludes the unintended solutions while preserving the intended ones.
 The key observation is that ad hoc solutions do not use the provided arguments or contain additional $\lambda$-abstractions (going under the hood of the encoding via projections).
 We can use a \emph{free variable}, to both enforce argument use and hinder the construction of additional $\lambda$-abstractions.
 
@@ -308,7 +308,7 @@ The following Remark~\ref{rem:eta-break} illustrates how the addition of $\eta$-
 \begin{rem}\label{rem:eta-break}
 Example~\ref{xmp:no-ad-hoc} demonstrates how to limit abstractions in solutions.
 However, in the presence of $\eta$-reduction this does not work.
-Consider the term $G := \lambda h.\lambda x y z.h\,y\,z\,x$ from Example~\ref{xmp:no-ad-hoc}.
+Consider the term $G := \lambda h.\lambda x y z.h\,y\,z\,x$ from Example~\ref{xmp:ad-hoc}.
 The term $M := \lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 x\,z\,y)\,y\,z$ solves the matching instance in Example~\ref{xmp:no-ad-hoc-combo} because:\\
 $\arraycolsep=1.4pt\begin{array}[t]{lclcl}
 M\,G\,\pi_1 &=_\beta& \big(\lambda g.\lambda h.\lambda xyz.h\,(g\,\pi_1 x\,z\,y)\,y\,z\big)\,G\,\pi_1
@@ -418,7 +418,7 @@ For $k \in \bbN$, distinct $i_1, \ldots, i_k \in \calA$, and terms $M_1, \ldots,
 \begin{lem}
 Let $k \in \bbN$, let $i_1, \ldots, i_k \in \calA$ be distinct, and let $M_1, \ldots, M_k$ be some terms.
 For $j \in \calA$ we have 
-$\caseelse{\pi_j}{i_1 \mapsto M_1 \mid \ldots \mid i_k \mapsto M_k}{M} =_\beta \begin{cases} M_j \text{ if } j \in \{i_1, \ldots, i_k\}\\ M \text{ else} \end{cases}$
+$\caseelse{\pi_j}{i_1 \mapsto M_1 \mid \ldots \mid i_k \mapsto M_k}{M} =_\beta \begin{cases} M_l \text{ if } j = i_l \\ M \text{ else} \end{cases}$
 \end{lem}
 
 A particular term $\delta_i$ for $i \in \calA$, which we use commonly is:
