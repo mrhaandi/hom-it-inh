@@ -101,7 +101,7 @@ The presented undecidability proof is mechanized in the Coq proof assistant and 
 
 \lstset{
 comment=[l]{(*},
-basicstyle=\ttfamily\footnotesize,
+basicstyle=\ttfamily\scriptsize,
 keywordstyle=\color{blue},
 morekeywords={Inductive,Type,Theorem,Definition,exists,fun},
 commentstyle=\color{olive},
@@ -646,7 +646,7 @@ Having only \enquote{well-formed} terms to consider (cf. Example~\ref{xmp:ad-hoc
 
 We formulate typed terms (Definition~\ref{def:G}) and $\beta$-equivalence constraints characterizing word expansion (Lemma~\ref{lem:R_ssts_sem}) and rewriting (Lemma~\ref{lem:Q_ssts_sem}).
 The presented terms are programs which realize the intended meaning (Example~\ref{xmp:H}) of \enquote{well-formed} terms in $\calQ_m$ and $\calR_m$.
-Specifically, $G_\star$ realizes word expansion, $G_\0$ realizes initialization with $\0$s, $G_{ab \Rightarrow cd}$ realizes rule application, and $G_j^i$ controls the effect at position $i$ for rule application at position $j$.
+Specifically, $G_\star$ realizes word expansion, $G_\0$ realizes initialization with $\0$s, $G_{ab \Rightarrow cd}$ realizes rule $ab \Rightarrow cd$ application, and $G_j^i$ controls the effect at position $i$ for rule application at position $j$.
 A~word of length $m$ is represented by $m + 1$ right-hand sides of $\beta$-equivalences.
 
 \begin{defi}[Typed Terms $G_\star$, $G_\0$, $G_{ab \Rightarrow cd}$, $G_i^j$]
@@ -685,16 +685,20 @@ S_G(z_\0) := G_\0 \qquad
 S_G(r_j) := G_{R_j} \text{ for } j \in {1, \ldots L}\]
 \end{defi}
 
-The following Example~\ref{xmp:rule} illustrates how the term $G_{ab \Rightarrow cd}$ represents rule application.
+The following Example~\ref{xmp:rule} illustrates how the term $G_{ab \Rightarrow cd}$ together with the term $G_j^i$ represent the effect of rule $ab \Rightarrow cd$ applied at position $j$ on the symbol at position $i$.
 
 \begin{exa}\label{xmp:rule}
-Consider for symbols $\0, \1, \ldots, \5$ an application of the rule $\1\2 \Rightarrow \4\5$ at position $2$ in order to rewrite the word $\0\1\2\3$ to $\0\4\5\3$. Accordingly, we have:
+Consider for symbols $\0, \1, \ldots, \5$ an application of the rule $\1\2 \Rightarrow \4\5$ at position $2$ in order to rewrite the word $\0\1\2\3$ to $\0\4\5\3$. 
+The terms $G_2^i$ for $i \in \{1, 2, 3, 4\}$ indicate that we are interested in the symbol at position $i$ when the rule is applied at position~$2$.
+Accordingly, we have:
 \begin{description}
-\item[Position $1$:] $G_{\1\2 \Rightarrow \4\5}\,G_2^1\,\pi_\0 =_\beta \pi_\0$
-\item[Position $2$:] $G_{\1\2 \Rightarrow \4\5}\,G_2^2\,\pi_{\4} =_\beta \pi_\1$
-\item[Position $3$:] $G_{\1\2 \Rightarrow \4\5}\,G_2^3\,\pi_{\5} =_\beta \pi_\2$
-\item[Position $4$:] $G_{\1\2 \Rightarrow \4\5}\,G_2^4\,\pi_\3 =_\beta \pi_\3$
+\item[Position $1$] $G_{\1\2 \Rightarrow \4\5}\,G_2^1\,\pi_\0 =_\beta \pi_\0$
+\item[Position $2$] $G_{\1\2 \Rightarrow \4\5}\,G_2^2\,\pi_{\4} =_\beta \pi_\1$
+\item[Position $3$] $G_{\1\2 \Rightarrow \4\5}\,G_2^3\,\pi_{\5} =_\beta \pi_\2$
+\item[Position $4$] $G_{\1\2 \Rightarrow \4\5}\,G_2^4\,\pi_\3 =_\beta \pi_\3$
 \end{description}
+Let us also inspect an illegal rewriting step with rule $\1\2 \Rightarrow \4\5$ at position~$1$, for which we have $G_{\1\2 \Rightarrow \4\5}\,G_1^1\,\pi_\0 =_\beta \pi_\bot$.
+This means the symbol $\0$ cannot be at position $1$ as the result of the application of rule $\1\2 \Rightarrow \4\5$ at position $1$.
 \end{exa}
 
 The above observation is generalized for terms in $\calQ_m$ in the following Lemma~\ref{lem:Q_ssts_sem}.
@@ -734,6 +738,7 @@ $\begin{array}{lll}
 
 In accordance with Lemma~\ref{lem:Q_ssts_sem}, we have that $\0^4 \Rightarrow_\frakR^* \1^4 $.
 Equivalences $(1)$ -- $(4)$ witness the particular rewriting steps at positions $1$ -- $4$ (cf.~Example~\ref{xmp:H} and Example~\ref{xmp:rule}).
+Illegal rule application (cf.\,Example~\ref{xmp:no-H}) would result in $\pi_\bot$ as one of the right-hand sides.
 \end{exa}
 
 Complementarily to word rewriting, the following Lemma~\ref{lem:R_ssts_sem} characterizes word expansion and initialization with $\0$s.
@@ -764,7 +769,7 @@ $S_G(N)[p_1 := G_1^i, \ldots, p_m := G_m^i] =_\beta \pi_\0$ for $i \in \{1, \ldo
 Considering the general case $M \in \calR_{m'}$ for $m' > 0$, induction on the size of $M$ and case analysis using Definition~\ref{def:ring}.
 \end{proof}
 
-The following Example~\ref{xmp:G_R} complements the previous Example~\ref{xmp:G_Q} and illustrates the intended meaning (word expansion and initialization with $\0$s) of a \enquote{well-formed} term in $\calR_1$.
+The following Example~\ref{xmp:G_R} complements the previous Example~\ref{xmp:G_Q} and illustrates the intended meaning (word expansion and initialization with $\0$s) of a \enquote{well-formed} term in the set $\calR_1$.
 
 \begin{exa}\label{xmp:G_R}
 Assume $\frakR = \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$, and consider the terms
@@ -861,7 +866,7 @@ By reduction from the undecidable Problem $\0^+ \Rightarrow^* \1^+$ (Theorem~\re
 \section{Mechanization}\label{sec:mech}
 
 This section provides a brief overview over the mechanization of undecidability of higher-order $\beta$-matching (Theorem~\ref{thm:hom_undec}) using the Coq proof assistant~\cite{Coq_2023}.
-The mechanization is constructive (in the technical sense of axiom-free Coq) and spans approximately $4000$ lines of code, consisting of the following parts:
+The mechanization is axiom-free and spans approximately $4000$ lines of code, consisting of the following parts:
 \begin{itemize}
 \item \texttt{HOMatching.v} contains definitions of the simply typed $\lambda$-calculus~\coqextra{LambdaCalculus/HOMatching.v\#L31} and higher-order $\beta$-matching~\coqextra{LambdaCalculus/HOMatching.v\#L37}.
 \item \texttt{Util/stlc\_facts.v} and \texttt{Util/term\_facts.v} contain basic properties of the simply typed $\lambda$-calculus, such as confluence of $\beta$-reduction~\coqextra{LambdaCalculus/Util/term\_facts.v\#L1056}, substitution lemmas~\coqextra{LambdaCalculus/Util/stlc\_facts.v\#L100}, and type preservation properties~\coqextra{LambdaCalculus/Util/stlc\_facts.v\#L116}.
@@ -896,14 +901,14 @@ Definition HOMbeta : { '(s, t, F, N) : (ty * ty * term * term)
   | stlc nil F (arr s t) /\ stlc nil N t } -> Prop :=
     fun '(exist _ (s, t, F, N) _) =>
       exists (M : term), stlc nil M s /\
-        clos_refl_sym_trans term step (app F M) N.
+ clos_refl_sym_trans term step (app F M) N.
 \end{lstlisting}
 
 The proposition \lstinline|undecidable HOMbeta|~\coqextra{LambdaCalculus/HOMatching\_undec.v\#L16} mechanizes the undecidability of the predicate \texttt{HOMbeta}, relying on the following library definition~\cite[Chapter~19]{forster2021computability}.
 A predicate \texttt{p} is undecidable, if existence of a computable decider for \texttt{p} implies recursive co-enumerability of the (Turing machine) Halting Problem.
 \begin{lstlisting}[mathescape]
 Definition undecidable {X} (p : X -> Prop) :=
-  decidable p -> enumerable (complement SBTM_HALT).
+ decidable p -> enumerable (complement SBTM_HALT).
 \end{lstlisting}
 Since the Halting Problem is recursively enumerable, decidability of \texttt{p} would imply decidability of the Halting Problem.
 
