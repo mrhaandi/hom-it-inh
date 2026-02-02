@@ -112,20 +112,19 @@ it is uniformly applicable to prove undecidability of higher-order $\beta$-match
 
 The present work is an extended version of a conference article~\cite{Dudenhefner25}, and adds the following aspects.
 \begin{itemize}
+\item Further explanations throughout the textual passages.
 \item Proof details apart from straightforward induction and case analysis.
 \item Negative examples, showing what happens on the technical level when a given instance of the problem $\0^+ \Rightarrow^* \1^+$ has no solution.
-\item Further explanations throughout the textual passages.
-\item TODO: code listing showing the definition of ring1 and ring2 predicates (currently only described textually)
-\item TODO: examples of intersection types inhabited iff solvable
+\item Exemplified correspondence between intersection type inhabitation and higher-order $\beta$-machting.
 \end{itemize}
 
 \paragraph*{Paper organization} The present work is structured as follows: 
 \begin{description}
-\item[Section~\ref{sec:prelim}:] Preliminaries for the simply typed $\lambda$-calculus, higher-order $\beta$-matching, and simple semi-Thue systems (including the undecidable Problem $\0^+ \Rightarrow^* \1^+$).
-\item[Section~\ref{sec:undec}:] Reduction from Problem $\0^+ \Rightarrow^* \1^+$ to higher-order $\beta$-matching.
-\item[Section~\ref{sec:mech}:] Overview over the mechanization in the Coq proof assistant.
-\item[Section~\ref{sec:uniform}:] Applicability to intersection type inhabitation and $\lambda$-definability.
-\item[Section~\ref{sec:concl}:] Concluding remarks.
+\item[Section~\ref{sec:prelim}] Preliminaries for the simply typed $\lambda$-calculus, higher-order $\beta$-matching, and simple semi-Thue systems (including the undecidable Problem $\0^+ \Rightarrow^* \1^+$).
+\item[Section~\ref{sec:undec}] Reduction from Problem $\0^+ \Rightarrow^* \1^+$ to higher-order $\beta$-matching.
+\item[Section~\ref{sec:mech}] Overview over the mechanization in the Coq proof assistant.
+\item[Section~\ref{sec:uniform}] Applicability to intersection type inhabitation and $\lambda$-definability.
+\item[Section~\ref{sec:concl}] Concluding remarks.
 \end{description}
 
 Statements in the digital version of the present work are linked to the corresponding mechanization, which is marked by the symbol\;\coqextra{LambdaCalculus/HOMatching.v}.
@@ -817,7 +816,108 @@ Terms in Definition~\ref{def:G} realize certain finite functions as follows.
 The above specifications follow the intended meaning (Example~\ref{xmp:H}) of the corresponding programs, when used in \enquote{well-formed} terms in $\calQ_m$ and $\calR_m$.
 For example, we have $G_\0\,\delta_\bullet\,\pi_\1 =_\beta \pi_\$$, in agreement with the above Remark~\ref{rem:G}.
 
-Let us state the relationship between simple semi-Thue system rewriting, higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation.
+Let us briefly recapitulate one standard presentation of the intersection type system~\cite{Bakel11}.
+Intersection types extend simple types with a associative, commutative, and idempotent constructor $\cap$.
+Judgments are of shape $\Gamma \vdash_\cap M : \varphi$, where the intersection type environment $\Gamma$ contains assumptions of shape $(x : \varphi_1 \cap \cdots \cap \varphi_n)$ where $n \geq 0$.
+
+\begin{defi}[Intersection Types]
+\label{def:itypes}~
+\[
+\varphi ::= a \mid \varphi_1 \cap \cdots \cap \varphi_n \to \varphi \text{ where } n \geq 0
+\]
+where $n \geq 0$ and $a$ rangers over a denumerable set of type variables.
+\end{defi}
+
+\begin{defi}[Intersection Type System~{\cite{Bakel11}}]~\medskip\\
+\begin{minipage}{0.9\textwidth}
+\centering
+\begin{tabular}{l}
+{\RightLabel{\textnormal{(Ax)}}
+\AxiomC{$i \in \{1, \ldots, n\}$ }
+\UnaryInfC{$\Gamma, x : \varphi_1 \cap \cdots \cap \varphi_n \vdash_\cap x : \varphi_i$}
+\DisplayProof}\quad
+{\RightLabel{\textnormal{($\to$I)}}
+\AxiomC{$\Gamma, x: \varphi_1 \cap \cdots \cap \varphi_n \vdash_\cap M : \varphi$}
+\UnaryInfC{$\Gamma \vdash_\cap \lambda x.M : \varphi_1 \cap \cdots \cap \varphi_n \to \varphi$}
+\DisplayProof}
+\\\\
+{\RightLabel{\textnormal{($\to$E)}}
+\AxiomC{$\Gamma \vdash_\cap M : \varphi_1 \cap \cdots \cap \varphi_n \to \varphi$}
+\AxiomC{$\Gamma \vdash_\cap N : \varphi_1,\quad\ldots,\quad \Gamma \vdash_\cap N : \varphi_n$}
+\BinaryInfC{$\Gamma \vdash_\cap M\,N : \varphi$}
+\DisplayProof}
+\end{tabular}
+\end{minipage}
+\end{defi}
+
+The above type system enjoys subject reduction with respect to $\beta$-reduction and strong normalization properties~\cite{Barendregt13book}.
+
+The decision problem of intersection type inhabitation is: given an intersection type environment $\Gamma$ and an intersection type $\varphi$, is there a term $M$ such that $\Gamma \vdash_\cap M : \varphi$ is derivable?
+Undecidability of intersection type inhabitation was shown by Urzyczyn~\cite{Urzyczyn09}.
+
+\newpage
+
+Let us illustrate in the following Example~\ref{xmp:inh_Q} and Example~\ref{xmp:inh_R} the relationship between intersection type inhabitation and the $\beta$-equivalence construction in Example~\ref{xmp:G_Q} and Example~\ref{xmp:G_R} respectively.
+
+\begin{exa}\label{xmp:inh_Q}
+Assume $\frakR = \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$, and consider the term $N = r_1\,p_2\,(r_2\,p_1\,(r_3\,p_3\,z_\1))$ from Example~\ref{xmp:H}. Let
+\begin{align*}
+\Gamma := \{&r_1 : (\1 \to \2 \to \0) \cap (\0 \to \2 \to \0) \cap (\bullet \to \0 \to \0) \cap (\bullet \to \1 \to \1) \cap (\bullet \to \2 \to \2),\\
+&r_2 : (\1 \to \1 \to \0) \cap (\0 \to \1 \to \2) \cap (\bullet \to \0 \to \0) \cap (\bullet \to \1 \to \1) \cap (\bullet \to \2 \to \2),\\
+&r_3 : (\1 \to \1 \to \2) \cap (\0 \to \1 \to \0) \cap (\bullet \to \0 \to \0) \cap (\bullet \to \1 \to \1) \cap (\bullet \to \2 \to \2),\\
+&z_\1 : \1\}
+\end{align*}
+The following judgments $(0)$ -- $(4)$ are derivable:\\
+$\begin{array}{lll}
+(0) &\quad &\Gamma \cup \{ p_1 : \bullet, p_2 : \bullet, p_3 : \bullet \} \vdash_\cap N : \1 \\
+(1) &\quad &\Gamma \cup \{ p_1 : \1, p_2 : \bullet, p_3 : \bullet \} \vdash_\cap N : \0\\
+(2) &\quad &\Gamma \cup \{ p_1 : \0, p_2 : \1, p_3 : \bullet \} \vdash_\cap N : \0\\
+(3) &\quad &\Gamma \cup \{ p_1 : \bullet, p_2 : \0, p_3 : \1 \} \vdash_\cap N : \0\\
+(4) &\quad &\Gamma \cup \{ p_1 : \bullet, p_2 : \bullet, p_3 : \0 \} \vdash_\cap N : \0
+\end{array}$
+
+The above judgments are in one-to-one correspondence to $\beta$-equivalences $(0)$ -- $(4)$ from Example~\ref{xmp:G_Q} and witness the particular rewriting steps at positions $1$ -- $4$ (cf.~Example~\ref{xmp:H} and Example~\ref{xmp:rule}).
+\end{exa}
+
+\begin{exa}\label{xmp:inh_R}
+Assume $\frakR = \{\0\0 \Rightarrow \2\2, \0\2 \Rightarrow \1\1, \2\0 \Rightarrow \1\1\}$ over the alphabet $\{\0,\1,\2\}$, and consider the terms
+$M_1 := z_\star\,p_1\,(\lambda p_2.M_2)$, $M_2 := z_\star\,p_2\,(\lambda p_3.M_3)$,
+$M_3 := z_\0\,p_3\,N$, and $N := r_1\,p_2\,(r_2\,p_1\,(r_3\,p_3\,z_\1))$ from Example~\ref{xmp:G_Q}.
+Consider $\Gamma$ from Example~\ref{xmp:inh_Q} and let
+\begin{align*}
+\Gamma' := \{&z_\0 : (\bullet \to \0 \to \0) \cap (\bullet \to \1 \to \$) \cap (\0 \to \0 \to \1) \cap (\1 \to \0 \to \0),\\
+&z_\star : (\bullet \to (\bullet \to \0) \to \0) \cap (\bullet \to ((\bullet \to \$) \cap (\0 \to \1)) \to \$) \,\cap \\
+&\hspace*{1.7em}(\0 \to (\1 \to \0) \to \1) \cap (\1 \to (\bullet \to \0) \to \0)\}
+\end{align*}
+
+Proceeding bottom up, the following judgments are derivable:\medskip\\
+$\begin{array}{l}
+\Gamma \cup \Gamma' \cup \{p_1 : \bullet, p_2 : \bullet, p_3 : \bullet\} \vdash_\cap M_3 : \$\\
+\Gamma \cup \Gamma' \cup \{p_1 : \1, p_2 : \bullet, p_3 : \bullet\} \vdash_\cap M_3 : \0\\
+\Gamma \cup \Gamma' \cup \{p_1 : \0, p_2 : \1, p_3 : \bullet\} \vdash_\cap M_3 : \0\\
+\Gamma \cup \Gamma' \cup \{p_1 : \bullet, p_2 : \0, p_3 : \1\} \vdash_\cap M_3 : \0\\
+\Gamma \cup \Gamma' \cup \{p_1 : \bullet, p_2 : \bullet, p_3 : \0\} \vdash_\cap M_3 : \1
+\end{array}$\medskip\\
+Additionally, the following judgments are derivable:\medskip\\
+$\begin{array}{l}
+\Gamma \cup \Gamma' \cup \{p_1 : \bullet, p_2 : \bullet\} \vdash_\cap M_2 : \$\\
+\Gamma \cup \Gamma' \cup \{p_1 : \1, p_2 : \bullet\} \vdash_\cap M_2 : \0\\
+\Gamma \cup \Gamma' \cup \{p_1 : \0, p_2 : \1\} \vdash_\cap M_2 : \0\\
+\Gamma \cup \Gamma' \cup \{p_1 : \bullet, p_2 : \0\} \vdash_\cap M_2 : \1
+\end{array}$
+\qquad
+$\begin{array}{l}
+\Gamma \cup \Gamma' \cup \{p_1 : \bullet\} \vdash_\cap M_1 : \$\\
+\Gamma \cup \Gamma' \cup \{p_1 : \1\} \vdash_\cap M_1 : \0\\
+\Gamma \cup \Gamma' \cup \{p_1 : \0\} \vdash_\cap M_1 : \1
+\end{array}$
+
+The above judgments are in one-to-one correspondence to $\beta$-equivalences from Example~\ref{xmp:G_R} and witness word expansion up to length $4$, followed by initialization with $\0$s, and rewriting to $\1$s.
+\end{exa}
+
+A construction, similar to the above Examples is carried out and mechanized\;\coqextra{IntersectionTypes/Reductions/SSTS01\_to\_CD\_INH.v} systematically~\cite{DudenhefnerR19} as a refinement of Urzyczyn's original undecidability proof.
+
+Finally, let us state the relationship between simple semi-Thue system rewriting, higher-order $\beta$-matching, $\lambda$-definability, and intersection type inhabitation in the following Proposition~\ref{prop:uniform}.
 
 \begin{prop}\label{prop:uniform}
 Given a simple semi-Thue system $\frakR$, one can construct simply typed terms $F_\frakR$ and $N_\frakR$, an intersection type $T_\frakR$, and a finite function $\calF_\frakR$ such that the following statements are equivalent:
@@ -854,8 +954,8 @@ The present approach agrees with Loader's result that $\beta$-matching is undeci
 While Loader conjectures that order $5$ may suffice, neither Loader's technique (as observed by Joly~\cite[Section~5]{Joly05}), nor the present approach is applicable at order $5$.
 Constraining the shape of candidate solutions both in the present work as well as in Loader's proof seems to necessitate order $6$.
 While $\beta$-matching at order $4$ is decidable~\cite{Padovani00}, decidability at order $5$ remains an open question.
-Additionally, it remains unknown whether higher-order $\beta$-matching is decidable when restricted to \emph{linear} terms (where each bound variable occurs exactly once).
-The present construction relies on non-linear terms in constraints, suggesting that linearity might be a meaningful restriction.
+%Additionally, it remains unknown whether higher-order $\beta$-matching is decidable when restricted to \emph{linear} terms (where each bound variable occurs exactly once).
+%The present construction relies on non-linear terms in constraints, suggesting that linearity might be a meaningful restriction.
 
 As pointed out in Remark~\ref{rem:typing-break}, the presented approach might be adapted to scenarios beyond the simply typed $\lambda$-calculus.
 An interesting alternative to the simple type system is the Coppo-Dezani intersection type assignment system~\cite{CoppoDezani80}, which characterizes strong normalization~\cite{amadio1998domains}.
